@@ -1,0 +1,23 @@
+***************
+Rowing Physics
+***************
+
+Rowing physics package in development
+
+* Got energybalance working!
+* Most functions in rowingphysics.py tested
+* most functions in rowplots tested
+
+To Do
+-------------
+
+* Add wind resistance
+	
+	* Done for energybalance
+
+In Rowingdata:
+
+* Calculate wind corrected pace
+
+* Add wind to power calculation
+

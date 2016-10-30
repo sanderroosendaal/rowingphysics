@@ -1,0 +1,27 @@
+  Kleshnev data, heavy men- 1+, 30.0 1/min                                      
+  Atkinsopht/vanHolst comparison data file (English units)                      
+  van Holst coeffs. Cd, Cl, modified Hoerner (normal-pull, fixed resist. factor)
++   
++ROWING:    (hmen1-r3.dat)- Ver.10.x  (At iteration   12)      8/17/ 4  8:51: 6
+      Input oarhandle pull-   632.06 & 842.90 N;   Ddwgt.-    22.14 kg;  13.3C
+     Catch oar shaft angle-    22.50 deg;   Advance/sweep-    13.47 m         
+   Maximum oar shaft angle-   126.78 deg;   Release angle-   128.30; dAngl:105.8
+          Blade cant angle-     6.00 deg; Oar lever ratio-     2.29; SwpEff=0.86
+      Stroke period length-     2.04 sec/cycle;    Rating-    29.410 strokes/min
+    Drive/run period ratio-     0.754;      Absolute slip-     0.61 m;  Hydrfoil
+              Drive period-     0.876 sec;    Free period-     1.164 sec
+    Oar blade surface area-   715.37 cm^2;  Apparent slip-    -0.72 m         
+    Calculated sweep: DrvC-     3.677 m;  Geometric: DrvA-     3.683 (iterated)
+ SHELL SPEED:      Initial-     4.25 m/sec;         Final-     4.24  (iterated)
+             Minimum ( 88)-     3.79;       Maximum (851)-     5.59;  Amp.= 1.8
+ T2km- 422.7 sec;  Average-     4.732 m/sec; 15.52 ft/sec;     0.00- Wind m/sec
+ Resist. facts. KWa,KA,KTa-     3.472 0.000 3.472; Implse-   456.91   N-sec/rowr
+ WORK: Shell friction work-  -772.72 J/stroke;     Expt.V-     2.000; S= 2.26 m2
+      Momentum lower, ext.-    46.16; Momntm. lower, int.-   100.59; L=  85 kg
+      Momentum upper, ext.-    89.30; Momntm. upper, int.-   188.81; D=  22 kg
+ Externl (footboard) total-   135.47;Internl (body) total-   289.40; T= 107 kg
+      Shell net (residual)-    -1.96;  Blade profile loss-    -8.93; W=  90 kg
+      Direct shell oarlock-   635.29;     Blade slip loss-  -192.98; N= 1 rowers
+      Total oarhandle work-   837.21; Tot.oarhandle power-   410.32   W/rower  
+          Total rower work-  1262.08;   Total rower power-   618.55   W/rower
+ EFF:  Oarblade mechanical-     0.759;  System mechanical-     0.612 An= 0.00

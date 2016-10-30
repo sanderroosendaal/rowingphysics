@@ -1,0 +1,2 @@
+Flat 250N v0=4.245 531.4 W eff = 0.77 ratio = 0.46
+Trapezium 250N v0=4.234 507.3 W eff = 0.78 ratio = 0.42
