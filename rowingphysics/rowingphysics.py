@@ -13,7 +13,7 @@ from matplotlib import pyplot
 
 from numpy import linspace,zeros,cumsum,mean
 
-__version__ = "0.3.8"
+__version__ = "0.3.9"
 
 # submodules
 from srnumerical import *
@@ -77,7 +77,7 @@ def testbladeforce(fhandle,rigging,vb,oarangle=0.01,aantal=10):
     res = blade_force(oarangle,rigging,vb,Fblade)
     phidot = res[0]
    
-    print Fblade,180*phidot/np.pi,180.*vb*np.cos(0.01)/(np.pi*lout)
+    print(Fblade,180*phidot/np.pi,180.*vb*np.cos(0.01)/(np.pi*lout))
 
 
     Fb = zeros(aantal)
@@ -89,7 +89,7 @@ def testbladeforce(fhandle,rigging,vb,oarangle=0.01,aantal=10):
 	Fb[i] = fhandle*lin/l2
 	res = blade_force(oarangle,rigging,vb,Fb[i])
 	phidot = res[0]
-	print Fb[i],180.*phidot/np.pi
+	print(Fb[i],180.*phidot/np.pi)
 
     Fdol = fhandle + Fb
 
@@ -118,7 +118,7 @@ def plotforce(fhandle,rigging,vb,oarangle=0.01):
     res = blade_force(oarangle,rigging,vb,Fblade,doplot=1)
     phidot = res[0]
    
-    print Fblade,180*phidot/np.pi,180.*vb*np.cos(0.01)/(np.pi*lout)
+    print(Fblade,180*phidot/np.pi,180.*vb*np.cos(0.01)/(np.pi*lout))
 
 
 def empirical(datafile,vavg,crew,rigging,tstroke,trecovery,doplot=1):
@@ -218,9 +218,9 @@ def empirical(datafile,vavg,crew,rigging,tstroke,trecovery,doplot=1):
     
     
 
-    print 'Drag Power',mean(Pw)
-    print 'Kinetic Power loss',mean(Pdiss)
-    print 'Stroke length ',max(handlepos)
+    print('Drag Power',mean(Pw))
+    print('Kinetic Power loss',mean(Pdiss))
+    print('Stroke length ',max(handlepos))
 
     forcearray = transpose([handlepos[wh_stroke-1:],Fhandle[wh_stroke-1:]])
 
@@ -409,7 +409,7 @@ def energybalance(F,crew,rigging,v0=4.3801,dt=0.03,doplot=1,doprint=0,
        zdotdot[i] = -Fdrag/((Nrowers*mc)+mb)
        vw = windv-vcstroke-zdot[i-1]
        Fwind = 0.5*crewarea*Cdw*rho_air*(Nrowers**scalepower)*vw*abs(vw)*dowind
-#       print Fwind,crewarea,dowind
+#       print(Fwind,crewarea,dowind)
        zdotdot[i] = zdotdot[i] + Fwind/((Nrowers*mc)+mb)
        zdot[i] = zdot[i-1]+dt*zdotdot[i]
        xdot[i] = zdot[i]-((Nrowers*mc)/((Nrowers*mc)+mb))*ydot[i]
@@ -423,7 +423,7 @@ def energybalance(F,crew,rigging,v0=4.3801,dt=0.03,doplot=1,doprint=0,
 
        
        vblade = xdot[i]-phidot*lout*np.cos(oarangle[i-1])
-#       print i,vhand,vhand2,vcstroke,vcstroke2
+#       print(i,vhand,vhand2,vcstroke,vcstroke2)
        vs[i] = zdot[i]
        vc[i] = xdot[i]+ydot[i]
        vb[i] = xdot[i]
@@ -631,8 +631,8 @@ def energybalance(F,crew,rigging,v0=4.3801,dt=0.03,doplot=1,doprint=0,
        empRIM_check = max(empxdot)-min(empxdot)
        
        if (doprint == 1):
-	   print "RIM E (measured)",empRIM_E
-	   print "RIM Check (meas)",empRIM_check
+	   print("RIM E (measured)",empRIM_E)
+	   print("RIM Check (meas)",empRIM_check)
 		     
 
 # some other calculations
@@ -642,22 +642,22 @@ def energybalance(F,crew,rigging,v0=4.3801,dt=0.03,doplot=1,doprint=0,
 
    # printing
    if (doprint==1):
-      print "E blade ",Eblade[aantal-1]
-      print "Ediss rower ",Ediss[aantal-1]
-      print "E drag ",Ew[aantal-1]
-      print "Eleg ",Eleg[aantal-1]
-      print "Ehandle ",Ehandle[aantal-1]
-      print "Epropulsion ",Ef[aantal-1]
-      print "Ekin loss ",Eloss
-      print ""
-      print "P blade ",Eblade[aantal-1]/time[aantal-1]
-      print "P leg   ",Eleg[aantal-1]/time[aantal-1]
-      print "P handle ",Ehandle[aantal-1]/time[aantal-1]
-      print "P drag ",Ew[aantal-1]/time[aantal-1]
-      print "P propulsion ",Ef[aantal-1]/time[aantal-1]
-      print ""
-      print "Stroke length CM ",strokelength_cm
-      print ""
+      print("E blade ",Eblade[aantal-1])
+      print("Ediss rower ",Ediss[aantal-1])
+      print("E drag ",Ew[aantal-1])
+      print("Eleg ",Eleg[aantal-1])
+      print("Ehandle ",Ehandle[aantal-1])
+      print("Epropulsion ",Ef[aantal-1])
+      print("Ekin loss ",Eloss)
+      print("")
+      print("P blade ",Eblade[aantal-1]/time[aantal-1])
+      print("P leg   ",Eleg[aantal-1]/time[aantal-1])
+      print("P handle ",Ehandle[aantal-1]/time[aantal-1])
+      print("P drag ",Ew[aantal-1]/time[aantal-1])
+      print("P propulsion ",Ef[aantal-1]/time[aantal-1])
+      print("")
+      print("Stroke length CM ",strokelength_cm)
+      print("")
 
    # plotting
 
@@ -1160,15 +1160,15 @@ def energybalance_erg(ratio,crew,erg,w0=4.3801,dt=0.03,doplot=1,doprint=0,thecon
 
    # printing
    if (doprint==1):
-      print "Ediss rower ",Ediss[aantal-1]
-      print "E drag ",Ew[aantal-1]
-      print "Eleg ",Eqrower[aantal-1]
-      print "Ehandle ",Ehandle[aantal-1]
-      print "Ebungee ",Ebungee[aantal-1]
-      print ""
-      print "P handle ",Ehandle[aantal-1]/time[aantal-1]
-      print "P drag ",Ew[aantal-1]/time[aantal-1]
-      print ""
+      print("Ediss rower ",Ediss[aantal-1])
+      print("E drag ",Ew[aantal-1])
+      print("Eleg ",Eqrower[aantal-1])
+      print("Ehandle ",Ehandle[aantal-1])
+      print("Ebungee ",Ebungee[aantal-1])
+      print("")
+      print("P handle ",Ehandle[aantal-1]/time[aantal-1])
+      print("P drag ",Ew[aantal-1]/time[aantal-1])
+      print("")
 
    # plotting
 
@@ -1473,15 +1473,15 @@ def energybalance_erg_old(F,crew,erg,w0=4.3801,dt=0.03,doplot=1,doprint=0,
 
    # printing
    if (doprint==1):
-      print "Ediss rower ",Ediss[aantal-1]
-      print "E drag ",Ew[aantal-1]
-      print "Eleg ",Eqrower[aantal-1]
-      print "Ehandle ",Ehandle[aantal-1]
-      print "Ebungee ",Ebungee[aantal-1]
-      print ""
-      print "P handle ",Ehandle[aantal-1]/time[aantal-1]
-      print "P drag ",Ew[aantal-1]/time[aantal-1]
-      print ""
+      print("Ediss rower ",Ediss[aantal-1])
+      print("E drag ",Ew[aantal-1])
+      print("Eleg ",Eqrower[aantal-1])
+      print("Ehandle ",Ehandle[aantal-1])
+      print("Ebungee ",Ebungee[aantal-1])
+      print("")
+      print("P handle ",Ehandle[aantal-1]/time[aantal-1])
+      print("P drag ",Ew[aantal-1]/time[aantal-1])
+      print("")
 
    # plotting
 
@@ -1793,7 +1793,7 @@ def energybalance_old(F,crew,rigging,v0=4.3801,dt=0.03,doplot=1,doprint=0,
 
 #   Pw = drag_eq((Nrowers*mc)+mb,xdot)*xdot
    Pw = alfaboat*xdot**3
-   print alfaboat,xdot[0],Pw[0]
+   print(alfaboat,xdot[0],Pw[0])
 
    Pmb = mb*xdot*xdotdot
    Pmc = (Nrowers*mc)*(xdot+ydot)*(xdotdot+ydotdot)
@@ -1822,20 +1822,20 @@ def energybalance_old(F,crew,rigging,v0=4.3801,dt=0.03,doplot=1,doprint=0,
 
    # printing
    if (doprint==1):
-      print "E blade ",Eblade[aantal-1]
-      print "Ediss rower ",Ediss[aantal-1]
-      print "E drag ",Ew[aantal-1]
-      print "Eleg ",Eleg[aantal-1]
-      print "Ehandle ",Ehandle[aantal-1]
-      print "Epropulsion ",Ef[aantal-1]
-      print "Ekin loss ",Eloss
-      print ""
-      print "P blade ",Eblade[aantal-1]/time[aantal-1]
-      print "P leg   ",Eleg[aantal-1]/time[aantal-1]
-      print "P handle ",Ehandle[aantal-1]/time[aantal-1]
-      print "P drag ",Ew[aantal-1]/time[aantal-1]
-      print "P propulsion ",Ef[aantal-1]/time[aantal-1]
-      print ""
+      print("E blade ",Eblade[aantal-1])
+      print("Ediss rower ",Ediss[aantal-1])
+      print("E drag ",Ew[aantal-1])
+      print("Eleg ",Eleg[aantal-1])
+      print("Ehandle ",Ehandle[aantal-1])
+      print("Epropulsion ",Ef[aantal-1])
+      print("Ekin loss ",Eloss)
+      print("")
+      print("P blade ",Eblade[aantal-1]/time[aantal-1])
+      print("P leg   ",Eleg[aantal-1]/time[aantal-1])
+      print("P handle ",Ehandle[aantal-1]/time[aantal-1])
+      print("P drag ",Ew[aantal-1]/time[aantal-1])
+      print("P propulsion ",Ef[aantal-1]/time[aantal-1])
+      print("")
 
    # plotting
 
@@ -2090,7 +2090,7 @@ def atkinsoncalc(F,crew,rigging,v0=4.3801,dt=0.03,doplot=1,doprint=0,
 
        
        vblade = xdot[i]-phidot*lout*np.cos(oarangle[i-1])
-#       print i,vhand,vhand2,vcstroke,vcstroke2
+#       print(i,vhand,vhand2,vcstroke,vcstroke2)
        vs[i] = zdot[i]
        vc[i] = xdot[i]+ydot[i]
        vb[i] = xdot[i]
@@ -2246,21 +2246,21 @@ def atkinsoncalc(F,crew,rigging,v0=4.3801,dt=0.03,doplot=1,doprint=0,
 
    # printing
    if (doprint==1):
-      print "E blade ",Eblade[aantal-1]
-      print "Ediss rower ",Ediss[aantal-1]
-      print "E drag ",Ew[aantal-1]
-      print "Eleg ",Eleg[aantal-1]
-      print "Ehandle ",Ehandle[aantal-1]
-      print "Epropulsion ",Ef[aantal-1]
-      print ""
-      print "P blade ",Eblade[aantal-1]/time[aantal-1]
-      print "P momentum ",Eqrower[aantal-1]/time[aantal-1]
-      print "P dissipation ",Ediss[aantal-1]/time[aantal-1]
-      print "P leg   ",Eleg[aantal-1]/time[aantal-1]
-      print "P handle ",Ehandle[aantal-1]/time[aantal-1]
-      print "P drag ",Ew[aantal-1]/time[aantal-1]
-      print "P propulsion ",Ef[aantal-1]/time[aantal-1]
-      print ""
+      print("E blade ",Eblade[aantal-1])
+      print("Ediss rower ",Ediss[aantal-1])
+      print("E drag ",Ew[aantal-1])
+      print("Eleg ",Eleg[aantal-1])
+      print("Ehandle ",Ehandle[aantal-1])
+      print("Epropulsion ",Ef[aantal-1])
+      print("")
+      print("P blade ",Eblade[aantal-1]/time[aantal-1])
+      print("P momentum ",Eqrower[aantal-1]/time[aantal-1])
+      print("P dissipation ",Ediss[aantal-1]/time[aantal-1])
+      print("P leg   ",Eleg[aantal-1]/time[aantal-1])
+      print("P handle ",Ehandle[aantal-1]/time[aantal-1])
+      print("P drag ",Ew[aantal-1]/time[aantal-1])
+      print("P propulsion ",Ef[aantal-1]/time[aantal-1])
+      print("")
 
    # plotting
 
@@ -2412,7 +2412,7 @@ def atkinsoncalc(F,crew,rigging,v0=4.3801,dt=0.03,doplot=1,doprint=0,
       pyplot.xlabel("time (s)")
       pyplot.ylabel("Drag constant (N s^2 / m^2)")
       pyplot.show()
-      print "average K :",average(dragconst)
+      print("average K :",average(dragconst))
 
    dv = zdot[len(time)-1]-zdot[0]
    vavg = mean(xdot)
@@ -3276,7 +3276,7 @@ def constantrecovery(trecovery,crew,rigging,timestep=0.03,
    eff = res[6]
    vend  = res[1] 
 
-   print "vend",vend,res[1]
+   print("vend",vend,res[1])
 
    return [fres,trecovery,vavg,vend,ratio,pw,eff]
 

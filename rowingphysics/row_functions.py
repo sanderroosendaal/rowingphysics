@@ -47,15 +47,15 @@ def drag_eq(displacement,velo,alfaref=3.5,doprint=0,constantdrag=0):
       a1 = alfaref
 
    if doprint==1:
-      print "----- Drag resistance data --------"
-      print "Corr : ",corr
-      print "Beam : ",beam
-      print "Boat length : ",boatlength
-      print "Wetted Area : ",wetted_area
-      print "alpha skin  : ",alpha
-      print "alpha total : ",a1
-      print "----- Drag resistance data --------"
-      print ""
+      print("----- Drag resistance data --------")
+      print("Corr : ",corr)
+      print("Beam : ",beam)
+      print("Boat length : ",boatlength)
+      print("Wetted Area : ",wetted_area)
+      print("alpha skin  : ",alpha)
+      print("alpha total : ",a1)
+      print("----- Drag resistance data --------")
+      print("")
    
    W2 = a1*velo**2
 
@@ -162,7 +162,7 @@ def blade_force(oarangle,rigging,vb,fblade,doplot=0):
 
          pyplot.show()
       except NameError:
-         print "No plotting today"
+         print("No plotting today")
   
    vblade = phidot1*lout
 

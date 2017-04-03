@@ -59,7 +59,7 @@ def plotwindeffect(r,rg,aantal=10):
 	    res = rowingphysics.constantwattfast(thepower,r,rg,windv=wind[j])
 	    resvelo[j,i] = res[1]
 	    perc[j,i] = 100.*(res[1]-v0)/v0
-	    print i,j,wind[j],perc[j,i],rg.Nrowers,rg.mb
+	    print(i,j,wind[j],perc[j,i],rg.Nrowers,rg.mb)
 
 	pyplot.plot(-wind,perc[:,i],label=filenames[i])
 
@@ -115,7 +115,7 @@ def temposeriesvaughan(tempomin,tempomax,F,crew,rigging,aantal=30,
 
       pyplot.show()
    except NameError:
-      print "No plotting today"
+      print("No plotting today")
 
    return calctime
 
@@ -178,7 +178,7 @@ def temposeries(tempomin,tempomax,F,crew,rigging,aantal=30,timestep=0.03):
 
       pyplot.show()
    except NameError:
-      print "No plotting today"
+      print("No plotting today")
 
    return calctime
 
@@ -245,7 +245,7 @@ def catchangleseries(anglemin,anglemax,F,crew,rigging,aantal=30,timestep=0.03):
 
 	pyplot.show()
     except NameError:
-	print "No plotting today"
+	print("No plotting today")
 
     return calctime
 
@@ -467,7 +467,7 @@ def styleseries(tempomin,tempomax,F,crew,rigging,
          dv = res[0]
          vend = res[1]
 	 catchacceler = res[14]
-	 print catchacceler
+	 print(catchacceler)
       res = rowingphysics.stroke(F,crew,rigging,vend,timestep,10,
 			  timewise=timewise,
 			  catchacceler=catchacceler)
@@ -726,7 +726,7 @@ def styleseries(tempomin,tempomax,F,crew,rigging,
 
       pyplot.show()
    except NameError:
-      print "No plotting today"
+      print("No plotting today")
 
    return calctime
 
@@ -764,7 +764,7 @@ def catchseriesRIM(anglemin,anglemax,F,crew,rigging,
          dv = res[0]
          vend = res[1]
 	 catchacceler = res[14]
-	 print catchacceler
+	 print(catchacceler)
       res = rowingphysics.stroke(F,crew,rigging,vend,timestep,10,
 			  timewise=timewise,
 			  catchacceler=catchacceler)
@@ -1025,7 +1025,7 @@ def catchseriesRIM(anglemin,anglemax,F,crew,rigging,
 
       pyplot.show()
    except NameError:
-      print "No plotting today"
+      print("No plotting today")
 
    return calctime
 
@@ -1064,7 +1064,7 @@ def styleseriesRIM(tempomin,tempomax,F,crew,rigging,
          dv = res[0]
          vend = res[1]
 	 catchacceler = res[14]
-	 print catchacceler
+	 print(catchacceler)
       res = rowingphysics.stroke(F,crew,rigging,vend,timestep,10,
 			  timewise=timewise,
 			  catchacceler=catchacceler)
@@ -1117,7 +1117,7 @@ def styleseriesRIM(tempomin,tempomax,F,crew,rigging,
       check2[i] = res[9]
       RIM_check2[i] = res[11]
       RIM_E2[i] = res[10]
-#      print tempos[i],power2[i],velocity2[i],RIM_effs2[i]
+#      print(tempos[i],power2[i],velocity2[i],RIM_effs2[i]
 
    velocity3 = zeros(aantal)
    power3 = zeros(aantal)
@@ -1157,7 +1157,7 @@ def styleseriesRIM(tempomin,tempomax,F,crew,rigging,
       check3[i] = res[9]
       RIM_check3[i] = res[11]
       RIM_E3[i] = res[10]
-#      print tempos[i],power3[i],velocity3[i],RIM_effs3[i]
+#      print(tempos[i],power3[i],velocity3[i],RIM_effs3[i]
 
    velocity4 = zeros(aantal)
    power4 = zeros(aantal)
@@ -1363,7 +1363,7 @@ def styleseriesRIM(tempomin,tempomax,F,crew,rigging,
 
       pyplot.show()
    except NameError:
-      print "No plotting today"
+      print("No plotting today")
 
    return calctime
 
@@ -1654,7 +1654,7 @@ def styleseriesforce(Fmin,Fmax,crew,rigging,
 
       pyplot.show()
    except NameError:
-      print "No plotting today"
+      print("No plotting today")
 
    return calctime
 
@@ -1901,7 +1901,7 @@ def recoverystyleseries(tempomin,tempomax,F,crew,rigging,
 
       pyplot.show()
    except NameError:
-      print "No plotting today"
+      print("No plotting today")
 
    return calctime
 
@@ -2145,7 +2145,7 @@ def recoverystyletriangle(tempomin,tempomax,F,crew,rigging,aantal=30,timestep=0.
 
       pyplot.show()
    except NameError:
-      print "No plotting today"
+      print("No plotting today")
 
    return calctime
 
@@ -2205,7 +2205,7 @@ def forceseries(Forcemin,Forcemax,tempo,crew,rigging,aantal=10,timestep=.03):
 
       pyplot.show()
    except NameError:
-      print "No plotting today"
+      print("No plotting today")
 
    return calctime
 
@@ -2237,7 +2237,7 @@ def plot_tempo_v_constantwatt(watt,r,rg,aantal=10,
       watts[i] = res[3]
       effs[i] = res[4]
 
-      print tempoos[i],velocity[i],watts[i],fres[i],effs[i]
+      print(tempoos[i],velocity[i],watts[i],fres[i],effs[i])
 
    wattratio = (watts/watts[0])**(1./3.)
    velocity = velocity/wattratio
@@ -2279,7 +2279,7 @@ def plot_tempo_v_constantwatt(watt,r,rg,aantal=10,
   
       pyplot.show()
    except NameError:
-      print "No plotting today"
+      print("No plotting today")
 
    return calctime
 
@@ -2306,7 +2306,7 @@ def plot_catchangle_v_constantwatt(watt,r,rg,aantal=10,timestep=0.03):
       velocity[i] = res[1]
       eff[i] = res[4]
       watts[i] = res[3]
-      print np.degrees(catchangles[i]),rg.dcatch,velocity[i],watts[i]
+      print(np.degrees(catchangles[i]),rg.dcatch,velocity[i],watts[i])
 
    wattratio = (watts/watts[0])**(1./3.)
    velocity = velocity/wattratio
@@ -2347,7 +2347,7 @@ def plot_catchangle_v_constantwatt(watt,r,rg,aantal=10,timestep=0.03):
 
       pyplot.show()
    except NameError:
-      print "No plotting today"
+      print("No plotting today")
 
    return calctime
 
@@ -2388,7 +2388,7 @@ def plot_ratio_v_constantwatt(watt,r,rg,aantal=10,timestep=0.03):
       ratios[i] = res[2]
       eff[i] = res[4]
       watts[i] = res[3]
-      print r.tempo, lsculls[i],ratios[i],velocity[i],watts[i]
+      print(r.tempo, lsculls[i],ratios[i],velocity[i],watts[i])
 
    wattratio = (watts/watts[0])**(1./3.)
    velocity = velocity/wattratio
@@ -2406,7 +2406,7 @@ def plot_ratio_v_constantwatt(watt,r,rg,aantal=10,timestep=0.03):
       ratios2[i] = res[2]
       eff2[i] = res[4]
       watts2[i] = res[3]
-      print r.tempo, lsculls[i],ratios2[i],velocity2[i],watts2[i]
+      print(r.tempo, lsculls[i],ratios2[i],velocity2[i],watts2[i])
 
    wattratio = (watts2/watts2[0])**(1./3.)
    velocity2 = velocity2/wattratio
@@ -2424,7 +2424,7 @@ def plot_ratio_v_constantwatt(watt,r,rg,aantal=10,timestep=0.03):
       ratios3[i] = res[2]
       eff3[i] = res[4]
       watts3[i] = res[3]
-      print r.tempo, lsculls[i],ratios3[i],velocity3[i],watts3[i]
+      print(r.tempo, lsculls[i],ratios3[i],velocity3[i],watts3[i])
 
    wattratio = (watts3/watts3[0])**(1./3.)
    velocity3 = velocity3/wattratio
@@ -2482,7 +2482,7 @@ def plot_ratio_v_constantwatt(watt,r,rg,aantal=10,timestep=0.03):
 
       pyplot.show()
    except NameError:
-      print "No plotting today"
+      print("No plotting today")
 
    return calctime
 
@@ -2513,7 +2513,7 @@ def plot_tempo_power_constantv(velo,r,rg,aantal=10,timestep=0.03,
       watts[i] = res[3]
       eff[i]=res[4]
       peakforce[i] = res[0]
-      print tempoos[i],velocity[i],watts[i],peakforce[i]
+      print(tempoos[i],velocity[i],watts[i],peakforce[i])
 
    calctime = time.time()-tm
 
@@ -2547,7 +2547,7 @@ def plot_tempo_power_constantv(velo,r,rg,aantal=10,timestep=0.03,
   
       pyplot.show()
    except NameError:
-      print "No plotting today"
+      print("No plotting today")
 
    return calctime
 
@@ -2579,7 +2579,7 @@ def plot_inboard_power_constantv(velo,r,rg,aantal=10,timestep=0.03):
       eff[i]=res[4]
       peakforce[i] = (0.5+0.25*pi)*res[0]
       
-      print lins[i],velocity[i],watts[i],peakforce[i]
+      print(lins[i],velocity[i],watts[i],peakforce[i])
 
 
    calctime = time.time()-tm
@@ -2608,7 +2608,7 @@ def plot_inboard_power_constantv(velo,r,rg,aantal=10,timestep=0.03):
   
       pyplot.show()
    except NameError:
-      print "No plotting today"
+      print("No plotting today")
 
    return calctime
 
@@ -2639,7 +2639,7 @@ def plot_boatweight_power_constantv(velo,r,rg,aantal=10,timestep=0.01):
       eff[i]=res[4]
       peakforce[i] = (0.5+0.25*pi)*res[0]
       
-      print mbs[i],velocity[i],watts[i],peakforce[i]
+      print(mbs[i],velocity[i],watts[i],peakforce[i])
 
 
    calctime = time.time()-tm
@@ -2669,7 +2669,7 @@ def plot_boatweight_power_constantv(velo,r,rg,aantal=10,timestep=0.01):
   
       pyplot.show()
    except NameError:
-      print "No plotting today"
+      print("No plotting today")
 
    return calctime
 
@@ -2689,7 +2689,7 @@ def atkinson(timestep=0.01,factor=0.45,doplot=1,h1=0.75,h2=1.0,
 
 
    factor2 = (rg.lscull-rg.lin)/rg.lin
-#   print factor2
+#   print(factor2
 
    F = ratio*368.*factor*factor2
 
@@ -2731,14 +2731,14 @@ def atkinson(timestep=0.01,factor=0.45,doplot=1,h1=0.75,h2=1.0,
    displacement = rg.mb+rg.Nrowers*r.mc
    res = rowingphysics.drag_eq(displacement,velocity,alfaref=3.2,doprint=1,constantdrag=constantdrag)
 
-   print "Velocity :",velocity,"  m/s"
-   print "Ratio    :",ratios
-   print "Power    :",power," W"
-   print "Energy   :",energies," J"
-   print "dv       :",res2[0]
-   print "vend     :",res2[1]
-   print "vmin     :",res2[7]
-   print "vmax     :",res2[8]
+   print("Velocity :",velocity,"  m/s")
+   print("Ratio    :",ratios)
+   print("Power    :",power," W")
+   print("Energy   :",energies," J")
+   print("dv       :",res2[0])
+   print("vend     :",res2[1])
+   print("vmin     :",res2[7])
+   print("vmax     :",res2[8])
 
    calctime = time.time()-tm
    
@@ -2799,11 +2799,11 @@ def james_hm2min(timestep=0.01,factor=0.86,doplot=1,h1=1.0,h2=0.8,
 
 
 
-   print "Velocity :",velocity,"  m/s"
-   print "Ratio    :",ratios
-   print "Power    :",power," W"
-   print "Energy   :",energies," J"
-   print "dv       :",res[0]
+   print("Velocity :",velocity,"  m/s")
+   print("Ratio    :",ratios)
+   print("Power    :",power," W")
+   print("Energy   :",energies," J")
+   print("dv       :",res[0])
 
    calctime = time.time()-tm
    
@@ -2820,7 +2820,7 @@ def powerseries(powers,r,rg):
    for pw in powers:
       res = rowingphysics.constantwatt(pw,r,rg)
       [mins,secs] = rowingphysics.vavgto500mtime(res[1])
-      print pw,'W  ',mins,':',secs
+      print(pw,'W  ',mins,':',secs)
 
 def ergtoboat(splits,r,rg,tempos,erg):
 
@@ -2829,10 +2829,10 @@ def ergtoboat(splits,r,rg,tempos,erg):
    for tempo in tempos:
       r.tempo = tempo
 
-      print "----------------------------------------"
-      print "Tempo       ",tempo, " /min"
-      print ""
-      print "erg split     erg P    total P      boat split"
+      print("----------------------------------------")
+      print("Tempo       ",tempo, " /min")
+      print("")
+      print("erg split     erg P    total P      boat split")
       
       for split in splits:
          mins = split[0]
@@ -2847,19 +2847,19 @@ def ergtoboat(splits,r,rg,tempos,erg):
          bmins = int(bmins)
          bsecs = int(10*bsecs)/10.
          
-         print mins,":",secs,"  ",int(ergpower),"   ",int(totalpower),"  ",bmins,":",bsecs
+         print(mins,":",secs,"  ",int(ergpower),"   ",int(totalpower),"  ",bmins,":",bsecs)
 
 def tempopower(r,rg,tp,pw):
 
     res = rowingphysics.constantwatt(pw,r,rg,timestep = 0.01,aantal = 15,aantal2=15)
-    print pw,res[3]
-    print 'Split ',rowingphysics.vavgto500mtime(res[1])
+    print(pw,res[3])
+    print('Split ',rowingphysics.vavgto500mtime(res[1]))
 
 def tempopowererg(r,rg,erg,tp,pwd,theconst=0.0):
     
     res = rowingphysics.constantwatt_ergdisplay(pwd,r,erg,timestep=0.01,aantal=10,aantal2=10,theconst=theconst)
-    print res
+    print(res)
     pw = res[3]
     res = rowingphysics.constantwatt(pw,r,rg,timestep = 0.01,aantal = 15,aantal2=15)
-    print pw,res[3]
-    print 'Split ',rowingphysics.vavgto500mtime(res[1])
+    print(pw,res[3])
+    print('Split ',rowingphysics.vavgto500mtime(res[1]))
