@@ -4,17 +4,17 @@ import re
 
 def readme():
     with open('README.rst') as f:
-	return f.read()
+        return f.read()
 
 setup(name='rowingphysics',
 
       version=re.search(
 
-	  '^__version__\s*=\s*"(.*)"',
-	  open('rowingphysics/rowingphysics.py').read(),
-	  re.M
+          '^__version__\s*=\s*"(.*)"',
+          open('rowingphysics/rowingphysics.py').read(),
+          re.M
 
-	  ).group(1),
+          ).group(1),
 
       description='Rowing Physics calculations',
       
@@ -29,8 +29,8 @@ setup(name='rowingphysics',
       license='MIT',
 
 #      py_modules = ['rowingphysics.crew',
-#		    'rowingphysics.rowingphysics',
-#		    'rowingphysics.rigging'],
+#                   'rowingphysics.rowingphysics',
+#                   'rowingphysics.rigging'],
 
       packages=find_packages(),
 
@@ -39,10 +39,10 @@ setup(name='rowingphysics',
       keywords = 'rowing ergometer concept2',
       
       install_requires=[
-	  'numpy',
-	  'matplotlib',
-	  'pandas',
-	  ],
+          'numpy',
+          'matplotlib',
+          'pandas',
+          ],
 
       zip_safe=False,
 #      include_package_data=True,
