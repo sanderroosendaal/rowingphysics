@@ -13,19 +13,19 @@ setup(name='rowingphysics',
 	  '^__version__\s*=\s*"(.*)"',
 	  open('rowingphysics/rowingphysics.py').read(),
 	  re.M
-
-	  ).group(1),
+          
+      ).group(1),
 
       description='Rowing Physics calculations',
       
       long_description=readme(),
-
+      
       url='http://sanderroosendaal.wordpress.com',
-
+      
       author='Sander Roosendaal',
-
+      
       author_email='roosendaalsander@gmail.com',
-
+      
       license='MIT',
 
 #      py_modules = ['rowingphysics.crew',
@@ -49,4 +49,4 @@ setup(name='rowingphysics',
 #      include_package_data=True,
 
 
-      )
+)
