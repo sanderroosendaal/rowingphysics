@@ -47,6 +47,7 @@ sudo: required
 after_success:
   - coveralls --config_file .coveragerc
 script:
+  - python setup.py install
 deploy:
   provider: pypi
   user: "sanderroosendaal"
