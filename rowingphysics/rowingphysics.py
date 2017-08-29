@@ -309,545 +309,576 @@ def energybalance(F,crew,rigging,v0=4.3801,dt=0.03,doplot=1,doprint=0,
                   timewise=0,index_offset=1,empirical=0,empt0=0,vb0=0,
 		  catchacceler=5.0,emptype='acceler',
 		  windv=0,dowind=1):
-   """ calculates one stroke with average handle force as input
-   slide velocity and stroke/recovery ratio are calculated
-   knows about slip, lift, drag. Plots energy balance.
+    """ calculates one stroke with average handle force as input
+    slide velocity and stroke/recovery ratio are calculated
+    knows about slip, lift, drag. Plots energy balance.
+    
+    windv is wind speed in m/s. Positive values are tailwind.
+    
+    """
 
-   windv is wind speed in m/s. Positive values are tailwind.
+    # initialising output values
+    dv = 100.
+    vavg = 0.0
+    vend = 0.0
+    ratio = 0.0
+    power = 0.0
 
-   """
+    if (vb0==0):
+        vb0 = v0
 
-   # initialising output values
-   dv = 100.
-   vavg = 0.0
-   vend = 0.0
-   ratio = 0.0
-   power = 0.0
+    if (catchacceler>50):
+        catchacceler = 50
 
-   if (vb0==0):
-       vb0 = v0
+    # stroke parameters
+    lin = rigging.lin
+    lscull = rigging.lscull
+    lout = lscull - lin
+    tempo = crew.tempo
+    mc = crew.mc
+    mb = rigging.mb
+    recprofile = crew.recprofile
+    d = crew.strokelength
+    Nrowers = rigging.Nrowers
+    try:
+        dragform = rigging.dragform
+    except:
+        dragform = 1.0
 
-   if (catchacceler>50):
-       catchacceler = 50
+    catchacceler = max(catchacceler,2.0)
 
-  # stroke parameters
-   lin = rigging.lin
-   lscull = rigging.lscull
-   lout = lscull - lin
-   tempo = crew.tempo
-   mc = crew.mc
-   mb = rigging.mb
-   recprofile = crew.recprofile
-   d = crew.strokelength
-   Nrowers = rigging.Nrowers
-   try:
-       dragform = rigging.dragform
-   except:
-       dragform = 1.0
+    # nr of time steps
+    aantal = 1+int(round(60./(tempo*dt)))
+    time = linspace(0,60./tempo,aantal)
 
-   catchacceler = max(catchacceler,2.0)
+    vs = zeros(len(time))+v0
+    vb = zeros(len(time))+v0
+    vc = zeros(len(time))+v0
 
-   # nr of time steps
-   aantal = 1+int(round(60./(tempo*dt)))
-   time = linspace(0,60./tempo,aantal)
-
-   vs = zeros(len(time))+v0
-   vb = zeros(len(time))+v0
-   vc = zeros(len(time))+v0
-
-   oarangle = zeros(len(time))
-   xblade = zeros(len(time))
-   Fhandle = zeros(len(time))
-   Fblade = zeros(len(time))
-   Fprop = zeros(len(time))
-   Fhandle[0:2] = 0
+    oarangle = zeros(len(time))
+    xblade = zeros(len(time))
+    Fhandle = zeros(len(time))
+    Fblade = zeros(len(time))
+    Fprop = zeros(len(time))
+    Fhandle[0:2] = 0
    
-   Pbladeslip = zeros(len(time))    # H
+    Pbladeslip = zeros(len(time))    # H
 
-   xdotdot = zeros(len(time))
-   zdotdot = zeros(len(time))
-   ydotdot = zeros(len(time))
+    xdotdot = zeros(len(time))
+    zdotdot = zeros(len(time))
+    ydotdot = zeros(len(time))
 
-   xdot = zeros(len(time))+v0
-   ydot = zeros(len(time))+v0
-   zdot = zeros(len(time))+v0
+    xdot = zeros(len(time))+v0
+    ydot = zeros(len(time))+v0
+    zdot = zeros(len(time))+v0
 
-   Pf = zeros(len(time))
-   Foarlock = zeros(len(time))
-   Flift = zeros(len(time))
-   Fbldrag = zeros(len(time))
-   attackangle = zeros(len(time))
-   Clift = zeros(len(time))
-   Cdrag = zeros(len(time))
+    Pf = zeros(len(time))
+    Foarlock = zeros(len(time))
+    Flift = zeros(len(time))
+    Fbldrag = zeros(len(time))
+    attackangle = zeros(len(time))
+    Clift = zeros(len(time))
+    Cdrag = zeros(len(time))
    
-   handlepos = 0
+    handlepos = 0
 
-   # initial handle and boat velocities
-   vs[0] = v0
-   vb[0] = vb0
-   vc[0] = ((Nrowers*mc+mb)*vs[0]-mb*vb[0])/(Nrowers*mc)
-   oarangle[0] = rigging.oarangle(0)
-   xblade[0] = -lout*np.sin(oarangle[0])
+    # initial handle and boat velocities
+    vs[0] = v0
+    vb[0] = vb0
+    vc[0] = ((Nrowers*mc+mb)*vs[0]-mb*vb[0])/(Nrowers*mc)
+    oarangle[0] = rigging.oarangle(0)
+    xblade[0] = -lout*np.sin(oarangle[0])
 
 
-   i=1
+    i=1
+   
+    vcstroke = 0
+    vcstroke2 = 1
 
-   vcstroke = 0
-   vcstroke2 = 1
+    # catch
+    vblade = xdot[i-1]
 
-   # catch
-   vblade = xdot[i-1]
+    while (vcstroke < vcstroke2):
+        vhand = catchacceler*(time[i]-time[0])
+        
+        vcstroke = crew.vcm(vhand, handlepos)
+        phidot = vb[i-1]*np.cos(oarangle[i-1])
+        vhand = phidot*lin*np.cos(oarangle[i-1])
+        ydot[i] = vcstroke
+        Fdrag = drag_eq((Nrowers*mc)+mb,xdot[i-1],alfaref=alfa*dragform)
+        zdotdot[i] = -Fdrag/((Nrowers*mc)+mb)
+        vw = windv-vcstroke-zdot[i-1]
+        Fwind = 0.5*crewarea*Cdw*rho_air*(Nrowers**scalepower)*vw*abs(vw)*dowind
+        #       print(Fwind,crewarea,dowind)
+        zdotdot[i] = zdotdot[i] + Fwind/((Nrowers*mc)+mb)
+        zdot[i] = zdot[i-1]+dt*zdotdot[i]
+        xdot[i] = zdot[i]-((Nrowers*mc)/((Nrowers*mc)+mb))*ydot[i]
 
-   while (vcstroke < vcstroke2):
-       vhand = catchacceler*(time[i]-time[0])
-
-       vcstroke = crew.vcm(vhand, handlepos)
-       phidot = vb[i-1]*np.cos(oarangle[i-1])
-       vhand = phidot*lin*np.cos(oarangle[i-1])
-       ydot[i] = vcstroke
-       Fdrag = drag_eq((Nrowers*mc)+mb,xdot[i-1],alfaref=alfa*dragform)
-       zdotdot[i] = -Fdrag/((Nrowers*mc)+mb)
-       vw = windv-vcstroke-zdot[i-1]
-       Fwind = 0.5*crewarea*Cdw*rho_air*(Nrowers**scalepower)*vw*abs(vw)*dowind
-#       print(Fwind,crewarea,dowind)
-       zdotdot[i] = zdotdot[i] + Fwind/((Nrowers*mc)+mb)
-       zdot[i] = zdot[i-1]+dt*zdotdot[i]
-       xdot[i] = zdot[i]-((Nrowers*mc)/((Nrowers*mc)+mb))*ydot[i]
-
-       Fi = crew.forceprofile(F,handlepos)
-       Fbladei = Fi*lin/lout 
-       res = blade_force(oarangle[i-1],rigging,vb[i-1],Fbladei)
-       phidot2 = res[0]
-       vhand2 = phidot2*lin*np.cos(oarangle[i-1])
-       vcstroke2 = crew.vcm(vhand2,handlepos)
+        Fi = crew.forceprofile(F,handlepos)
+        Fbladei = Fi*lin/lout 
+        res = blade_force(oarangle[i-1],rigging,vb[i-1],Fbladei)
+        phidot2 = res[0]
+        vhand2 = phidot2*lin*np.cos(oarangle[i-1])
+        vcstroke2 = crew.vcm(vhand2,handlepos)
 
        
-       vblade = xdot[i]-phidot*lout*np.cos(oarangle[i-1])
-#       print(i,vhand,vhand2,vcstroke,vcstroke2)
-       vs[i] = zdot[i]
-       vc[i] = xdot[i]+ydot[i]
-       vb[i] = xdot[i]
+        vblade = xdot[i]-phidot*lout*np.cos(oarangle[i-1])
+        #       print(i,vhand,vhand2,vcstroke,vcstroke2)
+        vs[i] = zdot[i]
+        vc[i] = xdot[i]+ydot[i]
+        vb[i] = xdot[i]
 
-       ydotdot[i] = (ydot[i]-ydot[i-1])/dt
-       xdotdot[i] = zdotdot[i]-((Nrowers*mc)/((Nrowers*mc)+mb))*ydotdot[i]
+        ydotdot[i] = (ydot[i]-ydot[i-1])/dt
+        xdotdot[i] = zdotdot[i]-((Nrowers*mc)/((Nrowers*mc)+mb))*ydotdot[i]
 
 
-       handlepos = handlepos+ydot[i]*dt
-       Fhandle[i] = 0
+        handlepos = handlepos+ydot[i]*dt
+        Fhandle[i] = 0
        
-       oarangle[i] = rigging.oarangle(handlepos)
-       i = i+1
+        oarangle[i] = rigging.oarangle(handlepos)
+        i = i+1
 
-   # stroke 
-   while (handlepos<d) & (i<len(time)):
-      if (timewise == 1):
-         Fi = crew.forceprofile(F,handlepos)*np.cos(oarangle[i-1])
-      else:
-         Fi = crew.forceprofile(F,handlepos)
-      Fhandle[i-1] = Fi
-      Fblade[i-1] = Fi*lin/lout 
-      res = blade_force(oarangle[i-1],rigging,vb[i-1],Fblade[i-1])
-      phidot = res[0]
-#      for u in range(5):
-#         l2 = lout-phidot/(vb[i-1]*np.cos(oarangle[i-1]))
-#         l2 = lout
-#         Fblade[i-1] = Fhandle[i-1]*lin/l2
-#         res = blade_force(oarangle[i-1],rigging,vb[i-1],Fblade[i-1])
-#         phidot = res[0]
+    # stroke 
+    while (handlepos<d) & (i<len(time)):
+        if (timewise == 1):
+            Fi = crew.forceprofile(F,handlepos)*np.cos(oarangle[i-1])
+        else:
+            Fi = crew.forceprofile(F,handlepos)
+        Fhandle[i-1] = Fi
+        Fblade[i-1] = Fi*lin/lout 
+        res = blade_force(oarangle[i-1],rigging,vb[i-1],Fblade[i-1])
+        phidot = res[0]
+        #      for u in range(5):
+        #         l2 = lout-phidot/(vb[i-1]*np.cos(oarangle[i-1]))
+        #         l2 = lout
+        #         Fblade[i-1] = Fhandle[i-1]*lin/l2
+        #         res = blade_force(oarangle[i-1],rigging,vb[i-1],Fblade[i-1])
+        #         phidot = res[0]
 
-      Fprop[i-1] = res[2]*Nrowers
-      Flift[i-1] = res[3]*Nrowers
-      Fbldrag[i-1] = res[4]*Nrowers
-      Clift[i-1] = res[5]
-      Cdrag[i-1] = res[6]
-      attackangle[i-1] = res[7]
+        Fprop[i-1] = res[2]*Nrowers
+        Flift[i-1] = res[3]*Nrowers
+        Fbldrag[i-1] = res[4]*Nrowers
+        Clift[i-1] = res[5]
+        Cdrag[i-1] = res[6]
+        attackangle[i-1] = res[7]
 
-      phidot = res[0]
-      vhand = phidot*lin*np.cos(oarangle[i-1])
-#      vcstroke = vhand*(1-(handlepos/d))
-      vcstroke = crew.vcm(vhand, handlepos)
-      Pbladeslip[i-1] = Nrowers*res[1]*(phidot*lout - vb[i-1]*np.cos(oarangle[i-1]))
-      Fdrag = drag_eq((Nrowers*mc)+mb,xdot[i-1],alfaref=alfa*dragform)
-      zdotdot[i] = (Fprop[i-1] - Fdrag)/((Nrowers*mc)+mb)
+        phidot = res[0]
+        vhand = phidot*lin*np.cos(oarangle[i-1])
+        #      vcstroke = vhand*(1-(handlepos/d))
+        vcstroke = crew.vcm(vhand, handlepos)
+        Pbladeslip[i-1] = Nrowers*res[1]*(phidot*lout - vb[i-1]*np.cos(oarangle[i-1]))
+        Fdrag = drag_eq((Nrowers*mc)+mb,xdot[i-1],alfaref=alfa*dragform)
+        zdotdot[i] = (Fprop[i-1] - Fdrag)/((Nrowers*mc)+mb)
 
-      vw = windv-vcstroke-zdot[i-1]
-      Fwind = 0.5*crewarea*Cdw*rho_air*(Nrowers**scalepower)*vw*abs(vw)*dowind
-      zdotdot[i] = zdotdot[i] + Fwind/((Nrowers*mc)+mb)
+        vw = windv-vcstroke-zdot[i-1]
+        Fwind = 0.5*crewarea*Cdw*rho_air*(Nrowers**scalepower)*vw*abs(vw)*dowind
+        zdotdot[i] = zdotdot[i] + Fwind/((Nrowers*mc)+mb)
 
-      zdot[i] = zdot[i-1]+dt*zdotdot[i]
+        zdot[i] = zdot[i-1]+dt*zdotdot[i]
       
 	  
-      ydot[i] = vcstroke
-      xdot[i] = zdot[i]-((Nrowers*mc)/((Nrowers*mc)+mb))*ydot[i]
+        ydot[i] = vcstroke
+        xdot[i] = zdot[i]-((Nrowers*mc)/((Nrowers*mc)+mb))*ydot[i]
 
-      handlepos = handlepos+vhand*dt
-      vs[i] = zdot[i]
-      vc[i] = xdot[i]+ydot[i]
-      vb[i] = xdot[i]
+        handlepos = handlepos+vhand*dt
+        vs[i] = zdot[i]
+        vc[i] = xdot[i]+ydot[i]
+        vb[i] = xdot[i]
 
-      ydotdot[i] = (ydot[i]-ydot[i-1])/dt
-      xdotdot[i] = zdotdot[i]-((Nrowers*mc)/((Nrowers*mc)+mb))*ydotdot[i]
+        ydotdot[i] = (ydot[i]-ydot[i-1])/dt
+        xdotdot[i] = zdotdot[i]-((Nrowers*mc)/((Nrowers*mc)+mb))*ydotdot[i]
 
-      Pf[i-1] = Nrowers*Fblade[i-1]*xdot[i]*np.cos(oarangle[i-1])
+        Pf[i-1] = Nrowers*Fblade[i-1]*xdot[i]*np.cos(oarangle[i-1])
 
-      oarangle[i] = rigging.oarangle(handlepos)  
+        oarangle[i] = rigging.oarangle(handlepos)  
 
-      i = i+1
+        i = i+1
       
-   i=i-1;
+    i=i-1;
 
-   # recovery
+    # recovery
 
-   trecovery = max(time)-time[i]
+    trecovery = max(time)-time[i]
 
-   ratio = time[i]/max(time)
-   aantalstroke = i
+    ratio = time[i]/max(time)
+    aantalstroke = i
 
-   if (recprofile == 1): # oude methode (sinus)
-      vhandmax = -np.pi*d/(2*trecovery)
-      vhand = vhandmax*np.sin(np.pi*(time-time[i])/trecovery)
-      for k in range(i+1,aantal):
-         Fdrag = drag_eq((Nrowers*mc)+mb,xdot[k-1],alfaref=alfa*dragform)
-         zdotdot[k] = (- Fdrag)/((Nrowers*mc)+mb)
+    if (recprofile == 1): # oude methode (sinus)
+        vhandmax = -np.pi*d/(2*trecovery)
+        vhand = vhandmax*np.sin(np.pi*(time-time[i])/trecovery)
+        for k in range(i+1,aantal):
+            Fdrag = drag_eq((Nrowers*mc)+mb,xdot[k-1],alfaref=alfa*dragform)
+            zdotdot[k] = (- Fdrag)/((Nrowers*mc)+mb)
 
-	 vw = windv-vcstroke-zdot[k-1]
-	 Fwind = 0.5*crewarea*Cdw*rho_air*(Nrowers**scalepower)*vw*abs(vw)*dowind
-	 zdotdot[k] = zdotdot[k] + Fwind/((Nrowers*mc)+mb)
+	    vw = windv-vcstroke-zdot[k-1]
+	    Fwind = 0.5*crewarea*Cdw*rho_air*(Nrowers**scalepower)*vw*abs(vw)*dowind
+	    zdotdot[k] = zdotdot[k] + Fwind/((Nrowers*mc)+mb)
 
-         zdot[k] = zdot[k-1]+dt*zdotdot[k]
-         ydot[k] = crew.vcm(vhand[k], handlepos)
-         xdot[k] = zdot[k]-((Nrowers*mc)/((Nrowers*mc)+mb))*ydot[k]
+            zdot[k] = zdot[k-1]+dt*zdotdot[k]
+            ydot[k] = crew.vcm(vhand[k], handlepos)
+            xdot[k] = zdot[k]-((Nrowers*mc)/((Nrowers*mc)+mb))*ydot[k]
 
-         vs[k] = zdot[k]
-         vc[k] = xdot[k]+ydot[k]
-         vb[k] = xdot[k]
+            vs[k] = zdot[k]
+            vc[k] = xdot[k]+ydot[k]
+            vb[k] = xdot[k]
 
-         ydotdot[k] = (ydot[k]-ydot[k-1])/dt
-         xdotdot[k] = zdotdot[k]-((Nrowers*mc)/((Nrowers*mc)+mb))*ydotdot[k]
-         handlepos = handlepos+vhand[k]*dt
-         oarangle[k] = rigging.oarangle(handlepos)
+            ydotdot[k] = (ydot[k]-ydot[k-1])/dt
+            xdotdot[k] = zdotdot[k]-((Nrowers*mc)/((Nrowers*mc)+mb))*ydotdot[k]
+            handlepos = handlepos+vhand[k]*dt
+            oarangle[k] = rigging.oarangle(handlepos)
       
-   else:
-      vavgrec = d/trecovery
-      vcrecovery = zeros(aantal)
-      for k in range(i+1,aantal):
-         vhand = crew.vhandle(vavgrec,trecovery,time[k]-time[i])
-         vcrecovery[k] = crew.vcm(vhand, handlepos)
+    else:
+        vavgrec = d/trecovery
+        vcrecovery = zeros(aantal)
+        for k in range(i+1,aantal):
+            vhand = crew.vhandle(vavgrec,trecovery,time[k]-time[i])
+            vcrecovery[k] = crew.vcm(vhand, handlepos)
 
-         Fdrag = drag_eq((Nrowers*mc)+mb,xdot[k-1],alfaref=alfa*dragform)
-         zdotdot[k] = (- Fdrag)/((Nrowers*mc)+mb)
+            Fdrag = drag_eq((Nrowers*mc)+mb,xdot[k-1],alfaref=alfa*dragform)
+            zdotdot[k] = (- Fdrag)/((Nrowers*mc)+mb)
 
-	 vw = windv-vcstroke-zdot[k-1]
-	 Fwind = 0.5*crewarea*Cdw*rho_air*(Nrowers**scalepower)*vw*abs(vw)*dowind
-	 zdotdot[k] = zdotdot[k] + Fwind/((Nrowers*mc)+mb)
+	    vw = windv-vcstroke-zdot[k-1]
+	    Fwind = 0.5*crewarea*Cdw*rho_air*(Nrowers**scalepower)*vw*abs(vw)*dowind
+	    zdotdot[k] = zdotdot[k] + Fwind/((Nrowers*mc)+mb)
 
 
-         zdot[k] = zdot[k-1]+dt*zdotdot[k]
-         ydot[k] = vcrecovery[k]
-         xdot[k] = zdot[k]-((Nrowers*mc)/((Nrowers*mc)+mb))*ydot[k]
+            zdot[k] = zdot[k-1]+dt*zdotdot[k]
+            ydot[k] = vcrecovery[k]
+            xdot[k] = zdot[k]-((Nrowers*mc)/((Nrowers*mc)+mb))*ydot[k]
 
-         vs[k] = zdot[k]
-         vc[k] = xdot[k]+ydot[k]
-         vb[k] = xdot[k]
+            vs[k] = zdot[k]
+            vc[k] = xdot[k]+ydot[k]
+            vb[k] = xdot[k]
 
-         ydotdot[k] = (ydot[k]-ydot[k-1])/dt
-         xdotdot[k] = zdotdot[k]-((Nrowers*mc)/((Nrowers*mc)+mb))*ydotdot[k]
+            ydotdot[k] = (ydot[k]-ydot[k-1])/dt
+            xdotdot[k] = zdotdot[k]-((Nrowers*mc)/((Nrowers*mc)+mb))*ydotdot[k]
 
-         handlepos = d+d*crew.dxhandle(vavgrec,trecovery,time[k]-time[i])
-#         handlepos = handlepos+vhand*dt
-         oarangle[k] = rigging.oarangle(handlepos)
+            handlepos = d+d*crew.dxhandle(vavgrec,trecovery,time[k]-time[i])
+            #         handlepos = handlepos+vhand*dt
+            oarangle[k] = rigging.oarangle(handlepos)
       
 
-# blade positions      
-   xblade=dt*cumsum(vb)-np.sin(oarangle)*lout
-   yblade=lout*np.cos(oarangle)+rigging.spread
+    # blade positions      
+    xblade=dt*cumsum(vb)-np.sin(oarangle)*lout
+    yblade=lout*np.cos(oarangle)+rigging.spread
 
 
-# velocities
-   xdot = vb
-   zdot = vs
-   ydot = vc-vb
+    # velocities
+    xdot = vb
+    zdot = vs
+    ydot = vc-vb
 
-   xdotdot[1]=(xdot[1]-xdot[0])/dt
-   ydotdot[1]=(ydot[1]-ydot[0])/dt
+    xdotdot[1]=(xdot[1]-xdot[0])/dt
+    ydotdot[1]=(ydot[1]-ydot[0])/dt
 
-   Pq = (Nrowers*mc)*(xdotdot+ydotdot)*ydot
+    Pq = (Nrowers*mc)*(xdotdot+ydotdot)*ydot
    
-#   Ekinb = 0.5*mb*xdot**2 - 0.5*mb*v0**2
-#   Ekinc = 0.5*mc*(xdot+ydot)**2 - 0.5*mc*v0**2
+    #   Ekinb = 0.5*mb*xdot**2 - 0.5*mb*v0**2
+    #   Ekinc = 0.5*mc*(xdot+ydot)**2 - 0.5*mc*v0**2
 
-   Pw = drag_eq((Nrowers*mc)+mb,xdot,alfaref=alfa*dragform)*xdot
-   Pwmin = drag_eq((Nrowers*mc)+mb,mean(xdot),alfaref=alfa*dragform)*mean(xdot)
+    Pw = drag_eq((Nrowers*mc)+mb,xdot,alfaref=alfa*dragform)*xdot
+    Pwmin = drag_eq((Nrowers*mc)+mb,mean(xdot),alfaref=alfa*dragform)*mean(xdot)
 
-   Pmb = mb*xdot*xdotdot
-   Pmc = (Nrowers*mc)*(xdot+ydot)*(xdotdot+ydotdot)
+    Pmb = mb*xdot*xdotdot
+    Pmc = (Nrowers*mc)*(xdot+ydot)*(xdotdot+ydotdot)
 
-#   Phandle = Nrowers*Fhandle*(xdot+ydot)*np.cos(oarangle)
-   Phandle = Nrowers*Fhandle*(xdot)*np.cos(oarangle)
+    #   Phandle = Nrowers*Fhandle*(xdot+ydot)*np.cos(oarangle)
+    Phandle = Nrowers*Fhandle*(xdot)*np.cos(oarangle)
 
-   Pleg = Nrowers*mc*(xdotdot+ydotdot)*ydot
+    Pleg = Nrowers*mc*(xdotdot+ydotdot)*ydot
 
-   Ekinb = cumsum(Pmb)*dt
-   Ekinc = cumsum(Pmc)*dt
+    Ekinb = cumsum(Pmb)*dt
+    Ekinc = cumsum(Pmc)*dt
 
-   Pqrower = abs(Pq)
-   Pdiss = Pqrower-Pq
+    Pqrower = abs(Pq)
+    Pdiss = Pqrower-Pq
 
-   Ef = cumsum(Pf)*dt
-   Eq = cumsum(Pq)*dt
-   Eblade = cumsum(Pbladeslip)*dt
-   Eqrower = cumsum(Pqrower)*dt
-   Ediss = cumsum(Pdiss)*dt
-   Ew = cumsum(Pw)*dt
-   Ewmin = Pwmin*(max(time)-min(time))
+    Ef = cumsum(Pf)*dt
+    Eq = cumsum(Pq)*dt
+    Eblade = cumsum(Pbladeslip)*dt
+    Eqrower = cumsum(Pqrower)*dt
+    Ediss = cumsum(Pdiss)*dt
+    Ew = cumsum(Pw)*dt
+    Ewmin = Pwmin*(max(time)-min(time))
 
-   Eleg = cumsum(Pleg)*dt
-   Ehandle = cumsum(Phandle)*dt
-   Ekin0 = 0.5*(Nrowers*mc+mb)*zdot[0]**2
-   Ekinend = 0.5*(Nrowers*mc+mb)*zdot[aantal-1]**2
-   Eloss = Ekin0-Ekinend
+    Eleg = cumsum(Pleg)*dt
+    Ehandle = cumsum(Phandle)*dt
+    Ekin0 = 0.5*(Nrowers*mc+mb)*zdot[0]**2
+    Ekinend = 0.5*(Nrowers*mc+mb)*zdot[aantal-1]**2
+    Eloss = Ekin0-Ekinend
 
-   Fbltotal = (Fbldrag**2 + Flift**2)**(0.5)
+    Fbltotal = (Fbldrag**2 + Flift**2)**(0.5)
 
-# empirical data
+    # empirical data
+    
+    if (empirical<>0):
+        empdata = np.genfromtxt(empirical, delimiter = ',',skip_header=1)
+        emptime = empdata[:,0]
+        if (max(emptime)>10):
+	    emptime = emptime/1000.
+        emptime = emptime + empt0
+        empdt = emptime[1]-emptime[0]
+        if (emptype == 'acceler'):
+	    empxdotdot = empdata[:,1]
+	    empxdot = cumsum(empxdotdot)*empdt
+	    empxdot = empxdot-mean(empxdot)+mean(xdot)
+        else:
+	    empdtarray = gradient(emptime)
+	    empxdot = empdata[:,1]
+	    empxdotdot = gradient(empxdot,empdtarray)
 
-   if (empirical<>0):
-       empdata = np.genfromtxt(empirical, delimiter = ',',skip_header=1)
-       emptime = empdata[:,0]
-       if (max(emptime)>10):
-	   emptime = emptime/1000.
-       emptime = emptime + empt0
-       empdt = emptime[1]-emptime[0]
-       if (emptype == 'acceler'):
-	   empxdotdot = empdata[:,1]
-	   empxdot = cumsum(empxdotdot)*empdt
-	   empxdot = empxdot-mean(empxdot)+mean(xdot)
-       else:
-	   empdtarray = gradient(emptime)
-	   empxdot = empdata[:,1]
-	   empxdotdot = gradient(empxdot,empdtarray)
-
-       empRIM_E = max(cumsum(empxdot-min(empxdot))*empdt)
-       empRIM_check = max(empxdot)-min(empxdot)
+        empRIM_E = max(cumsum(empxdot-min(empxdot))*empdt)
+        empRIM_check = max(empxdot)-min(empxdot)
        
-       if (doprint == 1):
-	   print("RIM E (measured)",empRIM_E)
-	   print("RIM Check (meas)",empRIM_check)
+        if (doprint == 1):
+	    print("RIM E (measured)",empRIM_E)
+	    print("RIM Check (meas)",empRIM_check)
 		     
 
-# some other calculations
+    # some other calculations
 
-   strokelength_cm = max(cumsum(ydot)*dt)
-
-
-   # printing
-   if (doprint==1):
-      print("E blade ",Eblade[aantal-1])
-      print("Ediss rower ",Ediss[aantal-1])
-      print("E drag ",Ew[aantal-1])
-      print("Eleg ",Eleg[aantal-1])
-      print("Ehandle ",Ehandle[aantal-1])
-      print("Epropulsion ",Ef[aantal-1])
-      print("Ekin loss ",Eloss)
-      print("")
-      print("P blade ",Eblade[aantal-1]/time[aantal-1])
-      print("P leg   ",Eleg[aantal-1]/time[aantal-1])
-      print("P handle ",Ehandle[aantal-1]/time[aantal-1])
-      print("P drag ",Ew[aantal-1]/time[aantal-1])
-      print("P propulsion ",Ef[aantal-1]/time[aantal-1])
-      print("")
-      print("Stroke length CM ",strokelength_cm)
-      print("")
-
-   # plotting
-
-   if (doplot==1):
-      pyplot.clf()
-      pyplot.subplot(111)
-
-      pyplot.plot(time, xdot,'r-',label = 'Boat velocity')
-      pyplot.plot(time, xdot+ydot,'g-',label = 'Crew velocity')
-      pyplot.plot(time, zdot,'b-',label = 'CM velocity')
-      if (empirical<>0):
-	  pyplot.plot(emptime, empxdot, 'y-',label = 'Measured')
-      pylab.legend(loc='upper left')
-      pyplot.xlabel("time (s)")
-      pyplot.ylabel('v (m/s)')
-
-      pyplot.show()
-
-   if(doplot==18):
-      pyplot.clf()
-      pyplot.plot(time,numpy.degrees(oarangle),'y.',label='oar angle')
-      pylab.legend(loc='upper right')
-      pyplot.ylabel("Oar Angle (o)")
-
-      pyplot.show()
+    strokelength_cm = max(cumsum(ydot)*dt)
 
 
-   if (doplot==2):
-      pyplot.clf()
-      pyplot.subplot(111)
-      pyplot.plot(time, Pf,'r-',label = 'Propulsive power')
-      pyplot.plot(time, Pq,'b-',label = 'Kinetic power')
-      pyplot.plot(time, Pbladeslip,'k-',label = 'Puddle power')
-      pyplot.plot(time, Pf+Pq+Pbladeslip,'g-',label = 'Leg power')
-      pylab.legend(loc='upper right')
-      pyplot.xlabel("time (s)")
-      pyplot.ylabel('power (W)')
-      pyplot.show()
+    # printing
+    if (doprint==1):
+        print("E blade ",Eblade[aantal-1])
+        print("Ediss rower ",Ediss[aantal-1])
+        print("E drag ",Ew[aantal-1])
+        print("Eleg ",Eleg[aantal-1])
+        print("Ehandle ",Ehandle[aantal-1])
+        print("Epropulsion ",Ef[aantal-1])
+        print("Ekin loss ",Eloss)
+        print("")
+        print("P blade ",Eblade[aantal-1]/time[aantal-1])
+        print("P leg   ",Eleg[aantal-1]/time[aantal-1])
+        print("P handle ",Ehandle[aantal-1]/time[aantal-1])
+        print("P drag ",Ew[aantal-1]/time[aantal-1])
+        print("P propulsion ",Ef[aantal-1]/time[aantal-1])
+        print("")
+        print("Stroke length CM ",strokelength_cm)
+        print("")
+
+    # plotting
+
+    if (doplot==1):
+        pyplot.clf()
+        pyplot.subplot(111)
+
+        pyplot.plot(time, xdot,'r-',label = 'Boat velocity')
+        pyplot.plot(time, xdot+ydot,'g-',label = 'Crew velocity')
+        pyplot.plot(time, zdot,'b-',label = 'CM velocity')
+        if (empirical<>0):
+	    pyplot.plot(emptime, empxdot, 'y-',label = 'Measured')
+        pylab.legend(loc='upper left')
+        pyplot.xlabel("time (s)")
+        pyplot.ylabel('v (m/s)')
+
+        pyplot.show()
+
+    if(doplot==18):
+        pyplot.clf()
+        pyplot.plot(time,numpy.degrees(oarangle),'y.',label='oar angle')
+        pylab.legend(loc='upper right')
+        pyplot.ylabel("Oar Angle (o)")
+
+        pyplot.show()
+
+
+    if (doplot==2):
+        pyplot.clf()
+        pyplot.subplot(111)
+        pyplot.plot(time, Pf,'r-',label = 'Propulsive power')
+        pyplot.plot(time, Pq,'b-',label = 'Kinetic power')
+        pyplot.plot(time, Pbladeslip,'k-',label = 'Puddle power')
+        pyplot.plot(time, Pf+Pq+Pbladeslip,'g-',label = 'Leg power')
+        pylab.legend(loc='upper right')
+        pyplot.xlabel("time (s)")
+        pyplot.ylabel('power (W)')
+        pyplot.show()
       
-   if (doplot==3):
-      pyplot.clf()
-      pyplot.subplot(111)
-      pyplot.plot(time, Ef,'r-',label = 'Propulsive Energy')
-      pyplot.plot(time, Eqrower,'b-',label = 'Kinetic Energy')
-      pyplot.plot(time, Ef+Eqrower+Eblade,'g-',label = 'Total Energy')
-      pyplot.plot(time, Eblade,'k-',label = 'Puddle Energy')
-      pylab.legend(loc='upper left')
-      pyplot.xlabel("time (s)")
-      pyplot.ylabel('energy (J)')
-      pyplot.show()
+    if (doplot==3):
+        pyplot.clf()
+        pyplot.subplot(111)
+        pyplot.plot(time, Ef,'r-',label = 'Propulsive Energy')
+        pyplot.plot(time, Eqrower,'b-',label = 'Kinetic Energy')
+        pyplot.plot(time, Ef+Eqrower+Eblade,'g-',label = 'Total Energy')
+        pyplot.plot(time, Eblade,'k-',label = 'Puddle Energy')
+        pylab.legend(loc='upper left')
+        pyplot.xlabel("time (s)")
+        pyplot.ylabel('energy (J)')
+        pyplot.show()
       
-   if (doplot==4):
-      pyplot.clf()
-      pyplot.subplot(111)
-      pyplot.plot(time, Pw,'r-',label = 'Drag sink')
-      pyplot.plot(time, Pbladeslip,'k-',label = 'Blade slip sink')
-      pyplot.plot(time, Pmb,'b-',label = 'Kinetic energy change boat')
-      pyplot.plot(time, Pmc,'g-',label = 'Kinetic energy change crew')
-      pylab.legend(loc='upper right')
-      pyplot.xlabel("time (s)")
-      pyplot.ylabel('power (W)')
-      pyplot.show()
+    if (doplot==4):
+        pyplot.clf()
+        pyplot.subplot(111)
+        pyplot.plot(time, Pw,'r-',label = 'Drag sink')
+        pyplot.plot(time, Pbladeslip,'k-',label = 'Blade slip sink')
+        pyplot.plot(time, Pmb,'b-',label = 'Kinetic energy change boat')
+        pyplot.plot(time, Pmc,'g-',label = 'Kinetic energy change crew')
+        pylab.legend(loc='upper right')
+        pyplot.xlabel("time (s)")
+        pyplot.ylabel('power (W)')
+        pyplot.show()
       
-   if (doplot==5):
-      pyplot.clf()
-      pyplot.subplot(111)
-      pyplot.plot(time, Ew+Ediss+Eblade,'r-',label = 'Drag energy + Rower Diss + Blade Slip')
-      pyplot.plot(time, Ew, 'y-', label = 'Drag Energy')
-      pyplot.plot(time, Ekinb,'b-',label = 'Boat Kinetic energy')
-      pyplot.plot(time, Ekinc,'g-',label = 'Crew Kinetic energy')
-      pyplot.plot(time, Ew+Ediss+Ekinb+Ekinc+Eblade, 'k-', label = 'Ew + Ediss + Ekinb + Ekinc+Eblade')
-      pylab.legend(loc='upper left')
-      pyplot.xlabel("time (s)")
-      pyplot.ylabel('energy (J)')
-      pyplot.show()
+    if (doplot==5):
+        pyplot.clf()
+        pyplot.subplot(111)
+        pyplot.plot(time, Ew+Ediss+Eblade,'r-',label = 'Drag energy + Rower Diss + Blade Slip')
+        pyplot.plot(time, Ew, 'y-', label = 'Drag Energy')
+        pyplot.plot(time, Ekinb,'b-',label = 'Boat Kinetic energy')
+        pyplot.plot(time, Ekinc,'g-',label = 'Crew Kinetic energy')
+        pyplot.plot(time, Ew+Ediss+Ekinb+Ekinc+Eblade, 'k-', label = 'Ew + Ediss + Ekinb + Ekinc+Eblade')
+        pylab.legend(loc='upper left')
+        pyplot.xlabel("time (s)")
+        pyplot.ylabel('energy (J)')
+        pyplot.show()
       
-   if (doplot==6):
-      pyplot.clf()
-      pyplot.subplot(121)
-      pyplot.plot(time, Pq,'k-',label = 'Kinetic power')
-      pyplot.plot(time, 0*Pq, 'k-')
-      pylab.legend(loc='upper right')
-      pyplot.xlabel("time (s)")
-      pyplot.ylabel('power (W)')
+    if (doplot==6):
+        pyplot.clf()
+        pyplot.subplot(121)
+        pyplot.plot(time, Pq,'k-',label = 'Kinetic power')
+        pyplot.plot(time, 0*Pq, 'k-')
+        pylab.legend(loc='upper right')
+        pyplot.xlabel("time (s)")
+        pyplot.ylabel('power (W)')
 
-      pyplot.subplot(122)
-      pyplot.plot(time, Pqrower,'b-',label = 'Kinetic power rower')
-      pyplot.plot(time, Pdiss,'k-',label = 'Kinetic energy dissipation')
-      pylab.legend(loc='upper right')
-      pyplot.xlabel("time (s)")
-      pyplot.ylabel('power (W)')
+        pyplot.subplot(122)
+        pyplot.plot(time, Pqrower,'b-',label = 'Kinetic power rower')
+        pyplot.plot(time, Pdiss,'k-',label = 'Kinetic energy dissipation')
+        pylab.legend(loc='upper right')
+        pyplot.xlabel("time (s)")
+        pyplot.ylabel('power (W)')
 
-      pyplot.show()
+        pyplot.show()
       
-   if (doplot==7):
-      pyplot.clf()
-      pyplot.plot(time, Ew+Ediss+Ekinb+Ekinc+Eblade, 'r-', label = 'Total Sinks')
-      pyplot.plot(time, Ef+Eqrower+Eblade,'g-',label = 'Total Sources')
-      pylab.legend(loc='lower right')
-      pyplot.xlabel("time (s)")
-      pyplot.ylabel('energy (J)')
-      pyplot.show()
+    if (doplot==7):
+        pyplot.clf()
+        pyplot.plot(time, Ew+Ediss+Ekinb+Ekinc+Eblade, 'r-', label = 'Total Sinks')
+        pyplot.plot(time, Ef+Eqrower+Eblade,'g-',label = 'Total Sources')
+        pylab.legend(loc='lower right')
+        pyplot.xlabel("time (s)")
+        pyplot.ylabel('energy (J)')
+        pyplot.show()
 
-   if (doplot==8):
-      pyplot.clf()
-      pyplot.subplot(111)
-      pyplot.plot(time, Phandle,'r-',label = 'Handle power (crew)')
-      pyplot.plot(time, Pbladeslip,'g-',label = 'Puddle power')
-      pyplot.plot(time, Pf, 'y-', label = 'Propulsive power')
-      pyplot.plot(time, Pf+Pbladeslip,'k-',label = 'Propulsive+Puddle Power')
-      pylab.legend(loc='upper right')
-      pyplot.xlabel("time (s)")
-      pyplot.ylabel('power (W)')
-      pyplot.show()
+    if (doplot==8):
+        pyplot.clf()
+        pyplot.subplot(111)
+        pyplot.plot(time, Phandle,'r-',label = 'Handle power (crew)')
+        pyplot.plot(time, Pbladeslip,'g-',label = 'Puddle power')
+        pyplot.plot(time, Pf, 'y-', label = 'Propulsive power')
+        pyplot.plot(time, Pf+Pbladeslip,'k-',label = 'Propulsive+Puddle Power')
+        pylab.legend(loc='upper right')
+        pyplot.xlabel("time (s)")
+        pyplot.ylabel('power (W)')
+        pyplot.show()
 
-   if (doplot==9):
-      pyplot.clf()
-      ax1 = pyplot.subplot(111)
+    if (doplot==9):
+        pyplot.clf()
+        ax1 = pyplot.subplot(111)
 
-      pyplot.plot(xblade,yblade,label='blade centre')
+        pyplot.plot(xblade,yblade,label='blade centre')
+        
+        pylab.legend(loc='best')
+        pyplot.xlabel("x (m)")
+        pyplot.ylabel('y (m)')
+        ax1.axis('equal')
+
+        xblade2 = xblade[0:len(xblade):4]
+        yblade2 = yblade[0:len(xblade):4]
+        oarangle2 = oarangle[0:len(xblade):4]
+
+        for i in range(len(xblade2)):
+            x1 = xblade2[i]+rigging.bladelength*np.sin(oarangle2[i])/2.
+            x2 = xblade2[i]-rigging.bladelength*np.sin(oarangle2[i])/2.
+            y1 = yblade2[i]-rigging.bladelength*np.cos(oarangle2[i])/2.
+            y2 = yblade2[i]+rigging.bladelength*np.cos(oarangle2[i])/2.
+
+        pyplot.plot([x1,x2],[y1,y2],'r-')
+
+        pyplot.show()
+
+    if (doplot==10):
+        pyplot.clf()
+        pyplot.plot(time, Fhandle, 'r-', label = 'Handle Force')
+        pyplot.plot(time, Fblade, 'g-', label = 'Blade Force')
+        pyplot.plot(time, Fprop, 'k-', label = 'Propulsive Force')
+        pylab.legend(loc='lower right')
+        pyplot.xlabel("time (s)")
+        pyplot.ylabel('Force (N)')
+        pyplot.show()
+        
+    if (doplot==11):
+        pyplot.clf()
+        pyplot.plot(numpy.degrees(oarangle), Clift, 'r-', label = 'Lift coefficient')
+        pyplot.plot(numpy.degrees(oarangle), Cdrag, 'g-', label = 'Drag coefficient')
+        pylab.legend(loc='lower right')
+        pyplot.xlabel("Oar Angle (degree)")
+        pyplot.ylabel("Coefficient")
+        pyplot.show()
+
+    if (doplot==12):
+        pyplot.clf()
+        
+        ax1 = pyplot.subplot(111)
+        pyplot.plot(numpy.degrees(oarangle), Flift, 'r-', label = 'Lift Force')
+        pyplot.plot(numpy.degrees(oarangle), Fbldrag, 'g-', label = 'Drag Force')
+        pyplot.plot(numpy.degrees(oarangle), Fbltotal, 'k-', label = 'Total blade Force')
+        pyplot.plot(numpy.degrees(oarangle),numpy.degrees(attackangle),'y.',label='angle of attack')
+        pylab.legend(loc='lower right')
+        pyplot.xlabel("Oar Angle (degree)")
+        pyplot.ylabel("Blade Force")
+
+        ax2 = pyplot.twinx()
+        pyplot.plot(numpy.degrees(oarangle),numpy.degrees(attackangle),'y.',label='angle of attack')
+        pylab.legend(loc='upper right')
+        pyplot.ylabel("Angle of attack (o)")
+        ax2.yaxis.tick_right()
+        ax1 = pyplot.subplot(111)
+
+        pyplot.show()
+
+
       
-      pylab.legend(loc='best')
-      pyplot.xlabel("x (m)")
-      pyplot.ylabel('y (m)')
-      ax1.axis('equal')
+    if (doplot==13):
+        pyplot.clf()
+        pyplot.plot(time, ydot, 'r-', label = 'Crew velocity')
+        pylab.legend(loc='lower right')
+        pyplot.xlabel("time (s)")
+        pyplot.ylabel("v (m/s)")
+        pyplot.show()
+        
+    if (doplot==14):
+        pyplot.clf()
+        pyplot.plot(time, xdotdot, 'r-', label = 'Boat acceleration')
+        pyplot.plot(time, zdotdot, 'g-', label = 'System acceleration')
+        pyplot.plot(time, ydotdot, 'b-', label = 'Crew acceleration')
+        if (empirical<>0):
+	    pyplot.plot(emptime,empxdotdot, 'y-', label = 'Measured')
+        pylab.legend(loc='upper right')
+        pyplot.xlabel("time (s)")
+        pyplot.ylabel("Boat Acceleration (m/s2)")
+        pyplot.show()
 
-      xblade2 = xblade[0:len(xblade):4]
-      yblade2 = yblade[0:len(xblade):4]
-      oarangle2 = oarangle[0:len(xblade):4]
+    if (doplot==15):
+        pyplot.clf()
+        pyplot.plot(time, ydot, 'r-', label = 'Recovery speed')
+        pylab.legend(loc='upper right')
+        pyplot.xlabel("time (s)")
+        pyplot.ylabel("Recovery Speed (m/s)")
+        pyplot.show()
 
-      for i in range(len(xblade2)):
-         x1 = xblade2[i]+rigging.bladelength*np.sin(oarangle2[i])/2.
-         x2 = xblade2[i]-rigging.bladelength*np.sin(oarangle2[i])/2.
-         y1 = yblade2[i]-rigging.bladelength*np.cos(oarangle2[i])/2.
-         y2 = yblade2[i]+rigging.bladelength*np.cos(oarangle2[i])/2.
+    if (doplot==16):
+	pyplot.clf()
+	pyplot.plot(time, numpy.degrees(oarangle), 'r-', label = 'Oar Angle')
+	pylab.legend(loc='upper right')
+	pyplot.xlabel("time (s)")
+	pyplot.ylabel("Oar angle (o)")
+	pyplot.show()
 
-         pyplot.plot([x1,x2],[y1,y2],'r-')
-
-      pyplot.show()
-
-   if (doplot==10):
-      pyplot.clf()
-      pyplot.plot(time, Fhandle, 'r-', label = 'Handle Force')
-      pyplot.plot(time, Fblade, 'g-', label = 'Blade Force')
-      pyplot.plot(time, Fprop, 'k-', label = 'Propulsive Force')
-      pylab.legend(loc='lower right')
-      pyplot.xlabel("time (s)")
-      pyplot.ylabel('Force (N)')
-      pyplot.show()
-      
-   if (doplot==11):
-      pyplot.clf()
-      pyplot.plot(numpy.degrees(oarangle), Clift, 'r-', label = 'Lift coefficient')
-      pyplot.plot(numpy.degrees(oarangle), Cdrag, 'g-', label = 'Drag coefficient')
-      pylab.legend(loc='lower right')
-      pyplot.xlabel("Oar Angle (degree)")
-      pyplot.ylabel("Coefficient")
-      pyplot.show()
-
-   if (doplot==12):
-      pyplot.clf()
-
-      ax1 = pyplot.subplot(111)
-      pyplot.plot(numpy.degrees(oarangle), Flift, 'r-', label = 'Lift Force')
-      pyplot.plot(numpy.degrees(oarangle), Fbldrag, 'g-', label = 'Drag Force')
-      pyplot.plot(numpy.degrees(oarangle), Fbltotal, 'k-', label = 'Total blade Force')
-      pyplot.plot(numpy.degrees(oarangle),numpy.degrees(attackangle),'y.',label='angle of attack')
-      pylab.legend(loc='lower right')
-      pyplot.xlabel("Oar Angle (degree)")
-      pyplot.ylabel("Blade Force")
-
-      ax2 = pyplot.twinx()
-      pyplot.plot(numpy.degrees(oarangle),numpy.degrees(attackangle),'y.',label='angle of attack')
-      pylab.legend(loc='upper right')
-      pyplot.ylabel("Angle of attack (o)")
-      ax2.yaxis.tick_right()
-      ax1 = pyplot.subplot(111)
-
-      pyplot.show()
-
-   if (doplot==13):
-      pyplot.clf()
-      pyplot.plot(time, ydot, 'r-', label = 'Crew velocity')
-      pylab.legend(loc='lower right')
-      pyplot.xlabel("time (s)")
-      pyplot.ylabel("v (m/s)")
-      pyplot.show()
-
-   if (doplot==14):
+    if (doplot==19):
        pyplot.clf()
+       ax1 = pyplot.subplot(111)
        pyplot.plot(time, xdotdot, 'r-', label = 'Boat acceleration')
        pyplot.plot(time, zdotdot, 'g-', label = 'System acceleration')
        pyplot.plot(time, ydotdot, 'b-', label = 'Crew acceleration')
@@ -856,32 +887,23 @@ def energybalance(F,crew,rigging,v0=4.3801,dt=0.03,doplot=1,doprint=0,
        pylab.legend(loc='upper right')
        pyplot.xlabel("time (s)")
        pyplot.ylabel("Boat Acceleration (m/s2)")
+
+       ax2 = pyplot.twinx()
+       pyplot.plot(time,numpy.degrees(oarangle),'y-',label='oar angle')
+       pylab.legend(loc='upper left')
+       pyplot.ylabel("Oar Angle (o)")
+       ax2.yaxis.tick_right()
+
        pyplot.show()
 
-   if (doplot==15):
-       pyplot.clf()
-       pyplot.plot(time, ydot, 'r-', label = 'Recovery speed')
-       pylab.legend(loc='upper right')
-       pyplot.xlabel("time (s)")
-       pyplot.ylabel("Recovery Speed (m/s)")
-       pyplot.show()
-
-   if (doplot==16):
-	pyplot.clf()
-	pyplot.plot(time, numpy.degrees(oarangle), 'r-', label = 'Oar Angle')
-	pylab.legend(loc='upper right')
-	pyplot.xlabel("time (s)")
-	pyplot.ylabel("Oar angle (o)")
-	pyplot.show()
-
-   try:
+    try:
 	instanteff = (Pf+Pq)/(Pf+Pq+Pbladeslip)
-   except RuntimeWarning:
+    except RuntimeWarning:
 	instanteff = 0.0
    
 	 
 
-   if (doplot==17):
+    if (doplot==17):
        pyplot.clf()
        pyplot.plot(time, instanteff, 'r-', label = 'Efficiency')
        pylab.legend(loc='upper right')
@@ -889,43 +911,43 @@ def energybalance(F,crew,rigging,v0=4.3801,dt=0.03,doplot=1,doprint=0,
        pyplot.ylabel("Efficiency")
        pyplot.show()
 
-   # calculate check
-   decel = -(abs(xdotdot[index_offset:])-xdotdot[index_offset:])/2.
-   indices = decel.nonzero()
-   decelmean = mean(decel[indices])
-   cn_check = np.std(decel[indices])**2
+    # calculate check
+    decel = -(abs(xdotdot[index_offset:])-xdotdot[index_offset:])/2.
+    indices = decel.nonzero()
+    decelmean = mean(decel[indices])
+    cn_check = np.std(decel[indices])**2
        
 
-   # calculate vavg, vmin, vmax, energy, efficiency, power
-   dv = zdot[len(time)-1]-zdot[0]
-   vavg = mean(xdot)
-   vend = zdot[len(time)-1]
-   energy = max(Ew+Ediss+Eblade-Eloss)
-   efficiency = max(Ew-Eloss)/energy
-   energy = energy/Nrowers
-   power = energy*tempo/60.
-   vmax = max(xdot)
-   vmin = min(xdot)
+    # calculate vavg, vmin, vmax, energy, efficiency, power
+    dv = zdot[len(time)-1]-zdot[0]
+    vavg = mean(xdot)
+    vend = zdot[len(time)-1]
+    energy = max(Ew+Ediss+Eblade-Eloss)
+    efficiency = max(Ew-Eloss)/energy
+    energy = energy/Nrowers
+    power = energy*tempo/60.
+    vmax = max(xdot)
+    vmin = min(xdot)
 
 
-   # calculate RIM parameters
-   RIM_check = vmax-vmin
-   RIM_E = max(cumsum(xdot-vmin)*dt)
-   drag_eff = Ewmin/max(Ew)
-   try:
-       t4 = time[index_offset+min(where(decel==0)[0])]
-       t3 = time[index_offset+max(where(decel==0)[0])]
-   except ValueError:
-       t4 = 1.0
-       t3 = t4
-   amin = min(xdotdot[2:])
-   RIM_catchE = -(amin/t4)
-   RIM_catchD = t4+max(time)-t3
-
-   catchacceler = max(5,ydotdot[aantal-1]-xdotdot[aantal-1])
+    # calculate RIM parameters
+    RIM_check = vmax-vmin
+    RIM_E = max(cumsum(xdot-vmin)*dt)
+    drag_eff = Ewmin/max(Ew)
+    try:
+        t4 = time[index_offset+min(where(decel==0)[0])]
+        t3 = time[index_offset+max(where(decel==0)[0])]
+    except ValueError:
+        t4 = 1.0
+        t3 = t4
+    amin = min(xdotdot[2:])
+    RIM_catchE = -(amin/t4)
+    RIM_catchD = t4+max(time)-t3
+    
+    catchacceler = max(5,ydotdot[aantal-1]-xdotdot[aantal-1])
 
    
-   return [dv,vend,vavg,ratio,energy,power,efficiency,vmax,vmin,cn_check,RIM_E,RIM_check,RIM_catchE,RIM_catchD,catchacceler,drag_eff]
+    return [dv,vend,vavg,ratio,energy,power,efficiency,vmax,vmin,cn_check,RIM_E,RIM_check,RIM_catchE,RIM_catchD,catchacceler,drag_eff]
 
 def energybalance_erg(ratio,crew,erg,w0=4.3801,dt=0.03,doplot=1,doprint=0,theconst=1.0):
    """
