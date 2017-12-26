@@ -13,7 +13,7 @@ from matplotlib import pyplot
 
 from numpy import linspace,zeros,cumsum,mean
 
-__version__ = "0.3.9"
+__version__ = "0.3.10"
 
 # submodules
 from srnumerical import *
@@ -448,12 +448,6 @@ def energybalance(F,crew,rigging,v0=4.3801,dt=0.03,doplot=1,doprint=0,
         Fblade[i-1] = Fi*lin/lout 
         res = blade_force(oarangle[i-1],rigging,vb[i-1],Fblade[i-1])
         phidot = res[0]
-        #      for u in range(5):
-        #         l2 = lout-phidot/(vb[i-1]*np.cos(oarangle[i-1]))
-        #         l2 = lout
-        #         Fblade[i-1] = Fhandle[i-1]*lin/l2
-        #         res = blade_force(oarangle[i-1],rigging,vb[i-1],Fblade[i-1])
-        #         phidot = res[0]
 
         Fprop[i-1] = res[2]*Nrowers
         Flift[i-1] = res[3]*Nrowers
@@ -464,7 +458,7 @@ def energybalance(F,crew,rigging,v0=4.3801,dt=0.03,doplot=1,doprint=0,
 
         phidot = res[0]
         vhand = phidot*lin*np.cos(oarangle[i-1])
-        #      vcstroke = vhand*(1-(handlepos/d))
+
         vcstroke = crew.vcm(vhand, handlepos)
         Pbladeslip[i-1] = Nrowers*res[1]*(phidot*lout - vb[i-1]*np.cos(oarangle[i-1]))
         Fdrag = drag_eq((Nrowers*mc)+mb,xdot[i-1],alfaref=alfa*dragform)
@@ -2450,7 +2444,6 @@ def atkinsoncalc(F,crew,rigging,v0=4.3801,dt=0.03,doplot=1,doprint=0,
 
 
 
-
 def stroke(F,crew,rigging,v0,dt,aantal,doplot=0,timewise=0,catchacceler=5,
 	   dowind=1,windv=0):
     """ Calculates a few (aantal) strokes and returns parameters averaged
@@ -2614,7 +2607,7 @@ def constantwatt(watt,crew,rigging,timestep=0.03,aantal=5,
     for i in range(len(F)):
 	# een paar halen om op snelheid te komen
 	dv = 1
-	vend = 4
+	vend = 4.0
 	while (dv/vend > 0.001):
 	    res = energybalance(F[i],crew,rigging,vend,timestep,0,
 				catchacceler=tcatchacceler,
@@ -2645,7 +2638,7 @@ def constantwatt(watt,crew,rigging,timestep=0.03,aantal=5,
     for i in range(len(F)):
 	# een paar halen om op snelheid te komen
 	dv = 1
-	vend = 4
+	vend = 4.0
 	while (dv/vend > 0.001):
 	    res = energybalance(F[i],crew,rigging,vend,
 				timestep,0,catchacceler=tcatchacceler,
@@ -2698,7 +2691,7 @@ def constantwattfast(watt,crew,rigging,timestep=0.03,aantal=5,
     for i in range(len(F)):
 	# een paar halen om op snelheid te komen
 	dv = 1
-	vend = 4
+	vend = 4.0
 	while (dv/vend > 0.001):
 	    res = energybalance(F[i],crew,rigging,vend,timestep,0,
 				catchacceler=tcatchacceler,
@@ -2755,7 +2748,7 @@ def constantwatt_erg(watt,crew,erg,timestep=0.03,aantal=5,
        # een paar halen om op snelheid te komen
 
        dv = 1
-       vend = 40
+       vend = 40.
        while (dv/vend > 0.001):
 	   res = energybalance_erg(F[i],crew,erg,vend,timestep,0,theconst=theconst)
 	   dv = res[0]
@@ -2787,7 +2780,7 @@ def constantwatt_erg(watt,crew,erg,timestep=0.03,aantal=5,
    for i in range(len(F)):
       # een paar halen om op snelheid te komen
       dv = 1
-      vend = 40
+      vend = 40.
       while (dv/vend > 0.001):
 	  try:
 	      res = energybalance_erg(F[i],crew,erg,vend,timestep,0,theconst=theconst)
@@ -2837,7 +2830,7 @@ def constantwatt_ergtempo(watt,crew,erg,timestep=0.03,aantal=5,
        # een paar halen om op snelheid te komen
 
        dv = 1
-       vend = 40
+       vend = 40.
        crew.tempo = F[i]
        while (dv/vend > 0.001):
 	   res = energybalance_erg(ratio,crew,erg,vend,timestep,0,theconst=theconst)
@@ -2869,7 +2862,7 @@ def constantwatt_ergtempo(watt,crew,erg,timestep=0.03,aantal=5,
    for i in range(len(F)):
       # een paar halen om op snelheid te komen
       dv = 1
-      vend = 40
+      vend = 40.
       crew.tempo = F[i]
       while (dv/vend > 0.001):
 	  try:
@@ -2974,7 +2967,7 @@ def constantwatt_ergdisplay(watt,crew,erg,timestep=0.03,aantal=10,
    for i in range(len(F)):
       # een paar halen om op snelheid te komen
       dv = 1
-      vend = 40
+      vend = 40.
       while (dv/vend > 0.001):
          res = energybalance_erg(F[i],crew,erg,vend,timestep,0,theconst=theconst)
          dv = res[0]
@@ -3016,7 +3009,7 @@ def constantvelo(velo,crew,rigging,timestep=0.03,aantal=5,
    for i in range(len(F)):
       # een paar halen om op snelheid te komen
       dv = 1
-      vend = 4
+      vend = 4.0
       while (dv/vend > 0.001):
          res = energybalance(F[i],crew,rigging,vend,timestep,0,
 			     catchacceler=tcatchacceler,
@@ -3047,7 +3040,7 @@ def constantvelo(velo,crew,rigging,timestep=0.03,aantal=5,
    for i in range(len(F)):
       # een paar halen om op snelheid te komen
       dv = 1
-      vend = 4
+      vend = 4.0
       while (dv/vend > 0.001):
          res = energybalance(F[i],crew,rigging,vend,
 			     timestep,0,catchacceler=tcatchacceler,
@@ -3102,14 +3095,14 @@ def constantvelofast(velo,crew,rigging,timestep=0.03,aantal=5,
    for i in range(len(F)):
       # een paar halen om op snelheid te komen
       dv = 1
-      vend = 4
+      vend = 4.
       while (dv/vend > 0.001):
-         res = energybalance(F[i],crew,rigging,vend,timestep,0,
-			     catchacceler=tcatchacceler,
-			     dowind=dowind,windv=windv)
-         dv = res[0]
-         vend = res[1]
-	 tcatchacceler = res[14]
+          res = energybalance(F[i],crew,rigging,vend,timestep,0,
+			      catchacceler=tcatchacceler,
+			      dowind=dowind,windv=windv)
+          dv = res[0]
+          vend = res[1]
+	  tcatchacceler = res[14]
       res = stroke(F[i],crew,rigging,vend,timestep,10,
 		   dowind=dowind,windv=windv)
       velocity[i] = res[2]
@@ -3139,6 +3132,7 @@ def constantvelofast(velo,crew,rigging,timestep=0.03,aantal=5,
 
    return [fres,vavg,ratio,pw,eff]
 
+
 def constantratio(ratio,crew,rigging,timestep=0.03,aantal=5,
 		  aantal2=5,Fmin=100,Fmax=400,catchacceler=5,
 		  windv=0,dowind=1):
@@ -3157,7 +3151,7 @@ def constantratio(ratio,crew,rigging,timestep=0.03,aantal=5,
    for i in range(len(F)):
       # een paar halen om op snelheid te komen
       dv = 1
-      vend = 4
+      vend = 4.0
       while (dv/vend > 0.001):
          res = energybalance(F[i],crew,rigging,vend,timestep,0,
 			     catchacceler=tcatchacceler,
@@ -3188,7 +3182,7 @@ def constantratio(ratio,crew,rigging,timestep=0.03,aantal=5,
    for i in range(len(F)):
       # een paar halen om op snelheid te komen
       dv = 1
-      vend = 4
+      vend = 4.0
       while (dv/vend > 0.001):
          res = energybalance(F[i],crew,rigging,vend,timestep,0,
 			     catchacceler=tcatchacceler,
@@ -3242,7 +3236,7 @@ def constantrecovery(trecovery,crew,rigging,timestep=0.03,
    for i in range(len(F)):
       # een paar halen om op snelheid te komen
       dv = 1
-      vend = 4
+      vend = 4.0
       while (dv/vend > 0.001):
          res = energybalance(F[i],crew,rigging,vend,timestep,0,
 			     dowind=dowind,windv=windv)
@@ -3270,7 +3264,7 @@ def constantrecovery(trecovery,crew,rigging,timestep=0.03,
    for i in range(len(F)):
       # een paar halen om op snelheid te komen
       dv = 1
-      vend = 4
+      vend = 4.0
       while (dv/vend > 0.001):
          res = energybalance(F[i],crew,rigging,vend,timestep,0,
 			     dowind=dowind,windv=windv)
