@@ -1,5 +1,7 @@
+from __future__ import absolute_import
 from math import *
 from numpy import *
+from six.moves import range
 
 # force functions
 class strongmiddle:
@@ -87,7 +89,7 @@ class fromfile:
 	
     def forceprofile(self,favg,x):
 	f = 0
-	if (x<>0):
+	if (x!=0):
 	    wh2 = max(where(self.hpos<x)[0])
 	    f = self.force[wh2]*favg
 	    

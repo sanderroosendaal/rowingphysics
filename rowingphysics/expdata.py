@@ -1,3 +1,5 @@
+from __future__ import absolute_import
+from __future__ import print_function
 import pandas as pd
 import numpy as np
 import matplotlib
@@ -6,7 +8,9 @@ from matplotlib.pyplot import grid
 from matplotlib import figure
 from matplotlib.ticker import MultipleLocator,FuncFormatter,NullFormatter
 
-import rowingphysics
+from . import rowingphysics
+from six.moves import map
+from six.moves import range
 
 def format_time_tick(x,pos=None):
 	hour=int(x/3600)
@@ -92,12 +96,12 @@ def tempofromotwsplit(otwsplit,otwsplits,mc=70.):
     return tempo
 
 def splitvalues(s):
-    min, sec = map(float, s.split(':'))
+    min, sec = list(map(float, s.split(':')))
 
     return [min,sec]
 
 def rawtoseconds(raw):
-    r = np.array(map(splitvalues,raw))
+    r = np.array(list(map(splitvalues,raw)))
     thetime = 60.*r[:,0]+r[:,1]
     return thetime
 
@@ -218,11 +222,11 @@ def plotdata(filename,r,rg,erg):
     ax.plot(ergtime,otwsplit110kg,color='y')
 
     ax.axis([125,75,150,75])
-    ax.set_xticks(range(85,125,10))
+    ax.set_xticks(list(range(85,125,10)))
     ax.set_xlabel('Erg split')
     ax.set_ylabel('OTW split')
     ax.set_title(filename)
-    ax.set_yticks(range(85,150,10))
+    ax.set_yticks(list(range(85,150,10)))
     timeTickFormatter = NullFormatter()
 
     majorTimeFormatter = FuncFormatter(format_time_tick)
@@ -290,7 +294,7 @@ def plotinversedata(filename,r,rg,erg):
 	ergpower = reserg[4]
 	ergvelo = (ergpower/2.8)**(1./3.)
 	ergpace = 500./ergvelo
-	print(format_pace(otwsplit),format_pace(ergpace))
+	print((format_pace(otwsplit),format_pace(ergpace)))
 	ergsplit50kg.append(ergpace)
 
 
@@ -326,7 +330,7 @@ def plotinversedata(filename,r,rg,erg):
 	ergpower = reserg[4]
 	ergvelo = (ergpower/2.8)**(1./3.)
 	ergpace = 500./ergvelo
-	print(format_pace(otwsplit),format_pace(ergpace))
+	print((format_pace(otwsplit),format_pace(ergpace)))
 	ergsplit70kg.append(ergpace)
 
 
@@ -361,7 +365,7 @@ def plotinversedata(filename,r,rg,erg):
 	ergpower = reserg[4]
 	ergvelo = (ergpower/2.8)**(1./3.)
 	ergpace = 500./ergvelo
-	print(format_pace(otwsplit),format_pace(ergpace))
+	print((format_pace(otwsplit),format_pace(ergpace)))
 	ergsplit90kg.append(ergpace)
 
 
@@ -396,7 +400,7 @@ def plotinversedata(filename,r,rg,erg):
 	ergpower = reserg[4]
 	ergvelo = (ergpower/2.8)**(1./3.)
 	ergpace = 500./ergvelo
-	print(format_pace(otwsplit),format_pace(ergpace))
+	print((format_pace(otwsplit),format_pace(ergpace)))
 	ergsplit110kg.append(ergpace)
 
 
@@ -414,11 +418,11 @@ def plotinversedata(filename,r,rg,erg):
     ax.scatter(ergsplit110kg,hundredten,color='b')
 
     ax.axis([155,75,200,80])
-    ax.set_xticks(range(80,155,10))
+    ax.set_xticks(list(range(80,155,10)))
     ax.set_xlabel('Erg split')
     ax.set_ylabel('OTW split')
     ax.set_title(filename)
-    ax.set_yticks(range(85,195,10))
+    ax.set_yticks(list(range(85,195,10)))
     timeTickFormatter = NullFormatter()
 
     majorTimeFormatter = FuncFormatter(format_time_tick)
@@ -476,14 +480,14 @@ def plotinversedata2(filename,r,rg,erg):
 	ratio = res[2]
 	try:
 	    ergpower = rowingphysics.find_ergpower(power,r,erg,aantal=5,aantal2=5)
-	    print(power,ergpower)
+	    print((power,ergpower))
 	except:
 	    ergpower = 50.
 	    
 
 	ergvelo = (ergpower/2.8)**(1./3.)
 	ergpace = 500./ergvelo
-	print(format_pace(otwsplit),format_pace(ergpace))
+	print((format_pace(otwsplit),format_pace(ergpace)))
 	ergsplit50kg.append(ergpace)
 
 
@@ -510,7 +514,7 @@ def plotinversedata2(filename,r,rg,erg):
 	ratio = res[2]
 	try:
 	    ergpower = rowingphysics.find_ergpower(power,r,erg,aantal=5,aantal2=5)
-	    print(power,ergpower)
+	    print((power,ergpower))
 
 
 	except:
@@ -518,7 +522,7 @@ def plotinversedata2(filename,r,rg,erg):
 
 	ergvelo = (ergpower/2.8)**(1./3.)
 	ergpace = 500./ergvelo
-	print(format_pace(otwsplit),format_pace(ergpace))
+	print((format_pace(otwsplit),format_pace(ergpace)))
 	ergsplit70kg.append(ergpace)
 
 
@@ -551,7 +555,7 @@ def plotinversedata2(filename,r,rg,erg):
 
 	ergvelo = (ergpower/2.8)**(1./3.)
 	ergpace = 500./ergvelo
-	print(format_pace(otwsplit),format_pace(ergpace))
+	print((format_pace(otwsplit),format_pace(ergpace)))
 	ergsplit90kg.append(ergpace)
 
 
@@ -584,7 +588,7 @@ def plotinversedata2(filename,r,rg,erg):
 
 	ergvelo = (ergpower/2.8)**(1./3.)
 	ergpace = 500./ergvelo
-	print(format_pace(otwsplit),format_pace(ergpace))
+	print((format_pace(otwsplit),format_pace(ergpace)))
 	ergsplit110kg.append(ergpace)
 
 
@@ -602,11 +606,11 @@ def plotinversedata2(filename,r,rg,erg):
     ax.plot(ergsplit110kg,hundredten,color='b')
 
     ax.axis([155,75,200,85])
-    ax.set_xticks(range(85,155,10))
+    ax.set_xticks(list(range(85,155,10)))
     ax.set_xlabel('Erg split')
     ax.set_ylabel('OTW split')
     ax.set_title(filename)
-    ax.set_yticks(range(85,200,10))
+    ax.set_yticks(list(range(85,200,10)))
     timeTickFormatter = NullFormatter()
 
     majorTimeFormatter = FuncFormatter(format_time_tick)
@@ -658,7 +662,7 @@ def test_two(r,e,pace):
     ergpower = res[1]
 
 
-    print(totalpower,ergpower)
+    print((totalpower,ergpower))
     
     reserg = rowingphysics.constantwatt_erg(totalpower,r,e,theconst=1.0,
 					    ratiomin=0.4,ratiomax=0.6,aantal=30,aantal2=30)
@@ -674,7 +678,7 @@ def test_three(r,rg,e,pace):
     sec = pace[1]
     p = 60*min+sec
 
-    print(format_pace(p))
+    print((format_pace(p)))
     
     velo = 500./p
     
@@ -683,7 +687,7 @@ def test_three(r,rg,e,pace):
     power = res[3]
     ratio = res[2]
 
-    print(power,ratio)
+    print((power,ratio))
     
     reserg = rowingphysics.constantwatt_erg(power,r,e,theconst=1.0,ratiomin=0.4,ratiomax=0.6)
     powerergdisplay = reserg[4]
@@ -694,7 +698,7 @@ def test_three(r,rg,e,pace):
 
     ergpace = 500./v
 
-    print(format_pace(ergpace))
+    print((format_pace(ergpace)))
 
     ergsplitmin = ergpace / 60
     sec = ergpace - 60.*ergsplitmin
@@ -703,20 +707,20 @@ def test_three(r,rg,e,pace):
     totalpower = res[0]
     ergpower = res[1]
 
-    print(totalpower, ergpower)
+    print((totalpower, ergpower))
 
     res2 = rowingphysics.constantwatt(totalpower,r,rg)
 
     otwsplit = 500./res2[1]
 
-    print(format_pace(otwsplit))
+    print((format_pace(otwsplit)))
 
 def test_four(r,rg,e,pace,ratio=0.5):
     min = pace[0]
     sec = pace[1]
     p = 60*min+sec
 
-    print(format_pace(p))
+    print((format_pace(p)))
     
     velo = 500./p
     
@@ -724,21 +728,21 @@ def test_four(r,rg,e,pace,ratio=0.5):
     totalpower = res[0]
     ergpower = res[1]
 
-    print(totalpower, ergpower)
+    print((totalpower, ergpower))
 
     res2 = rowingphysics.constantwatt(totalpower,r,rg)
 
     otwsplit = 500./res2[1]
     velo = res2[1]
 
-    print(format_pace(otwsplit))
+    print((format_pace(otwsplit)))
 
     res = rowingphysics.constantvelofast(velo,r,rg,Fmax=600,windv=0)
     force = res[0]
     power = res[3]
     ratio = res[2]
 
-    print(power,ratio)
+    print((power,ratio))
     
     reserg = rowingphysics.constantwatt_erg(power,r,e,theconst=1.0,ratiomin=0.4,ratiomax=0.6)
     powerergdisplay = reserg[4]
@@ -749,7 +753,7 @@ def test_four(r,rg,e,pace,ratio=0.5):
 
     ergpace = 500./v
 
-    print(format_pace(ergpace))
+    print((format_pace(ergpace)))
 
 def test_five(r,rg,e,ergpace,otwpace,ratio=0.5):
     ergmin = ergpace[0]
@@ -767,7 +771,7 @@ def test_five(r,rg,e,ergpace,otwpace,ratio=0.5):
     ergpace2 = 0.0*tempos
     otwpace2 = 0.0*tempos
 
-    print(ergp,otwp)
+    print((ergp,otwp))
 
     for i in range(len(tempos)):
 	r.tempo = tempos[i]
@@ -780,14 +784,14 @@ def test_five(r,rg,e,ergpace,otwpace,ratio=0.5):
 	totalpower = res[0]
 	ergpower = res[1]
 
-	print(tempos[i],ergpower,totalpower)
+	print((tempos[i],ergpower,totalpower))
 
 	try:
 	    res2 = rowingphysics.constantwatt(totalpower,r,rg)
 	except:
 	    res2 = [0,0]
 
-	print(res2[3])
+	print((res2[3]))
 	otwpace2[i] = 500./res2[1]
 
 	try:
@@ -814,7 +818,7 @@ def test_five(r,rg,e,ergpace,otwpace,ratio=0.5):
 	if v==0:
 	    v=1.0
 
-	print(power, ratio, 500./v)
+	print((power, ratio, 500./v))
 
 	ergpace2[i] = 500./v    
 	
@@ -831,7 +835,7 @@ def test_five(r,rg,e,ergpace,otwpace,ratio=0.5):
     ax.axis([18,40,150,85])
     ax.set_xlabel('SPM')
     ax.set_ylabel('split')
-    ax.set_yticks(range(85,150,10))
+    ax.set_yticks(list(range(85,150,10)))
 
     majorFormatter = FuncFormatter(format_pace_tick)
     majorLocator = (5)
@@ -861,7 +865,7 @@ def test_six(r,rg,e,ergpace,otwpace,ratio=0.5):
     ergpace2 = 0.0*tempos
     otwpace2 = 0.0*tempos
 
-    print(ergp,otwp)
+    print((ergp,otwp))
 
     for i in range(len(tempos)):
 	r.tempo = tempos[i]
@@ -874,14 +878,14 @@ def test_six(r,rg,e,ergpace,otwpace,ratio=0.5):
 	totalpower = res[0]
 	ergpower = res[1]
 
-	print(tempos[i],ergpower,totalpower)
+	print((tempos[i],ergpower,totalpower))
 
 	try:
 	    res2 = rowingphysics.constantwatt(totalpower,r,rg)
 	except:
 	    res2 = [0,0]
 
-	print(res2[3])
+	print((res2[3]))
 	otwpace2[i] = 500./res2[1]
 
 	try:
@@ -908,7 +912,7 @@ def test_six(r,rg,e,ergpace,otwpace,ratio=0.5):
 	if v==0:
 	    v=1.0
 
-	print(power, ratio, 500./v)
+	print((power, ratio, 500./v))
 
 	ergpace2[i] = 500./v    
 	
@@ -925,7 +929,7 @@ def test_six(r,rg,e,ergpace,otwpace,ratio=0.5):
     ax.axis([18,40,150,80])
     ax.set_xlabel('SPM')
     ax.set_ylabel('split')
-    ax.set_yticks(range(80,150,10))
+    ax.set_yticks(list(range(80,150,10)))
 
     majorFormatter = FuncFormatter(format_pace_tick)
     majorLocator = (5)

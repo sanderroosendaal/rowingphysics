@@ -1,8 +1,10 @@
 #from math import *
+from __future__ import absolute_import
+from __future__ import print_function
 import time
 import pylab
 import numpy as np
-from srnumerical import *
+from .srnumerical import *
 #import scipy
 import matplotlib
 from matplotlib import pyplot
@@ -48,12 +50,12 @@ def drag_eq(displacement,velo,alfaref=3.5,doprint=0,constantdrag=0):
 
    if doprint==1:
       print("----- Drag resistance data --------")
-      print("Corr : ",corr)
-      print("Beam : ",beam)
-      print("Boat length : ",boatlength)
-      print("Wetted Area : ",wetted_area)
-      print("alpha skin  : ",alpha)
-      print("alpha total : ",a1)
+      print(("Corr : ",corr))
+      print(("Beam : ",beam))
+      print(("Boat length : ",boatlength))
+      print(("Wetted Area : ",wetted_area))
+      print(("alpha skin  : ",alpha))
+      print(("alpha total : ",a1))
       print("----- Drag resistance data --------")
       print("")
    

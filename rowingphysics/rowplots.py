@@ -1,11 +1,14 @@
-from rowingphysics import *
-from crew import *
-from rigging import *
+from __future__ import absolute_import
+from __future__ import print_function
+from .rowingphysics import *
+from .crew import *
+from .rigging import *
 import pylab
 import time
-import rowingphysics
+from . import rowingphysics
 import numpy as np
 from matplotlib import pyplot
+from six.moves import range
 
 def timeinterpol(v,r,rg):
     tm = time.time()
@@ -59,7 +62,7 @@ def plotwindeffect(r,rg,aantal=10):
 	    res = rowingphysics.constantwattfast(thepower,r,rg,windv=wind[j])
 	    resvelo[j,i] = res[1]
 	    perc[j,i] = 100.*(res[1]-v0)/v0
-	    print(i,j,wind[j],perc[j,i],rg.Nrowers,rg.mb)
+	    print((i,j,wind[j],perc[j,i],rg.Nrowers,rg.mb))
 
 	pyplot.plot(-wind,perc[:,i],label=filenames[i])
 
@@ -250,13 +253,13 @@ def catchangleseries(anglemin,anglemax,F,crew,rigging,aantal=30,timestep=0.03):
     return calctime
 
 def longlegs(rg,doplot=1,v0=3.962):
-   from crew import crew,trapezium
+   from .crew import crew,trapezium
    rr = crew(strokeprofile=trapezium(x1=0.1,h2=0.75),tempo=30.)
    res = rowingphysics.energybalance(250,rr,rg,v0,dt=0.01,doplot=doplot)
    return res
 
 def shortlegs(rg,doplot=1,v0=3.997):
-   from crew import crew, trapezium
+   from .crew import crew, trapezium
    rr = crew(strokeprofile=trapezium(x1=0.15,x2=0.5,h2=0.9),tempo=30.)
    res = rowingphysics.energybalance(250,rr,rg,v0,dt=0.01,doplot=doplot)
    return res
@@ -282,7 +285,7 @@ def plotrecstyle(crew,trecovery,aantal=50,empirical=0):
     vcrecovery[aantal-1] = crew.vcm(vh[aantal-1],handlepos[aantal-1])
 			     
 
-    if (empirical<>0):
+    if (empirical!=0):
        empdata = genfromtxt(empirical, delimiter = ',')
        emptime = empdata[:,0]
        empv = -empdata[:,1]
@@ -294,7 +297,7 @@ def plotrecstyle(crew,trecovery,aantal=50,empirical=0):
     pyplot.subplot(211)
     pyplot.plot(time,vh,'r-',label = 'Handle speed')
     pyplot.plot(time,vcrecovery, 'b-',label = 'CM speed')
-    if (empirical<>0):
+    if (empirical!=0):
 	pyplot.plot(emptime,empv,'g-',label = 'Measured')
     pylab.legend(loc='lower right')
     pyplot.xlabel("time (s)")
@@ -333,7 +336,7 @@ def plotforcecurve(F,cr,aantal=50):
 
    """
 
-   from crew import flat,strongmiddle,strongend,strongbegin,trapezium
+   from .crew import flat,strongmiddle,strongend,strongbegin,trapezium
    
    x = linspace(0,cr.strokelength,aantal)
    y1 = zeros(aantal)
@@ -386,7 +389,7 @@ def plotforcecurveRIM(F,cr,aantal=50):
 
    """
    
-   from crew import flat,strongmiddle,strongmiddle2,strongend,strongbegin,trapezium
+   from .crew import flat,strongmiddle,strongmiddle2,strongend,strongbegin,trapezium
    
    x = linspace(0,cr.strokelength,aantal)
    y1 = zeros(aantal)
@@ -440,7 +443,7 @@ def styleseries(tempomin,tempomax,F,crew,rigging,
 
    """
 
-   from crew import flat,strongmiddle,strongend,strongbegin,trapezium
+   from .crew import flat,strongmiddle,strongend,strongbegin,trapezium
    tm = time.time() 
 
    tempos = linspace(tempomin,tempomax,aantal)
@@ -737,7 +740,7 @@ def catchseriesRIM(anglemin,anglemax,F,crew,rigging,
    """ Various plots for different catch angles and style
    """
 
-   from crew import flat,strongmiddle,strongmiddle2,strongend,strongbegin,trapezium
+   from .crew import flat,strongmiddle,strongmiddle2,strongend,strongbegin,trapezium
    tm = time.time() 
 
    catchangles = linspace(anglemin,anglemax,aantal)
@@ -1035,7 +1038,7 @@ def styleseriesRIM(tempomin,tempomax,F,crew,rigging,
 
    """
 
-   from crew import flat,strongmiddle,strongmiddle2,strongend,strongbegin,trapezium
+   from .crew import flat,strongmiddle,strongmiddle2,strongend,strongbegin,trapezium
    tm = time.time() 
 
    tempos = linspace(tempomin,tempomax,aantal)
@@ -1374,7 +1377,7 @@ def styleseriesforce(Fmin,Fmax,crew,rigging,
 
    """
 
-   from crew import flat,strongmiddle,strongend,strongbegin,trapezium
+   from .crew import flat,strongmiddle,strongend,strongbegin,trapezium
    tm = time.time() 
 
    Forces = linspace(Fmin,Fmax,aantal)
@@ -1663,7 +1666,7 @@ def recoverystyleseries(tempomin,tempomax,F,crew,rigging,
    """ Various plots with varying recovery style
    
    """
-   from crew import flatrecovery,sinusrecovery,trianglerecovery,realisticrecovery
+   from .crew import flatrecovery,sinusrecovery,trianglerecovery,realisticrecovery
    tm = time.time() 
 
    tempos = linspace(tempomin,tempomax,aantal)
@@ -1907,7 +1910,7 @@ def recoverystyleseries(tempomin,tempomax,F,crew,rigging,
 
 def recoverystyletriangle(tempomin,tempomax,F,crew,rigging,aantal=30,timestep=0.03,doplot=1,timewise=0):
 
-   from crew import flatrecovery,sinusrecovery,trianglerecovery,realisticrecovery
+   from .crew import flatrecovery,sinusrecovery,trianglerecovery,realisticrecovery
    tm = time.time() 
 
    tempos = linspace(tempomin,tempomax,aantal)
@@ -2237,7 +2240,7 @@ def plot_tempo_v_constantwatt(watt,r,rg,aantal=10,
       watts[i] = res[3]
       effs[i] = res[4]
 
-      print(tempoos[i],velocity[i],watts[i],fres[i],effs[i])
+      print((tempoos[i],velocity[i],watts[i],fres[i],effs[i]))
 
    wattratio = (watts/watts[0])**(1./3.)
    velocity = velocity/wattratio
@@ -2306,7 +2309,7 @@ def plot_catchangle_v_constantwatt(watt,r,rg,aantal=10,timestep=0.03):
       velocity[i] = res[1]
       eff[i] = res[4]
       watts[i] = res[3]
-      print(np.degrees(catchangles[i]),rg.dcatch,velocity[i],watts[i])
+      print((np.degrees(catchangles[i]),rg.dcatch,velocity[i],watts[i]))
 
    wattratio = (watts/watts[0])**(1./3.)
    velocity = velocity/wattratio
@@ -2388,7 +2391,7 @@ def plot_ratio_v_constantwatt(watt,r,rg,aantal=10,timestep=0.03):
       ratios[i] = res[2]
       eff[i] = res[4]
       watts[i] = res[3]
-      print(r.tempo, lsculls[i],ratios[i],velocity[i],watts[i])
+      print((r.tempo, lsculls[i],ratios[i],velocity[i],watts[i]))
 
    wattratio = (watts/watts[0])**(1./3.)
    velocity = velocity/wattratio
@@ -2406,7 +2409,7 @@ def plot_ratio_v_constantwatt(watt,r,rg,aantal=10,timestep=0.03):
       ratios2[i] = res[2]
       eff2[i] = res[4]
       watts2[i] = res[3]
-      print(r.tempo, lsculls[i],ratios2[i],velocity2[i],watts2[i])
+      print((r.tempo, lsculls[i],ratios2[i],velocity2[i],watts2[i]))
 
    wattratio = (watts2/watts2[0])**(1./3.)
    velocity2 = velocity2/wattratio
@@ -2424,7 +2427,7 @@ def plot_ratio_v_constantwatt(watt,r,rg,aantal=10,timestep=0.03):
       ratios3[i] = res[2]
       eff3[i] = res[4]
       watts3[i] = res[3]
-      print(r.tempo, lsculls[i],ratios3[i],velocity3[i],watts3[i])
+      print((r.tempo, lsculls[i],ratios3[i],velocity3[i],watts3[i]))
 
    wattratio = (watts3/watts3[0])**(1./3.)
    velocity3 = velocity3/wattratio
@@ -2513,7 +2516,7 @@ def plot_tempo_power_constantv(velo,r,rg,aantal=10,timestep=0.03,
       watts[i] = res[3]
       eff[i]=res[4]
       peakforce[i] = res[0]
-      print(tempoos[i],velocity[i],watts[i],peakforce[i])
+      print((tempoos[i],velocity[i],watts[i],peakforce[i]))
 
    calctime = time.time()-tm
 
@@ -2579,7 +2582,7 @@ def plot_inboard_power_constantv(velo,r,rg,aantal=10,timestep=0.03):
       eff[i]=res[4]
       peakforce[i] = (0.5+0.25*pi)*res[0]
       
-      print(lins[i],velocity[i],watts[i],peakforce[i])
+      print((lins[i],velocity[i],watts[i],peakforce[i]))
 
 
    calctime = time.time()-tm
@@ -2639,7 +2642,7 @@ def plot_boatweight_power_constantv(velo,r,rg,aantal=10,timestep=0.01):
       eff[i]=res[4]
       peakforce[i] = (0.5+0.25*pi)*res[0]
       
-      print(mbs[i],velocity[i],watts[i],peakforce[i])
+      print((mbs[i],velocity[i],watts[i],peakforce[i]))
 
 
    calctime = time.time()-tm
@@ -2676,8 +2679,8 @@ def plot_boatweight_power_constantv(velo,r,rg,aantal=10,timestep=0.01):
 def atkinson(timestep=0.01,factor=0.45,doplot=1,h1=0.75,h2=1.0,
              timewise=0,x1=0.02,x2=0.39,bladearea=0.071,
              lscull=3.05,lin=0.86,strokelength=1.31,constantdrag=0):
-   from crew import trapezium
-   from crew import trianglerecovery,sinusrecovery,flatrecovery
+   from .crew import trapezium
+   from .crew import trianglerecovery,sinusrecovery,flatrecovery
 
    r = crew(mc=90.0,tempo=29.4,strokelength=strokelength)
    r.strokeprofile = trapezium(x1=x1,x2=x2,h1=h1,h2=h2)
@@ -2731,14 +2734,14 @@ def atkinson(timestep=0.01,factor=0.45,doplot=1,h1=0.75,h2=1.0,
    displacement = rg.mb+rg.Nrowers*r.mc
    res = rowingphysics.drag_eq(displacement,velocity,alfaref=3.2,doprint=1,constantdrag=constantdrag)
 
-   print("Velocity :",velocity,"  m/s")
-   print("Ratio    :",ratios)
-   print("Power    :",power," W")
-   print("Energy   :",energies," J")
-   print("dv       :",res2[0])
-   print("vend     :",res2[1])
-   print("vmin     :",res2[7])
-   print("vmax     :",res2[8])
+   print(("Velocity :",velocity,"  m/s"))
+   print(("Ratio    :",ratios))
+   print(("Power    :",power," W"))
+   print(("Energy   :",energies," J"))
+   print(("dv       :",res2[0]))
+   print(("vend     :",res2[1]))
+   print(("vmin     :",res2[7]))
+   print(("vmax     :",res2[8]))
 
    calctime = time.time()-tm
    
@@ -2747,8 +2750,8 @@ def atkinson(timestep=0.01,factor=0.45,doplot=1,h1=0.75,h2=1.0,
 
 def james_hm2min(timestep=0.01,factor=0.86,doplot=1,h1=1.0,h2=0.8,
              timewise=0,x1=0.03,x2=0.35,bladearea=1.212e-1):
-   from crew import trapezium
-   from crew import trianglerecovery,sinusrecovery,flatrecovery
+   from .crew import trapezium
+   from .crew import trianglerecovery,sinusrecovery,flatrecovery
 
    r = crew(mc=88.5,tempo=36.0,strokelength=1.37)
    r.strokeprofile = trapezium(x1=x1,x2=x2,h1=h1,h2=h2)
@@ -2799,11 +2802,11 @@ def james_hm2min(timestep=0.01,factor=0.86,doplot=1,h1=1.0,h2=0.8,
 
 
 
-   print("Velocity :",velocity,"  m/s")
-   print("Ratio    :",ratios)
-   print("Power    :",power," W")
-   print("Energy   :",energies," J")
-   print("dv       :",res[0])
+   print(("Velocity :",velocity,"  m/s"))
+   print(("Ratio    :",ratios))
+   print(("Power    :",power," W"))
+   print(("Energy   :",energies," J"))
+   print(("dv       :",res[0]))
 
    calctime = time.time()-tm
    
@@ -2820,7 +2823,7 @@ def powerseries(powers,r,rg):
    for pw in powers:
       res = rowingphysics.constantwatt(pw,r,rg)
       [mins,secs] = rowingphysics.vavgto500mtime(res[1])
-      print(pw,'W  ',mins,':',secs)
+      print((pw,'W  ',mins,':',secs))
 
 def ergtoboat(splits,r,rg,tempos,erg):
 
@@ -2830,7 +2833,7 @@ def ergtoboat(splits,r,rg,tempos,erg):
       r.tempo = tempo
 
       print("----------------------------------------")
-      print("Tempo       ",tempo, " /min")
+      print(("Tempo       ",tempo, " /min"))
       print("")
       print("erg split     erg P    total P      boat split")
       
@@ -2847,13 +2850,13 @@ def ergtoboat(splits,r,rg,tempos,erg):
          bmins = int(bmins)
          bsecs = int(10*bsecs)/10.
          
-         print(mins,":",secs,"  ",int(ergpower),"   ",int(totalpower),"  ",bmins,":",bsecs)
+         print((mins,":",secs,"  ",int(ergpower),"   ",int(totalpower),"  ",bmins,":",bsecs))
 
 def tempopower(r,rg,tp,pw):
 
     res = rowingphysics.constantwatt(pw,r,rg,timestep = 0.01,aantal = 15,aantal2=15)
-    print(pw,res[3])
-    print('Split ',rowingphysics.vavgto500mtime(res[1]))
+    print((pw,res[3]))
+    print(('Split ',rowingphysics.vavgto500mtime(res[1])))
 
 def tempopowererg(r,rg,erg,tp,pwd,theconst=0.0):
     
@@ -2861,5 +2864,5 @@ def tempopowererg(r,rg,erg,tp,pwd,theconst=0.0):
     print(res)
     pw = res[3]
     res = rowingphysics.constantwatt(pw,r,rg,timestep = 0.01,aantal = 15,aantal2=15)
-    print(pw,res[3])
-    print('Split ',rowingphysics.vavgto500mtime(res[1]))
+    print((pw,res[3]))
+    print(('Split ',rowingphysics.vavgto500mtime(res[1])))

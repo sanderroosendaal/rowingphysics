@@ -1,5 +1,6 @@
 # __init__.py
 
+from __future__ import absolute_import
 __all__ = [
     'rowingphysics',
     'row_functions',
@@ -10,7 +11,7 @@ __all__ = [
     'srnumerical'
     ]
 
-from rowingphysics import *
+from .rowingphysics import *
 #from .rowingphysics import *
 #from .row_functions import *
 #from .rowplots import *
