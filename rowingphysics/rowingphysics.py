@@ -87,7 +87,6 @@ def testbladeforce(fhandle,rigging,vb,oarangle=0.01,aantal=10):
     itern = list(range(aantal))
    
     for i in range(aantal):
-	#      l2 = lout-phidot/vb
 	l2 = lout
 	Fb[i] = fhandle*lin/l2
 	res = blade_force(oarangle,rigging,vb,Fb[i])
