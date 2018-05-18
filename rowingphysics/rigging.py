@@ -52,10 +52,10 @@ class rigging:
    def oarangle(self,x):  
       dist = self.dcatch+x
       try:
-	  angle = asin(dist/self.lin)
+          angle = asin(dist/self.lin)
       except ValueError:
-	  angle = pi/2
-	  
+          angle = pi/2
+          
       return angle
 
       
