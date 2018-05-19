@@ -27,7 +27,7 @@ before_cache:
 
 python:
  - "2.7.10"
- - "3.6"
+ - "3.4"
 notifications:
  email: false
 cache: pip
