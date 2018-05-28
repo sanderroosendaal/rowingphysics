@@ -1,4 +1,5 @@
 #! /usr/bin/python
+from __future__ import absolute_import
 import math
 import time
 import pylab
@@ -44,9 +45,9 @@ def sr_interpol4(x,y,target,doplot=0):
 def sr_interpol3(x,y,ytarget,doplot=0,factor=10):
     s = numpy.sign(numpy.diff(y)[0])
     if s==1:
-	y[numpy.argmax(y)+1:] = 2*abs(max(y))
+        y[numpy.argmax(y)+1:] = 2*abs(max(y))
     else:
-	y[numpy.argmin(y)+1:] = -2*abs(max(y))
+        y[numpy.argmin(y)+1:] = -2*abs(max(y))
     dx = x[1]-x[0]
     newx = linspace(min(x),max(x),factor*len(x))
 

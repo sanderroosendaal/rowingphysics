@@ -1,4 +1,6 @@
 #! /usr/bin/python
+from __future__ import absolute_import
+from __future__ import print_function
 import math
 import time
 import pickle
@@ -12,12 +14,13 @@ from matplotlib import pyplot
 
 
 from numpy import linspace,zeros,cumsum,mean
+from six.moves import range
 
 __version__ = "0.3.10"
 
 # submodules
-from srnumerical import *
-from row_functions import *
+from .srnumerical import *
+from .row_functions import *
 
 # global parameters
 
@@ -77,21 +80,20 @@ def testbladeforce(fhandle,rigging,vb,oarangle=0.01,aantal=10):
     res = blade_force(oarangle,rigging,vb,Fblade)
     phidot = res[0]
    
-    print(Fblade,180*phidot/np.pi,180.*vb*np.cos(0.01)/(np.pi*lout))
+    print((Fblade,180*phidot/np.pi,180.*vb*np.cos(0.01)/(np.pi*lout)))
 
 
     Fb = zeros(aantal)
-    itern = range(aantal)
+    itern = list(range(aantal))
    
     for i in range(aantal):
-	#      l2 = lout-phidot/vb
-	l2 = lout
-	Fb[i] = fhandle*lin/l2
-	res = blade_force(oarangle,rigging,vb,Fb[i])
-	phidot = res[0]
-	print(Fb[i],180.*phidot/np.pi)
-
-    Fdol = fhandle + Fb
+        l2 = lout
+        Fb[i] = fhandle*lin/l2
+        res = blade_force(oarangle,rigging,vb,Fb[i])
+        phidot = res[0]
+        print((Fb[i],180.*phidot/np.pi))
+        
+        Fdot = fhandle + Fb
 
     # plot
     pyplot.clf()
@@ -118,7 +120,7 @@ def plotforce(fhandle,rigging,vb,oarangle=0.01):
     res = blade_force(oarangle,rigging,vb,Fblade,doplot=1)
     phidot = res[0]
    
-    print(Fblade,180*phidot/np.pi,180.*vb*np.cos(0.01)/(np.pi*lout))
+    print((Fblade,180*phidot/np.pi,180.*vb*np.cos(0.01)/(np.pi*lout)))
 
 
 def empirical(datafile,vavg,crew,rigging,tstroke,trecovery,doplot=1):
@@ -135,9 +137,9 @@ def empirical(datafile,vavg,crew,rigging,tstroke,trecovery,doplot=1):
     mb = rigging.mb
     Nrowers = rigging.Nrowers
     try:
-	dragform = rigging.dragform
+        dragform = rigging.dragform
     except AttributeError:
-	dragform = 1.0
+        dragform = 1.0
 
     catchangle = rigging.oarangle(0)
 
@@ -218,9 +220,9 @@ def empirical(datafile,vavg,crew,rigging,tstroke,trecovery,doplot=1):
     
     
 
-    print('Drag Power',mean(Pw))
-    print('Kinetic Power loss',mean(Pdiss))
-    print('Stroke length ',max(handlepos))
+    print(('Drag Power',mean(Pw)))
+    print(('Kinetic Power loss',mean(Pdiss)))
+    print(('Stroke length ',max(handlepos)))
 
     forcearray = transpose([handlepos[wh_stroke-1:],Fhandle[wh_stroke-1:]])
 
@@ -251,64 +253,64 @@ def empirical(datafile,vavg,crew,rigging,tstroke,trecovery,doplot=1):
       pyplot.show()
 
     if (doplot==3):
-	pyplot.clf()
-	pyplot.plot(emptime, Fdrag, 'r-',label = 'Drag Force')
-	pyplot.plot(emptime, Fhelp, 'g-',label = 'Foar-Ffoot')
-	pyplot.plot(emptime, Fblade, 'b-',label = 'Fblade')
-	pyplot.plot(emptime, Ffoot,'y-', label = 'Ffoot')
-	pyplot.plot(emptime, Fhandle,'k-', label = 'Fhandle')
-	pylab.legend(loc='upper left')
-	pyplot.xlabel("time (s)")
-	pyplot.ylabel("F (N)")
-	pyplot.show()
-	  
+        pyplot.clf()
+        pyplot.plot(emptime, Fdrag, 'r-',label = 'Drag Force')
+        pyplot.plot(emptime, Fhelp, 'g-',label = 'Foar-Ffoot')
+        pyplot.plot(emptime, Fblade, 'b-',label = 'Fblade')
+        pyplot.plot(emptime, Ffoot,'y-', label = 'Ffoot')
+        pyplot.plot(emptime, Fhandle,'k-', label = 'Fhandle')
+        pylab.legend(loc='upper left')
+        pyplot.xlabel("time (s)")
+        pyplot.ylabel("F (N)")
+        pyplot.show()
+          
     if (doplot==4):
-	pyplot.clf()
-	pyplot.plot(emptime, phidot1, 'r-',label = 'Angular velocity')
-	pyplot.plot(emptime, phidot2, 'g-',label = 'Iteration 2')
-	pyplot.plot(emptime, phidot3, 'y-',label = 'Iteration 3')
-	pyplot.plot(emptime, phidot, 'b-',label = 'Iteration 4')
-	pylab.legend(loc='lower right')
-	pyplot.xlabel("time (s)")
-	pyplot.ylabel("rad/s")
-	pyplot.show()
-	  
+        pyplot.clf()
+        pyplot.plot(emptime, phidot1, 'r-',label = 'Angular velocity')
+        pyplot.plot(emptime, phidot2, 'g-',label = 'Iteration 2')
+        pyplot.plot(emptime, phidot3, 'y-',label = 'Iteration 3')
+        pyplot.plot(emptime, phidot, 'b-',label = 'Iteration 4')
+        pylab.legend(loc='lower right')
+        pyplot.xlabel("time (s)")
+        pyplot.ylabel("rad/s")
+        pyplot.show()
+          
     if (doplot==5):
-	pyplot.clf()
-	pyplot.plot(emptime, numpy.degrees(phi1), 'r-',label = 'Oar angle')
-	pyplot.plot(emptime, numpy.degrees(phi2), 'g-',label = 'Iteration 2')
-	pyplot.plot(emptime, numpy.degrees(phi3), 'y-',label = 'Iteration 3')
-	pyplot.plot(emptime, numpy.degrees(phi), 'b-',label = 'Iteration 4')
-	pylab.legend(loc='upper left')
-	pyplot.xlabel("time (s)")
-	pyplot.ylabel("degrees")
-	pyplot.show()
-	  
+        pyplot.clf()
+        pyplot.plot(emptime, numpy.degrees(phi1), 'r-',label = 'Oar angle')
+        pyplot.plot(emptime, numpy.degrees(phi2), 'g-',label = 'Iteration 2')
+        pyplot.plot(emptime, numpy.degrees(phi3), 'y-',label = 'Iteration 3')
+        pyplot.plot(emptime, numpy.degrees(phi), 'b-',label = 'Iteration 4')
+        pylab.legend(loc='upper left')
+        pyplot.xlabel("time (s)")
+        pyplot.ylabel("degrees")
+        pyplot.show()
+          
        
     if (doplot==6):
-	pyplot.clf()
-	pyplot.plot(emptime, handlepos, 'r-', label = 'Handle position')
-	pylab.legend(loc='upper left')
-	pyplot.xlabel("time (s)")
-	pyplot.ylabel("y (m)")
+        pyplot.clf()
+        pyplot.plot(emptime, handlepos, 'r-', label = 'Handle position')
+        pylab.legend(loc='upper left')
+        pyplot.xlabel("time (s)")
+        pyplot.ylabel("y (m)")
 
-	pyplot.show()
+        pyplot.show()
 
     if (doplot==7):
-	pyplot.clf()
-	pyplot.plot(handlepos,Fhandle,'r-', label = 'Handle Force')
-	pylab.legend(loc='upper left')
-	pyplot.xlabel("x (m)")
-	pyplot.ylabel("F (N)")
-	pyplot.show()
+        pyplot.clf()
+        pyplot.plot(handlepos,Fhandle,'r-', label = 'Handle Force')
+        pylab.legend(loc='upper left')
+        pyplot.xlabel("x (m)")
+        pyplot.ylabel("F (N)")
+        pyplot.show()
 
     return mean(Pw+Pdiss)
 
 
 def energybalance(F,crew,rigging,v0=4.3801,dt=0.03,doplot=1,doprint=0,
                   timewise=0,index_offset=1,empirical=0,empt0=0,vb0=0,
-		  catchacceler=5.0,emptype='acceler',
-		  windv=0,dowind=1):
+                  catchacceler=5.0,emptype='acceler',
+                  windv=0,dowind=1):
     """ calculates one stroke with average handle force as input
     slide velocity and stroke/recovery ratio are calculated
     knows about slip, lift, drag. Plots energy balance.
@@ -470,7 +472,7 @@ def energybalance(F,crew,rigging,v0=4.3801,dt=0.03,doplot=1,doprint=0,
 
         zdot[i] = zdot[i-1]+dt*zdotdot[i]
       
-	  
+          
         ydot[i] = vcstroke
         xdot[i] = zdot[i]-((Nrowers*mc)/((Nrowers*mc)+mb))*ydot[i]
 
@@ -504,9 +506,9 @@ def energybalance(F,crew,rigging,v0=4.3801,dt=0.03,doplot=1,doprint=0,
             Fdrag = drag_eq((Nrowers*mc)+mb,xdot[k-1],alfaref=alfa*dragform)
             zdotdot[k] = (- Fdrag)/((Nrowers*mc)+mb)
 
-	    vw = windv-vcstroke-zdot[k-1]
-	    Fwind = 0.5*crewarea*Cdw*rho_air*(Nrowers**scalepower)*vw*abs(vw)*dowind
-	    zdotdot[k] = zdotdot[k] + Fwind/((Nrowers*mc)+mb)
+            vw = windv-vcstroke-zdot[k-1]
+            Fwind = 0.5*crewarea*Cdw*rho_air*(Nrowers**scalepower)*vw*abs(vw)*dowind
+            zdotdot[k] = zdotdot[k] + Fwind/((Nrowers*mc)+mb)
 
             zdot[k] = zdot[k-1]+dt*zdotdot[k]
             ydot[k] = crew.vcm(vhand[k], handlepos)
@@ -531,9 +533,9 @@ def energybalance(F,crew,rigging,v0=4.3801,dt=0.03,doplot=1,doprint=0,
             Fdrag = drag_eq((Nrowers*mc)+mb,xdot[k-1],alfaref=alfa*dragform)
             zdotdot[k] = (- Fdrag)/((Nrowers*mc)+mb)
 
-	    vw = windv-vcstroke-zdot[k-1]
-	    Fwind = 0.5*crewarea*Cdw*rho_air*(Nrowers**scalepower)*vw*abs(vw)*dowind
-	    zdotdot[k] = zdotdot[k] + Fwind/((Nrowers*mc)+mb)
+            vw = windv-vcstroke-zdot[k-1]
+            Fwind = 0.5*crewarea*Cdw*rho_air*(Nrowers**scalepower)*vw*abs(vw)*dowind
+            zdotdot[k] = zdotdot[k] + Fwind/((Nrowers*mc)+mb)
 
 
             zdot[k] = zdot[k-1]+dt*zdotdot[k]
@@ -605,29 +607,29 @@ def energybalance(F,crew,rigging,v0=4.3801,dt=0.03,doplot=1,doprint=0,
 
     # empirical data
     
-    if (empirical<>0):
+    if (empirical!=0):
         empdata = np.genfromtxt(empirical, delimiter = ',',skip_header=1)
         emptime = empdata[:,0]
         if (max(emptime)>10):
-	    emptime = emptime/1000.
+            emptime = emptime/1000.
         emptime = emptime + empt0
         empdt = emptime[1]-emptime[0]
         if (emptype == 'acceler'):
-	    empxdotdot = empdata[:,1]
-	    empxdot = cumsum(empxdotdot)*empdt
-	    empxdot = empxdot-mean(empxdot)+mean(xdot)
+            empxdotdot = empdata[:,1]
+            empxdot = cumsum(empxdotdot)*empdt
+            empxdot = empxdot-mean(empxdot)+mean(xdot)
         else:
-	    empdtarray = gradient(emptime)
-	    empxdot = empdata[:,1]
-	    empxdotdot = gradient(empxdot,empdtarray)
+            empdtarray = gradient(emptime)
+            empxdot = empdata[:,1]
+            empxdotdot = gradient(empxdot,empdtarray)
 
         empRIM_E = max(cumsum(empxdot-min(empxdot))*empdt)
         empRIM_check = max(empxdot)-min(empxdot)
        
         if (doprint == 1):
-	    print("RIM E (measured)",empRIM_E)
-	    print("RIM Check (meas)",empRIM_check)
-		     
+            print(("RIM E (measured)",empRIM_E))
+            print(("RIM Check (meas)",empRIM_check))
+                     
 
     # some other calculations
 
@@ -636,21 +638,21 @@ def energybalance(F,crew,rigging,v0=4.3801,dt=0.03,doplot=1,doprint=0,
 
     # printing
     if (doprint==1):
-        print("E blade ",Eblade[aantal-1])
-        print("Ediss rower ",Ediss[aantal-1])
-        print("E drag ",Ew[aantal-1])
-        print("Eleg ",Eleg[aantal-1])
-        print("Ehandle ",Ehandle[aantal-1])
-        print("Epropulsion ",Ef[aantal-1])
-        print("Ekin loss ",Eloss)
+        print(("E blade ",Eblade[aantal-1]))
+        print(("Ediss rower ",Ediss[aantal-1]))
+        print(("E drag ",Ew[aantal-1]))
+        print(("Eleg ",Eleg[aantal-1]))
+        print(("Ehandle ",Ehandle[aantal-1]))
+        print(("Epropulsion ",Ef[aantal-1]))
+        print(("Ekin loss ",Eloss))
         print("")
-        print("P blade ",Eblade[aantal-1]/time[aantal-1])
-        print("P leg   ",Eleg[aantal-1]/time[aantal-1])
-        print("P handle ",Ehandle[aantal-1]/time[aantal-1])
-        print("P drag ",Ew[aantal-1]/time[aantal-1])
-        print("P propulsion ",Ef[aantal-1]/time[aantal-1])
+        print(("P blade ",Eblade[aantal-1]/time[aantal-1]))
+        print(("P leg   ",Eleg[aantal-1]/time[aantal-1]))
+        print(("P handle ",Ehandle[aantal-1]/time[aantal-1]))
+        print(("P drag ",Ew[aantal-1]/time[aantal-1]))
+        print(("P propulsion ",Ef[aantal-1]/time[aantal-1]))
         print("")
-        print("Stroke length CM ",strokelength_cm)
+        print(("Stroke length CM ",strokelength_cm))
         print("")
 
     # plotting
@@ -662,8 +664,8 @@ def energybalance(F,crew,rigging,v0=4.3801,dt=0.03,doplot=1,doprint=0,
         pyplot.plot(time, xdot,'r-',label = 'Boat velocity')
         pyplot.plot(time, xdot+ydot,'g-',label = 'Crew velocity')
         pyplot.plot(time, zdot,'b-',label = 'CM velocity')
-        if (empirical<>0):
-	    pyplot.plot(emptime, empxdot, 'y-',label = 'Measured')
+        if (empirical!=0):
+            pyplot.plot(emptime, empxdot, 'y-',label = 'Measured')
         pylab.legend(loc='upper left')
         pyplot.xlabel("time (s)")
         pyplot.ylabel('v (m/s)')
@@ -847,8 +849,8 @@ def energybalance(F,crew,rigging,v0=4.3801,dt=0.03,doplot=1,doprint=0,
         pyplot.plot(time, xdotdot, 'r-', label = 'Boat acceleration')
         pyplot.plot(time, zdotdot, 'g-', label = 'System acceleration')
         pyplot.plot(time, ydotdot, 'b-', label = 'Crew acceleration')
-        if (empirical<>0):
-	    pyplot.plot(emptime,empxdotdot, 'y-', label = 'Measured')
+        if (empirical!=0):
+            pyplot.plot(emptime,empxdotdot, 'y-', label = 'Measured')
         pylab.legend(loc='upper right')
         pyplot.xlabel("time (s)")
         pyplot.ylabel("Boat Acceleration (m/s2)")
@@ -863,12 +865,12 @@ def energybalance(F,crew,rigging,v0=4.3801,dt=0.03,doplot=1,doprint=0,
         pyplot.show()
 
     if (doplot==16):
-	pyplot.clf()
-	pyplot.plot(time, numpy.degrees(oarangle), 'r-', label = 'Oar Angle')
-	pylab.legend(loc='upper right')
-	pyplot.xlabel("time (s)")
-	pyplot.ylabel("Oar angle (o)")
-	pyplot.show()
+        pyplot.clf()
+        pyplot.plot(time, numpy.degrees(oarangle), 'r-', label = 'Oar Angle')
+        pylab.legend(loc='upper right')
+        pyplot.xlabel("time (s)")
+        pyplot.ylabel("Oar angle (o)")
+        pyplot.show()
 
     if (doplot==19):
        pyplot.clf()
@@ -876,8 +878,8 @@ def energybalance(F,crew,rigging,v0=4.3801,dt=0.03,doplot=1,doprint=0,
        pyplot.plot(time, xdotdot, 'r-', label = 'Boat acceleration')
        pyplot.plot(time, zdotdot, 'g-', label = 'System acceleration')
        pyplot.plot(time, ydotdot, 'b-', label = 'Crew acceleration')
-       if (empirical<>0):
-	   pyplot.plot(emptime,empxdotdot, 'y-', label = 'Measured')
+       if (empirical!=0):
+           pyplot.plot(emptime,empxdotdot, 'y-', label = 'Measured')
        pylab.legend(loc='upper right')
        pyplot.xlabel("time (s)")
        pyplot.ylabel("Boat Acceleration (m/s2)")
@@ -891,11 +893,11 @@ def energybalance(F,crew,rigging,v0=4.3801,dt=0.03,doplot=1,doprint=0,
        pyplot.show()
 
     try:
-	instanteff = (Pf+Pq)/(Pf+Pq+Pbladeslip)
+        instanteff = (Pf+Pq)/(Pf+Pq+Pbladeslip)
     except RuntimeWarning:
-	instanteff = 0.0
+        instanteff = 0.0
    
-	 
+         
 
     if (doplot==17):
        pyplot.clf()
@@ -1053,12 +1055,12 @@ def energybalance_erg(ratio,crew,erg,w0=4.3801,dt=0.03,doplot=1,doprint=0,thecon
        wnext2 = wf[i-1]-dt*Tdrag/inertia
 #       if wnext > 0.99*wf[i-1]:
        if wnext > wnext2:
-	   wf[i] = wnext
-	   Tacceler = inertia*(wnext-wf[i-1])/dt
+           wf[i] = wnext
+           Tacceler = inertia*(wnext-wf[i-1])/dt
        else:
-	   wf[i] = wf[i-1]-dt*Tdrag/inertia
-	   Tacceler = 0
-	   Tdrag = 0
+           wf[i] = wf[i-1]-dt*Tdrag/inertia
+           Tacceler = 0
+           Tdrag = 0
 
        wfdot[i] = (wf[i]-wf[i-1])/dt
        
@@ -1100,12 +1102,12 @@ def energybalance_erg(ratio,crew,erg,w0=4.3801,dt=0.03,doplot=1,doprint=0,thecon
       vcrecovery = zeros(aantal)
       for k in range(idrivemax,aantal):
          vhand = crew.vhandle(vavgrec,trecovery,time[k]-time[idrivemax])
-	 vpull[k] = vhand
-	 vcrecovery[k] = crew.vcm(vhand, handlepos)
-#	 vcrecovery[k] = vhand
+         vpull[k] = vhand
+         vcrecovery[k] = crew.vcm(vhand, handlepos)
+#        vcrecovery[k] = vhand
          Tdrag = drag*wf[k-1]**2  # drag torque
          wf[k] = wf[k-1]-dt*Tdrag/inertia
-	 wfdot[k] = (wf[k]-wf[k-1])/dt
+         wfdot[k] = (wf[k]-wf[k-1])/dt
 
 
          ydot[k] = vcrecovery[k]
@@ -1115,10 +1117,10 @@ def energybalance_erg(ratio,crew,erg,w0=4.3801,dt=0.03,doplot=1,doprint=0,thecon
 
          handlepos = d+d*crew.dxhandle(vavgrec,trecovery,time[k]-time[idrivemax])
 
-	        
-	 Fhandle[k] = cord*(cordlength+handlepos)
-	 Fres[k] = Nrowers*mc*ydotdot[k]
-	 Fleg[k] = Fres[k]+Fhandle[k]
+                
+         Fhandle[k] = cord*(cordlength+handlepos)
+         Fres[k] = Nrowers*mc*ydotdot[k]
+         Fleg[k] = Fres[k]+Fhandle[k]
 
          Ebungee[k] = 0.5*(cord*(cordlength+handlepos)**2 - cord*cordlength**2)
          Pbungee[k] = (Ebungee[k]-Ebungee[k-1])/dt
@@ -1176,14 +1178,14 @@ def energybalance_erg(ratio,crew,erg,w0=4.3801,dt=0.03,doplot=1,doprint=0,thecon
 
    # printing
    if (doprint==1):
-      print("Ediss rower ",Ediss[aantal-1])
-      print("E drag ",Ew[aantal-1])
-      print("Eleg ",Eqrower[aantal-1])
-      print("Ehandle ",Ehandle[aantal-1])
-      print("Ebungee ",Ebungee[aantal-1])
+      print(("Ediss rower ",Ediss[aantal-1]))
+      print(("E drag ",Ew[aantal-1]))
+      print(("Eleg ",Eqrower[aantal-1]))
+      print(("Ehandle ",Ehandle[aantal-1]))
+      print(("Ebungee ",Ebungee[aantal-1]))
       print("")
-      print("P handle ",Ehandle[aantal-1]/time[aantal-1])
-      print("P drag ",Ew[aantal-1]/time[aantal-1])
+      print(("P handle ",Ehandle[aantal-1]/time[aantal-1]))
+      print(("P drag ",Ew[aantal-1]/time[aantal-1]))
       print("")
 
    # plotting
@@ -1371,38 +1373,38 @@ def energybalance_erg_old(F,crew,erg,w0=4.3801,dt=0.03,doplot=1,doprint=0,
    # stroke
    while handlepos<d:
        if (timewise == 1):
-	   Fi = crew.forceprofile(F,handlepos)
+           Fi = crew.forceprofile(F,handlepos)
        else:
-	   Fi = crew.forceprofile(F,handlepos)
+           Fi = crew.forceprofile(F,handlepos)
       
        Fhandle[i-1] = Fi
        Tdrag = drag*wf[i-1]**2  # drag torque
 
        if (0.999*wf[i-1]*r > vhand):
-	   if (ydot[i-1] <> 0):
-	       maxforce = crew.maxpower/ydot[i-1]
-	   else:
-	       maxforce = crew.maxforce
-	   if maxforce<Fhandle[i-1]:
-	       maxforce=Fhandle[i-1]
-	   thepower = ydot[i-1]*maxforce
-	   if (thepower==0):
-	       thepower = crew.maxpower
-	   kinerg = 0.5*Nrowers*mc*(ydot[i-1])**2
-	   kinerg = kinerg+dt*thepower
-	   ydot[i] = np.sqrt(2*kinerg/(Nrowers*mc))
-	   ydotdot[i] = (ydot[i]-ydot[i-1])/dt
-	   if ydot[i]>wf[i-1]*r:
-	       ydot[i]=wf[i-1]*r
-	   dw = dt*(-Tdrag)/inertia
-	   wf[i] = wf[i-1]+dw
-	   vhand = crew.vha(ydot[i], handlepos)
+           if (ydot[i-1] != 0):
+               maxforce = crew.maxpower/ydot[i-1]
+           else:
+               maxforce = crew.maxforce
+           if maxforce<Fhandle[i-1]:
+               maxforce=Fhandle[i-1]
+           thepower = ydot[i-1]*maxforce
+           if (thepower==0):
+               thepower = crew.maxpower
+           kinerg = 0.5*Nrowers*mc*(ydot[i-1])**2
+           kinerg = kinerg+dt*thepower
+           ydot[i] = np.sqrt(2*kinerg/(Nrowers*mc))
+           ydotdot[i] = (ydot[i]-ydot[i-1])/dt
+           if ydot[i]>wf[i-1]*r:
+               ydot[i]=wf[i-1]*r
+           dw = dt*(-Tdrag)/inertia
+           wf[i] = wf[i-1]+dw
+           vhand = crew.vha(ydot[i], handlepos)
        else:
-	   dw = dt*(Fhandle[i-1]*r-Tdrag)/inertia
-	   wf[i] = wf[i-1]+dw
-	   vhand = wf[i]*r
-	   vcstroke = crew.vcm(vhand, handlepos)
-	   ydot[i] = vcstroke
+           dw = dt*(Fhandle[i-1]*r-Tdrag)/inertia
+           wf[i] = wf[i-1]+dw
+           vhand = wf[i]*r
+           vcstroke = crew.vcm(vhand, handlepos)
+           ydot[i] = vcstroke
 
        handlepos = handlepos+vhand*dt
        Ebungee[i] = 0.5*(cord*(cordlength+handlepos)**2 - cord*cordlength**2)
@@ -1489,14 +1491,14 @@ def energybalance_erg_old(F,crew,erg,w0=4.3801,dt=0.03,doplot=1,doprint=0,
 
    # printing
    if (doprint==1):
-      print("Ediss rower ",Ediss[aantal-1])
-      print("E drag ",Ew[aantal-1])
-      print("Eleg ",Eqrower[aantal-1])
-      print("Ehandle ",Ehandle[aantal-1])
-      print("Ebungee ",Ebungee[aantal-1])
+      print(("Ediss rower ",Ediss[aantal-1]))
+      print(("E drag ",Ew[aantal-1]))
+      print(("Eleg ",Eqrower[aantal-1]))
+      print(("Ehandle ",Ehandle[aantal-1]))
+      print(("Ebungee ",Ebungee[aantal-1]))
       print("")
-      print("P handle ",Ehandle[aantal-1]/time[aantal-1])
-      print("P drag ",Ew[aantal-1]/time[aantal-1])
+      print(("P handle ",Ehandle[aantal-1]/time[aantal-1]))
+      print(("P drag ",Ew[aantal-1]/time[aantal-1]))
       print("")
 
    # plotting
@@ -1809,7 +1811,7 @@ def energybalance_old(F,crew,rigging,v0=4.3801,dt=0.03,doplot=1,doprint=0,
 
 #   Pw = drag_eq((Nrowers*mc)+mb,xdot)*xdot
    Pw = alfaboat*xdot**3
-   print(alfaboat,xdot[0],Pw[0])
+   print((alfaboat,xdot[0],Pw[0]))
 
    Pmb = mb*xdot*xdotdot
    Pmc = (Nrowers*mc)*(xdot+ydot)*(xdotdot+ydotdot)
@@ -1838,19 +1840,19 @@ def energybalance_old(F,crew,rigging,v0=4.3801,dt=0.03,doplot=1,doprint=0,
 
    # printing
    if (doprint==1):
-      print("E blade ",Eblade[aantal-1])
-      print("Ediss rower ",Ediss[aantal-1])
-      print("E drag ",Ew[aantal-1])
-      print("Eleg ",Eleg[aantal-1])
-      print("Ehandle ",Ehandle[aantal-1])
-      print("Epropulsion ",Ef[aantal-1])
-      print("Ekin loss ",Eloss)
+      print(("E blade ",Eblade[aantal-1]))
+      print(("Ediss rower ",Ediss[aantal-1]))
+      print(("E drag ",Ew[aantal-1]))
+      print(("Eleg ",Eleg[aantal-1]))
+      print(("Ehandle ",Ehandle[aantal-1]))
+      print(("Epropulsion ",Ef[aantal-1]))
+      print(("Ekin loss ",Eloss))
       print("")
-      print("P blade ",Eblade[aantal-1]/time[aantal-1])
-      print("P leg   ",Eleg[aantal-1]/time[aantal-1])
-      print("P handle ",Ehandle[aantal-1]/time[aantal-1])
-      print("P drag ",Ew[aantal-1]/time[aantal-1])
-      print("P propulsion ",Ef[aantal-1]/time[aantal-1])
+      print(("P blade ",Eblade[aantal-1]/time[aantal-1]))
+      print(("P leg   ",Eleg[aantal-1]/time[aantal-1]))
+      print(("P handle ",Ehandle[aantal-1]/time[aantal-1]))
+      print(("P drag ",Ew[aantal-1]/time[aantal-1]))
+      print(("P propulsion ",Ef[aantal-1]/time[aantal-1]))
       print("")
 
    # plotting
@@ -2262,20 +2264,20 @@ def atkinsoncalc(F,crew,rigging,v0=4.3801,dt=0.03,doplot=1,doprint=0,
 
    # printing
    if (doprint==1):
-      print("E blade ",Eblade[aantal-1])
-      print("Ediss rower ",Ediss[aantal-1])
-      print("E drag ",Ew[aantal-1])
-      print("Eleg ",Eleg[aantal-1])
-      print("Ehandle ",Ehandle[aantal-1])
-      print("Epropulsion ",Ef[aantal-1])
+      print(("E blade ",Eblade[aantal-1]))
+      print(("Ediss rower ",Ediss[aantal-1]))
+      print(("E drag ",Ew[aantal-1]))
+      print(("Eleg ",Eleg[aantal-1]))
+      print(("Ehandle ",Ehandle[aantal-1]))
+      print(("Epropulsion ",Ef[aantal-1]))
       print("")
-      print("P blade ",Eblade[aantal-1]/time[aantal-1])
-      print("P momentum ",Eqrower[aantal-1]/time[aantal-1])
-      print("P dissipation ",Ediss[aantal-1]/time[aantal-1])
-      print("P leg   ",Eleg[aantal-1]/time[aantal-1])
-      print("P handle ",Ehandle[aantal-1]/time[aantal-1])
-      print("P drag ",Ew[aantal-1]/time[aantal-1])
-      print("P propulsion ",Ef[aantal-1]/time[aantal-1])
+      print(("P blade ",Eblade[aantal-1]/time[aantal-1]))
+      print(("P momentum ",Eqrower[aantal-1]/time[aantal-1]))
+      print(("P dissipation ",Ediss[aantal-1]/time[aantal-1]))
+      print(("P leg   ",Eleg[aantal-1]/time[aantal-1]))
+      print(("P handle ",Ehandle[aantal-1]/time[aantal-1]))
+      print(("P drag ",Ew[aantal-1]/time[aantal-1]))
+      print(("P propulsion ",Ef[aantal-1]/time[aantal-1]))
       print("")
 
    # plotting
@@ -2428,7 +2430,7 @@ def atkinsoncalc(F,crew,rigging,v0=4.3801,dt=0.03,doplot=1,doprint=0,
       pyplot.xlabel("time (s)")
       pyplot.ylabel("Drag constant (N s^2 / m^2)")
       pyplot.show()
-      print("average K :",average(dragconst))
+      print(("average K :",average(dragconst)))
 
    dv = zdot[len(time)-1]-zdot[0]
    vavg = mean(xdot)
@@ -2445,7 +2447,7 @@ def atkinsoncalc(F,crew,rigging,v0=4.3801,dt=0.03,doplot=1,doprint=0,
 
 
 def stroke(F,crew,rigging,v0,dt,aantal,doplot=0,timewise=0,catchacceler=5,
-	   dowind=1,windv=0):
+           dowind=1,windv=0):
     """ Calculates a few (aantal) strokes and returns parameters averaged
     over those strokes
 
@@ -2470,27 +2472,27 @@ def stroke(F,crew,rigging,v0,dt,aantal,doplot=0,timewise=0,catchacceler=5,
     tcatchacceler = catchacceler
 
     for i in range(aantal):
-	res = energybalance(F,crew,rigging,v0,dt,0,timewise=timewise,
-			    catchacceler=tcatchacceler,
-			    dowind=dowind,windv=windv)
-	dv = dv+res[0]
-	vend = vend+res[1]
-	vavg = vavg + res[2]
-	ratio = ratio + res[3]
-	energy = energy+res[4]
-	power = power+res[5]
-	vmin = vmin+res[8]
-	vmax = vmax+res[7]
-	eff=eff+res[6]
-	v0 = res[1]
-	cn_check = cn_check+res[9]
-	RIM_E = RIM_E+res[10]
-	RIM_check = RIM_check+res[11]
-	RIM_catchE = RIM_catchE+res[12]
-	RIM_catchD = RIM_catchD+res[13]
-	catchacceler = catchacceler+res[14]
-	drag_eff = drag_eff+res[15]
-	tcatchacceler = res[14]
+        res = energybalance(F,crew,rigging,v0,dt,0,timewise=timewise,
+                            catchacceler=tcatchacceler,
+                            dowind=dowind,windv=windv)
+        dv = dv+res[0]
+        vend = vend+res[1]
+        vavg = vavg + res[2]
+        ratio = ratio + res[3]
+        energy = energy+res[4]
+        power = power+res[5]
+        vmin = vmin+res[8]
+        vmax = vmax+res[7]
+        eff=eff+res[6]
+        v0 = res[1]
+        cn_check = cn_check+res[9]
+        RIM_E = RIM_E+res[10]
+        RIM_check = RIM_check+res[11]
+        RIM_catchE = RIM_catchE+res[12]
+        RIM_catchD = RIM_catchD+res[13]
+        catchacceler = catchacceler+res[14]
+        drag_eff = drag_eff+res[15]
+        tcatchacceler = res[14]
 
 
     dv = dv/aantal
@@ -2511,9 +2513,9 @@ def stroke(F,crew,rigging,v0,dt,aantal,doplot=0,timewise=0,catchacceler=5,
     catchacceler = catchacceler/aantal
 
     if (doplot):
-	res = energybalance(F,crew,rigging,vend,dt,doplot,timewise=timewise,
-			    catchacceler=catchacceler,
-			    dowind=dowind,windv=windv)
+        res = energybalance(F,crew,rigging,vend,dt,doplot,timewise=timewise,
+                            catchacceler=catchacceler,
+                            dowind=dowind,windv=windv)
 
     return [dv,vend,vavg,ratio,energy,power,eff,vmax,vmin,cn_check,RIM_E,RIM_check,RIM_catchE,RIM_catchD,catchacceler,drag_eff]
 
@@ -2536,16 +2538,16 @@ def stroke_erg(ratio,crew,erg,w0,dt,aantal,doplot=0,theconst=0.0):
     catchacceler=0
 
     for i in range(aantal):
-	res = energybalance_erg(ratio,crew,erg,w0,dt,0,theconst=theconst)
-	dv = dv+res[0]
+        res = energybalance_erg(ratio,crew,erg,w0,dt,0,theconst=theconst)
+        dv = dv+res[0]
 
-	wend = wend+res[1]
-	wavg = wavg + res[2]
+        wend = wend+res[1]
+        wavg = wavg + res[2]
 
-	energy = energy+res[4]
-	power = power+res[5]
-	powerd = powerd+res[6]
-	w0 = res[1]
+        energy = energy+res[4]
+        power = power+res[5]
+        powerd = powerd+res[6]
+        w0 = res[1]
 
     dv = dv/aantal
     wend = wend/aantal
@@ -2557,7 +2559,7 @@ def stroke_erg(ratio,crew,erg,w0,dt,aantal,doplot=0,theconst=0.0):
     powerd = powerd/aantal
 
     if (doplot):
-	res = energybalance_erg(ratio,crew,erg,wend,dt,doplot,theconst=theconst)
+        res = energybalance_erg(ratio,crew,erg,wend,dt,doplot,theconst=theconst)
 
     return [dv,wend,wavg,ratio,energy,power,powerd]
 
@@ -2592,8 +2594,8 @@ def stroke_atkinson(F,crew,rigging,v0,dt,aantal,timewise=0,constantdrag=0):
    return [dv,vend,vavg,ratio,energy,power,eff]
 
 def constantwatt(watt,crew,rigging,timestep=0.03,aantal=5,
-		 aantal2=5,Fmin=50,Fmax=1000,catchacceler=5,
-		 windv=0,dowind=1):
+                 aantal2=5,Fmin=50,Fmax=1000,catchacceler=5,
+                 windv=0,dowind=1):
     """ Returns force, average speed given an input power in watt
     """
 
@@ -2605,22 +2607,22 @@ def constantwatt(watt,crew,rigging,timestep=0.03,aantal=5,
     tcatchacceler = catchacceler
    
     for i in range(len(F)):
-	# een paar halen om op snelheid te komen
-	dv = 1
-	vend = 4.0
-	while (dv/vend > 0.001):
-	    res = energybalance(F[i],crew,rigging,vend,timestep,0,
-				catchacceler=tcatchacceler,
-				windv=windv,dowind=dowind)
-	    dv = res[0]
-	    vend = res[1]
-	    tcatchacceler = res[14]
-	res = stroke(F[i],crew,rigging,vend,timestep,10,
-		     dowind=dowind,windv=windv)
-	velocity[i] = res[2]
-	ratios[i] = res[3]
-	energies[i] = res[4]
-	power[i] = res[5]
+        # een paar halen om op snelheid te komen
+        dv = 1
+        vend = 4.0
+        while (dv/vend > 0.001):
+            res = energybalance(F[i],crew,rigging,vend,timestep,0,
+                                catchacceler=tcatchacceler,
+                                windv=windv,dowind=dowind)
+            dv = res[0]
+            vend = res[1]
+            tcatchacceler = res[14]
+        res = stroke(F[i],crew,rigging,vend,timestep,10,
+                     dowind=dowind,windv=windv)
+        velocity[i] = res[2]
+        ratios[i] = res[3]
+        energies[i] = res[4]
+        power[i] = res[5]
 
 
     fres = sr_interpol1(F,power,watt)
@@ -2636,37 +2638,37 @@ def constantwatt(watt,crew,rigging,timestep=0.03,aantal=5,
     energies = zeros(aantal2)
 
     for i in range(len(F)):
-	# een paar halen om op snelheid te komen
-	dv = 1
-	vend = 4.0
-	while (dv/vend > 0.001):
-	    res = energybalance(F[i],crew,rigging,vend,
-				timestep,0,catchacceler=tcatchacceler,
-				dowind=dowind,windv=windv)
-	    dv = res[0]
-	    vend = res[1]
-	    tcatchacceler = res[14]
-	res = stroke(F[i],crew,rigging,vend,timestep,10,
-		     dowind=dowind,windv=windv)
-	velocity[i] = res[2]
-	ratios[i] = res[3]
-	energies[i] = res[4]
-	power[i] = res[5]
+        # een paar halen om op snelheid te komen
+        dv = 1
+        vend = 4.0
+        while (dv/vend > 0.001):
+            res = energybalance(F[i],crew,rigging,vend,
+                                timestep,0,catchacceler=tcatchacceler,
+                                dowind=dowind,windv=windv)
+            dv = res[0]
+            vend = res[1]
+            tcatchacceler = res[14]
+        res = stroke(F[i],crew,rigging,vend,timestep,10,
+                     dowind=dowind,windv=windv)
+        velocity[i] = res[2]
+        ratios[i] = res[3]
+        energies[i] = res[4]
+        power[i] = res[5]
 
    
     fres = sr_interpol1(F,power,watt)
 
     while (dv/vend > 0.001):
-	res = energybalance(fres,crew,rigging,vend,timestep,0,
-			    catchacceler=tcatchacceler,
-			    dowind=dowind,windv=windv)
-	dv = res[0]
-	vend = res[1]
-	tcatchacceler = res[14]
+        res = energybalance(fres,crew,rigging,vend,timestep,0,
+                            catchacceler=tcatchacceler,
+                            dowind=dowind,windv=windv)
+        dv = res[0]
+        vend = res[1]
+        tcatchacceler = res[14]
 
    
     res = stroke(fres,crew,rigging,vend,timestep,10,catchacceler=tcatchacceler,
-		 dowind=dowind,windv=windv)
+                 dowind=dowind,windv=windv)
     vavg = res[2]
     ratio = res[3]
     pw = res[5]
@@ -2676,8 +2678,8 @@ def constantwatt(watt,crew,rigging,timestep=0.03,aantal=5,
     return [fres,vavg,ratio,pw,eff]
 
 def constantwattfast(watt,crew,rigging,timestep=0.03,aantal=5,
-		 aantal2=5,Fmin=50,Fmax=1000,catchacceler=5,
-		 windv=0,dowind=1):
+                 aantal2=5,Fmin=50,Fmax=1000,catchacceler=5,
+                 windv=0,dowind=1):
     """ Returns force, average speed given an input power in watt
     """
 
@@ -2689,38 +2691,38 @@ def constantwattfast(watt,crew,rigging,timestep=0.03,aantal=5,
     tcatchacceler = catchacceler
    
     for i in range(len(F)):
-	# een paar halen om op snelheid te komen
-	dv = 1
-	vend = 4.0
-	while (dv/vend > 0.001):
-	    res = energybalance(F[i],crew,rigging,vend,timestep,0,
-				catchacceler=tcatchacceler,
-				windv=windv,dowind=dowind)
-	    dv = res[0]
-	    vend = res[1]
-	    tcatchacceler = res[14]
-	res = stroke(F[i],crew,rigging,vend,timestep,10,
-		     dowind=dowind,windv=windv)
-	velocity[i] = res[2]
-	ratios[i] = res[3]
-	energies[i] = res[4]
-	power[i] = res[5]
+        # een paar halen om op snelheid te komen
+        dv = 1
+        vend = 4.0
+        while (dv/vend > 0.001):
+            res = energybalance(F[i],crew,rigging,vend,timestep,0,
+                                catchacceler=tcatchacceler,
+                                windv=windv,dowind=dowind)
+            dv = res[0]
+            vend = res[1]
+            tcatchacceler = res[14]
+        res = stroke(F[i],crew,rigging,vend,timestep,10,
+                     dowind=dowind,windv=windv)
+        velocity[i] = res[2]
+        ratios[i] = res[3]
+        energies[i] = res[4]
+        power[i] = res[5]
 
 
     fres = sr_interpol1(F,power,watt)
 
 
     while (dv/vend > 0.001):
-	res = energybalance(fres,crew,rigging,vend,timestep,0,
-			    catchacceler=tcatchacceler,
-			    dowind=dowind,windv=windv)
-	dv = res[0]
-	vend = res[1]
-	tcatchacceler = res[14]
+        res = energybalance(fres,crew,rigging,vend,timestep,0,
+                            catchacceler=tcatchacceler,
+                            dowind=dowind,windv=windv)
+        dv = res[0]
+        vend = res[1]
+        tcatchacceler = res[14]
 
    
     res = stroke(fres,crew,rigging,vend,timestep,10,catchacceler=tcatchacceler,
-		 dowind=dowind,windv=windv)
+                 dowind=dowind,windv=windv)
     vavg = res[2]
     ratio = res[3]
     pw = res[5]
@@ -2730,7 +2732,7 @@ def constantwattfast(watt,crew,rigging,timestep=0.03,aantal=5,
     return [fres,vavg,ratio,pw,eff]
 
 def constantwatt_erg(watt,crew,erg,timestep=0.03,aantal=5,
-		     aantal2=5,ratiomin=0.4,ratiomax=0.6,theconst=1.0):
+                     aantal2=5,ratiomin=0.4,ratiomax=0.6,theconst=1.0):
    """ Returns drive/recovery ratio, force given an input power (watt)
 
    The power is the total power (not only what the erg display shows)
@@ -2750,9 +2752,9 @@ def constantwatt_erg(watt,crew,erg,timestep=0.03,aantal=5,
        dv = 1
        vend = 40.
        while (dv/vend > 0.001):
-	   res = energybalance_erg(F[i],crew,erg,vend,timestep,0,theconst=theconst)
-	   dv = res[0]
-	   vend = res[1]
+           res = energybalance_erg(F[i],crew,erg,vend,timestep,0,theconst=theconst)
+           dv = res[0]
+           vend = res[1]
 
        res = stroke_erg(F[i],crew,erg,vend,timestep,10,theconst=theconst)
        velocity[i] = res[2]
@@ -2782,13 +2784,13 @@ def constantwatt_erg(watt,crew,erg,timestep=0.03,aantal=5,
       dv = 1
       vend = 40.
       while (dv/vend > 0.001):
-	  try:
-	      res = energybalance_erg(F[i],crew,erg,vend,timestep,0,theconst=theconst)
-	      dv = res[0]
-	      vend = res[1]
-	  except:
-	      pass
-	  
+          try:
+              res = energybalance_erg(F[i],crew,erg,vend,timestep,0,theconst=theconst)
+              dv = res[0]
+              vend = res[1]
+          except:
+              pass
+          
       res = stroke_erg(F[i],crew,erg,vend,timestep,10,theconst=theconst)
       velocity[i] = res[2]
       ratios[i] = res[3]
@@ -2812,7 +2814,7 @@ def constantwatt_erg(watt,crew,erg,timestep=0.03,aantal=5,
    return [fres,vavg,ratio,pw,pwd]
 
 def constantwatt_ergtempo(watt,crew,erg,timestep=0.03,aantal=5,
-		     aantal2=5,tempomin=15,tempomax=45,theconst=1.0,ratio=0.5):
+                     aantal2=5,tempomin=15,tempomax=45,theconst=1.0,ratio=0.5):
    """ Returns drive/recovery ratio, force given an input power (watt)
 
    The power is the total power (not only what the erg display shows)
@@ -2833,9 +2835,9 @@ def constantwatt_ergtempo(watt,crew,erg,timestep=0.03,aantal=5,
        vend = 40.
        crew.tempo = F[i]
        while (dv/vend > 0.001):
-	   res = energybalance_erg(ratio,crew,erg,vend,timestep,0,theconst=theconst)
-	   dv = res[0]
-	   vend = res[1]
+           res = energybalance_erg(ratio,crew,erg,vend,timestep,0,theconst=theconst)
+           dv = res[0]
+           vend = res[1]
 
        res = stroke_erg(ratio,crew,erg,vend,timestep,10,theconst=theconst)
        velocity[i] = res[2]
@@ -2865,13 +2867,13 @@ def constantwatt_ergtempo(watt,crew,erg,timestep=0.03,aantal=5,
       vend = 40.
       crew.tempo = F[i]
       while (dv/vend > 0.001):
-	  try:
-	      res = energybalance_erg(ratio,crew,erg,vend,timestep,0,theconst=theconst)
-	      dv = res[0]
-	      vend = res[1]
-	  except:
-	      pass
-	  
+          try:
+              res = energybalance_erg(ratio,crew,erg,vend,timestep,0,theconst=theconst)
+              dv = res[0]
+              vend = res[1]
+          except:
+              pass
+          
       res = stroke_erg(ratio,crew,erg,vend,timestep,10,theconst=theconst)
       velocity[i] = res[2]
       ratios[i] = res[3]
@@ -2899,8 +2901,8 @@ def find_ergpower(watt,crew,erg,timestep=0.03,aantal=10,aantal2=10,powermin=100,
     power = zeros(aantal)
 
     for i in range(len(F)):
-	res = ergpowertopower(F[i],ratio,crew,erg,aantal=5,aantal2=5)
-	power[i] = res[0]
+        res = ergpowertopower(F[i],ratio,crew,erg,aantal=5,aantal2=5)
+        power[i] = res[0]
 
     fres = sr_interpol1(F,power,watt)
 
@@ -2910,18 +2912,18 @@ def find_ergpower(watt,crew,erg,timestep=0.03,aantal=10,aantal2=10,powermin=100,
     F = linspace(powermin,powermax,aantal2)
 
     for i in range(len(F)):
-	res = ergpowertopower(F[i],ratio,crew,erg,aantal=5,aantal2=5)
-	power[i] = res[0]
+        res = ergpowertopower(F[i],ratio,crew,erg,aantal=5,aantal2=5)
+        power[i] = res[0]
 
     fres = sr_interpol1(F,power,watt)
     if fres<0:
-	fres = 50.
+        fres = 50.
 
     return fres
 
 def constantwatt_ergdisplay(watt,crew,erg,timestep=0.03,aantal=10,
-			    aantal2=10,ratiomin=0.3,ratiomax=0.8,theconst=0.0,
-			    catchacceler=5):
+                            aantal2=10,ratiomin=0.3,ratiomax=0.8,theconst=0.0,
+                            catchacceler=5):
    """ Returns drive/recovery ratio given an input power (watt)
 
    """
@@ -2993,7 +2995,7 @@ def constantwatt_ergdisplay(watt,crew,erg,timestep=0.03,aantal=10,
    return [fres,vavg,ratio,pw,pwd]
 
 def constantvelo(velo,crew,rigging,timestep=0.03,aantal=5,
-		 aantal2=5,Fmin=100,Fmax=400,catchacceler=5,dowind=1,windv=0):
+                 aantal2=5,Fmin=100,Fmax=400,catchacceler=5,dowind=1,windv=0):
    """ Returns the force and power needed to achieve
    average boat speed of velo
 
@@ -3012,13 +3014,13 @@ def constantvelo(velo,crew,rigging,timestep=0.03,aantal=5,
       vend = 4.0
       while (dv/vend > 0.001):
          res = energybalance(F[i],crew,rigging,vend,timestep,0,
-			     catchacceler=tcatchacceler,
-			     windv=windv,dowind=dowind)
+                             catchacceler=tcatchacceler,
+                             windv=windv,dowind=dowind)
          dv = res[0]
          vend = res[1]
-	 tcatchacceler = res[14]
+         tcatchacceler = res[14]
       res = stroke(F[i],crew,rigging,vend,timestep,10,
-		   windv=windv,dowind=dowind)
+                   windv=windv,dowind=dowind)
       velocity[i] = res[2]
       ratios[i] = res[3]
       energies[i] = res[4]
@@ -3043,13 +3045,13 @@ def constantvelo(velo,crew,rigging,timestep=0.03,aantal=5,
       vend = 4.0
       while (dv/vend > 0.001):
          res = energybalance(F[i],crew,rigging,vend,
-			     timestep,0,catchacceler=tcatchacceler,
-			     dowind=dowind,windv=windv)
+                             timestep,0,catchacceler=tcatchacceler,
+                             dowind=dowind,windv=windv)
          dv = res[0]
          vend = res[1]
-	 tcatchacceler = res[14]
+         tcatchacceler = res[14]
       res = stroke(F[i],crew,rigging,vend,timestep,10,
-		   dowind=dowind,windv=windv)
+                   dowind=dowind,windv=windv)
       velocity[i] = res[2]
       ratios[i] = res[3]
       energies[i] = res[4]
@@ -3059,15 +3061,15 @@ def constantvelo(velo,crew,rigging,timestep=0.03,aantal=5,
 
    while (dv/vend > 0.001):
       res = energybalance(fres,crew,rigging,vend,timestep,0,
-			  catchacceler=tcatchacceler,
-			  dowind=dowind,windv=windv)
+                          catchacceler=tcatchacceler,
+                          dowind=dowind,windv=windv)
       vend = res[1]
       tcatchacceler = res[14]
       dv=res[0]
 
    
    res = stroke(fres,crew,rigging,vend,timestep,10,
-		windv=windv,dowind=dowind)
+                windv=windv,dowind=dowind)
    vavg = res[2]
    ratio = res[3]
    pw = res[5]
@@ -3076,8 +3078,8 @@ def constantvelo(velo,crew,rigging,timestep=0.03,aantal=5,
    return [fres,vavg,ratio,pw,eff]
 
 def constantvelofast(velo,crew,rigging,timestep=0.03,aantal=5,
-		 aantal2=5,Fmin=100,Fmax=400,catchacceler=5,
-		     windv=0,dowind=1):
+                 aantal2=5,Fmin=100,Fmax=400,catchacceler=5,
+                     windv=0,dowind=1):
    """ Returns the force and power needed to achieve
    average boat speed of velo
 
@@ -3098,13 +3100,13 @@ def constantvelofast(velo,crew,rigging,timestep=0.03,aantal=5,
       vend = 4.
       while (dv/vend > 0.001):
           res = energybalance(F[i],crew,rigging,vend,timestep,0,
-			      catchacceler=tcatchacceler,
-			      dowind=dowind,windv=windv)
+                              catchacceler=tcatchacceler,
+                              dowind=dowind,windv=windv)
           dv = res[0]
           vend = res[1]
-	  tcatchacceler = res[14]
+          tcatchacceler = res[14]
       res = stroke(F[i],crew,rigging,vend,timestep,10,
-		   dowind=dowind,windv=windv)
+                   dowind=dowind,windv=windv)
       velocity[i] = res[2]
       ratios[i] = res[3]
       energies[i] = res[4]
@@ -3116,15 +3118,15 @@ def constantvelofast(velo,crew,rigging,timestep=0.03,aantal=5,
 
    while (dv/vend > 0.001):
       res = energybalance(fres,crew,rigging,vend,timestep,0,
-			  catchacceler=tcatchacceler,
-			  dowind=dowind,windv=windv)
+                          catchacceler=tcatchacceler,
+                          dowind=dowind,windv=windv)
       vend = res[1]
       tcatchacceler = res[14]
       dv=res[0]
 
    
    res = stroke(fres,crew,rigging,vend,timestep,10,
-		dowind=dowind,windv=windv)
+                dowind=dowind,windv=windv)
    vavg = res[2]
    ratio = res[3]
    pw = res[5]
@@ -3134,8 +3136,8 @@ def constantvelofast(velo,crew,rigging,timestep=0.03,aantal=5,
 
 
 def constantratio(ratio,crew,rigging,timestep=0.03,aantal=5,
-		  aantal2=5,Fmin=100,Fmax=400,catchacceler=5,
-		  windv=0,dowind=1):
+                  aantal2=5,Fmin=100,Fmax=400,catchacceler=5,
+                  windv=0,dowind=1):
    """ Finds the force, power and speed needed to achieve a
    certain drive/recovery ratio
 
@@ -3154,13 +3156,13 @@ def constantratio(ratio,crew,rigging,timestep=0.03,aantal=5,
       vend = 4.0
       while (dv/vend > 0.001):
          res = energybalance(F[i],crew,rigging,vend,timestep,0,
-			     catchacceler=tcatchacceler,
-			     windv=windv,dowind=dowind)
+                             catchacceler=tcatchacceler,
+                             windv=windv,dowind=dowind)
          dv = res[0]
          vend = res[1]
-	 tcatchacceler = res[14]
+         tcatchacceler = res[14]
       res = stroke(F[i],crew,rigging,vend,timestep,10,
-		   dowind=dowind,windv=windv)
+                   dowind=dowind,windv=windv)
       velocity[i] = res[2]
       ratios[i] = res[3]
       energies[i] = res[4]
@@ -3185,13 +3187,13 @@ def constantratio(ratio,crew,rigging,timestep=0.03,aantal=5,
       vend = 4.0
       while (dv/vend > 0.001):
          res = energybalance(F[i],crew,rigging,vend,timestep,0,
-			     catchacceler=tcatchacceler,
-			     windv=windv,dowind=dowind)
+                             catchacceler=tcatchacceler,
+                             windv=windv,dowind=dowind)
          dv = res[0]
          vend = res[1]
-	 tcatchacceler = res[14]
+         tcatchacceler = res[14]
       res = stroke(F[i],crew,rigging,vend,timestep,10,
-		   windv=windv,dowind=dowind)
+                   windv=windv,dowind=dowind)
       velocity[i] = res[2]
       ratios[i] = res[3]
       energies[i] = res[4]
@@ -3201,15 +3203,15 @@ def constantratio(ratio,crew,rigging,timestep=0.03,aantal=5,
 
    while (dv/vend > 0.001):
       res = energybalance(fres,crew,rigging,vend,timestep,0,
-			  catchacceler=tcatchacceler,
-			  windv=windv,dowind=dowind)
+                          catchacceler=tcatchacceler,
+                          windv=windv,dowind=dowind)
       vend = res[1]
       tcatchacceler = res[14]
       dv=res[0]
 
    
    res = stroke(fres,crew,rigging,vend,timestep,10,
-		windv=windv,dowind=dowind)
+                windv=windv,dowind=dowind)
    vavg = res[2]
    ratio = res[3]
    pw = res[5]
@@ -3218,8 +3220,8 @@ def constantratio(ratio,crew,rigging,timestep=0.03,aantal=5,
    return [fres,vavg,ratio,pw,eff]
 
 def constantrecovery(trecovery,crew,rigging,timestep=0.03,
-		     aantal=5,aantal2=5,Fmin=100,Fmax=400,\
-		     windv=0,dowind=1):
+                     aantal=5,aantal2=5,Fmin=100,Fmax=400,\
+                     windv=0,dowind=1):
    """ Finds the force, power and average boat speed to row a given stroke
    rate with a recovery duration of trecovery seconds
    """
@@ -3239,11 +3241,11 @@ def constantrecovery(trecovery,crew,rigging,timestep=0.03,
       vend = 4.0
       while (dv/vend > 0.001):
          res = energybalance(F[i],crew,rigging,vend,timestep,0,
-			     dowind=dowind,windv=windv)
+                             dowind=dowind,windv=windv)
          dv = res[0]
          vend = res[1]
       res = stroke(F[i],crew,rigging,vend,timestep,10,
-		   dowind=dowind,windv=windv)
+                   dowind=dowind,windv=windv)
       velocity[i] = res[2]
       ratios[i] = res[3]
       energies[i] = res[4]
@@ -3267,11 +3269,11 @@ def constantrecovery(trecovery,crew,rigging,timestep=0.03,
       vend = 4.0
       while (dv/vend > 0.001):
          res = energybalance(F[i],crew,rigging,vend,timestep,0,
-			     dowind=dowind,windv=windv)
+                             dowind=dowind,windv=windv)
          dv = res[0]
          vend = res[1]
       res = stroke(F[i],crew,rigging,vend,timestep,10,
-		   dowind=dowind,windv=windv)
+                   dowind=dowind,windv=windv)
       velocity[i] = res[2]
       ratios[i] = res[3]
       energies[i] = res[4]
@@ -3281,10 +3283,10 @@ def constantrecovery(trecovery,crew,rigging,timestep=0.03,
 
    while (dv/vend > 0.001):
       res = energybalance(fres,crew,rigging,vend,timestep,0,
-			  windv=windv,dowind=dowind)
+                          windv=windv,dowind=dowind)
    
    res = stroke(fres,crew,rigging,vend,timestep,10,
-		windv=windv,dowind=dowind)
+                windv=windv,dowind=dowind)
    vavg = res[2]
    ratio = res[3]
    trecovery = (1-ratio)*tstroke
@@ -3292,7 +3294,7 @@ def constantrecovery(trecovery,crew,rigging,timestep=0.03,
    eff = res[6]
    vend  = res[1] 
 
-   print("vend",vend,res[1])
+   print(("vend",vend,res[1]))
 
    return [fres,trecovery,vavg,vend,ratio,pw,eff]
 

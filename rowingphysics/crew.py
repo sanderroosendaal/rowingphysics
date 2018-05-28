@@ -1,18 +1,20 @@
+from __future__ import absolute_import
 from math import *
 from numpy import *
+from six.moves import range
 
 # force functions
 class strongmiddle:
     def __init__(self,frac=0.5):
-	self.frac = frac
+        self.frac = frac
 
     def forceprofile(self,favg,x):
-	f = favg+0 
-	f = (self.frac*favg*pi*sin(pi*x)/2.)+(1.-self.frac)*favg
-	return f
+        f = favg+0 
+        f = (self.frac*favg*pi*sin(pi*x)/2.)+(1.-self.frac)*favg
+        return f
 
     def maxforce(self,favg):
-	return favg*(self.frac*pi/2.+(1.-self.frac))
+        return favg*(self.frac*pi/2.+(1.-self.frac))
 
 class strongmiddle2:
    def __init__(self,frac=0.5):
@@ -76,22 +78,22 @@ class trapezium2:
 
 class fromfile:
     def __init__(self,fname = 'empforce.txt'):
-	self.fname = fname
-	data = genfromtxt(self.fname, delimiter = ',')
-	
-	self.x = data[:,0]
-	self.hpos = self.x/max(self.x)
-	self.f = data[:,1]
-	self.force = self.f/mean(self.f)
-	
-	
+        self.fname = fname
+        data = genfromtxt(self.fname, delimiter = ',')
+        
+        self.x = data[:,0]
+        self.hpos = self.x/max(self.x)
+        self.f = data[:,1]
+        self.force = self.f/mean(self.f)
+        
+        
     def forceprofile(self,favg,x):
-	f = 0
-	if (x<>0):
-	    wh2 = max(where(self.hpos<x)[0])
-	    f = self.force[wh2]*favg
-	    
-	return f
+        f = 0
+        if (x!=0):
+            wh2 = max(where(self.hpos<x)[0])
+            f = self.force[wh2]*favg
+            
+        return f
 
 class strongbegin:
    def __init__(self,frac=0.5):
@@ -135,102 +137,102 @@ class sinusrecovery:
 
 class sinusrecovery2:
     def __init__(self,strokelength,p1=1.0):
-	self.p1 = p1
-	self.w1 = pi/(p1)
-	self.strokelength = strokelength
-	
+        self.p1 = p1
+        self.w1 = pi/(p1)
+        self.strokelength = strokelength
+        
     def vhandle(self,vavg,trecovery,time):
-	w = self.w1/trecovery
-	vhandmax = w*self.strokelength/(1-cos(w*trecovery))
-	vhand = -vhandmax*sin(w*time)
-	return vhand
+        w = self.w1/trecovery
+        vhandmax = w*self.strokelength/(1-cos(w*trecovery))
+        vhand = -vhandmax*sin(w*time)
+        return vhand
 
     def dxhandle(self,vavg,trecovery,time):
-	w = self.w1/trecovery
-	vhandmax = w*self.strokelength/(1-cos(w*trecovery))
-	dx = vhandmax*(cos(w*time)-1)/(w*self.strokelength)
-	return dx
+        w = self.w1/trecovery
+        vhandmax = w*self.strokelength/(1-cos(w*trecovery))
+        dx = vhandmax*(cos(w*time)-1)/(w*self.strokelength)
+        return dx
 
 class cosinusrecovery:
     def __init__(self,strokelength, p1 = 0.95):
-	self.p1 = p1
-	self.w1 = pi/(2.0*p1)
-	self.strokelength = strokelength
-	
+        self.p1 = p1
+        self.w1 = pi/(2.0*p1)
+        self.strokelength = strokelength
+        
     def vhandle(self,vavg,trecovery,time):
-	w = self.w1/trecovery
-	vhmax = w*self.strokelength/(sin(w*trecovery))
-	vhand = -vhmax*cos(w*time)
+        w = self.w1/trecovery
+        vhmax = w*self.strokelength/(sin(w*trecovery))
+        vhand = -vhmax*cos(w*time)
 
-	return vhand
+        return vhand
 
     def dxhandle(self,vavg,trecovery,time):
-	w = self.w1/trecovery
-	vhmax = w*self.strokelength/(sin(w*trecovery))
-	dxhandle = -vhmax*sin(w*time)/(self.strokelength*w)
+        w = self.w1/trecovery
+        vhmax = w*self.strokelength/(sin(w*trecovery))
+        dxhandle = -vhmax*sin(w*time)/(self.strokelength*w)
 
-	return dxhandle
+        return dxhandle
 
 class genericrecovery:
     def __init__(self, strokelength, As=array([1.0]), ws=array([1.0]), phis=array([0.0])):
-	self.As = As
-	self.ws = ws
-	self.phis = phis
-	self.strokelength = strokelength
+        self.As = As
+        self.ws = ws
+        self.phis = phis
+        self.strokelength = strokelength
 
     def vhandle(self,vavg,trecovery,time):
-	v = 0
-	dmax = 0
+        v = 0
+        dmax = 0
 
-	for index in range(len(self.As)):
-	    v = v + self.As[index]*exp(1j*self.ws[index]*time+self.phis[index])
-	    dmax = dmax+(1/1j)*(self.As[index]/self.ws[index])*(exp(1j*self.ws[index]*trecovery+self.phis[index])-exp(1j*self.phis[index]))
+        for index in range(len(self.As)):
+            v = v + self.As[index]*exp(1j*self.ws[index]*time+self.phis[index])
+            dmax = dmax+(1/1j)*(self.As[index]/self.ws[index])*(exp(1j*self.ws[index]*trecovery+self.phis[index])-exp(1j*self.phis[index]))
 
 
-	dmaxr = real(dmax)
-	vhand = -real(v)*self.strokelength/dmaxr
-	return vhand
+        dmaxr = real(dmax)
+        vhand = -real(v)*self.strokelength/dmaxr
+        return vhand
 
     def dxhandle(self,vavg,trecovery,time):
-	dx = 0
-	dmax = 0
-	for index in range(len(self.As)):
-	    dx = dx + (self.As[index]/self.ws[index])*(exp(1j*self.ws[index]*trecovery+self.phis[index])-exp(1j*self.phis[index]))
-	    dmax = dmax+(1/1j)*(self.As[index]/self.ws[index])*(exp(1j*self.ws[index]*trecovery+self.phis[index])-exp(1j*self.phis[index]))
-	    
-	    
-	dmaxr = real(dmax)
-	dxhandle = -real(dx)*self.strokelength/dmaxr
-	return dxhandle
+        dx = 0
+        dmax = 0
+        for index in range(len(self.As)):
+            dx = dx + (self.As[index]/self.ws[index])*(exp(1j*self.ws[index]*trecovery+self.phis[index])-exp(1j*self.phis[index]))
+            dmax = dmax+(1/1j)*(self.As[index]/self.ws[index])*(exp(1j*self.ws[index]*trecovery+self.phis[index])-exp(1j*self.phis[index]))
+            
+            
+        dmaxr = real(dmax)
+        dxhandle = -real(dx)*self.strokelength/dmaxr
+        return dxhandle
 
 class combirecovery:
     def __init__(self,strokelength, p1 = 0.95, q1 = 0.5):
-	self.p1 = p1
-	self.q1 = q1
-	self.q2 = 1-q1
-	self.w1 = pi/(p1)
-	self.w2 = pi/(2*p1)
-	self.strokelength = strokelength
+        self.p1 = p1
+        self.q1 = q1
+        self.q2 = 1-q1
+        self.w1 = pi/(p1)
+        self.w2 = pi/(2*p1)
+        self.strokelength = strokelength
 
     def vhandle(self,vavg,trecovery,time):
-	w = self.w1/trecovery
-	vhandmax = w*self.strokelength/(1-cos(w*trecovery))
-	vhand1 = -vhandmax*sin(w*time)
-	w = self.w2/trecovery
-	vhmax = w*self.strokelength/(sin(w*trecovery))
-	vhand2 = -vhmax*cos(w*time)
+        w = self.w1/trecovery
+        vhandmax = w*self.strokelength/(1-cos(w*trecovery))
+        vhand1 = -vhandmax*sin(w*time)
+        w = self.w2/trecovery
+        vhmax = w*self.strokelength/(sin(w*trecovery))
+        vhand2 = -vhmax*cos(w*time)
 
-	return self.q1*vhand1+self.q2*vhand2
-	
+        return self.q1*vhand1+self.q2*vhand2
+        
     def dxhandle(self,vavg,trecovery,time):
-	w = self.w1/trecovery
-	vhandmax = w*self.strokelength/(1-cos(w*trecovery))
-	dx1 = vhandmax*(cos(w*time)-1)/(w*self.strokelength)
-	w = self.w2/trecovery
-	vhmax = w*self.strokelength/(sin(w*trecovery))
-	dx2 = -vhmax*sin(w*time)/(self.strokelength*w)
+        w = self.w1/trecovery
+        vhandmax = w*self.strokelength/(1-cos(w*trecovery))
+        dx1 = vhandmax*(cos(w*time)-1)/(w*self.strokelength)
+        w = self.w2/trecovery
+        vhmax = w*self.strokelength/(sin(w*trecovery))
+        dx2 = -vhmax*sin(w*time)/(self.strokelength*w)
 
-	return self.q1*dx1+self.q2*dx2
+        return self.q1*dx1+self.q2*dx2
 
 class trianglerecovery:
    def __init__(self,x1 = 0.3):
@@ -290,10 +292,10 @@ class technique_meas:
    def vcm(self, vhandle, strokelength, xhandle):
        vc = vhandle
        if (xhandle>=0):
-	   xr = (xhandle/strokelength) 
-	   # vc = vhandle*(1-xr)
-	   vc = 0.85*vhandle-0.75*vhandle*xr**2
-	   
+           xr = (xhandle/strokelength) 
+           # vc = vhandle*(1-xr)
+           vc = 0.85*vhandle-0.75*vhandle*xr**2
+           
        return vc
 
    def vcma(self, vhandle, strokelength, xhandle):
@@ -306,7 +308,7 @@ class technique_meas:
        # vc = vhandle*(1-xr)
        vc = 0.85*vhandle-0.75*vhandle*xr**2
        vc[wh] = vhandle[wh]
-	   
+           
        return vc
 
    def vha(self,vcm, strokelength, xhandle):
@@ -318,10 +320,10 @@ class technique_meas:
 # the real "crew" class
 class crew:
    def __init__(self,mc=80.,strokelength=1.4,tempo=30.0,frac=0.5,
-		recprofile=sinusrecovery(),
-		strokeprofile=trapezium(x1=0.15,x2=0.5,h2=0.9), 
-		technique = technique_meas(), 
-		maxpower = 1000., maxforce = 1000.):
+                recprofile=sinusrecovery(),
+                strokeprofile=trapezium(x1=0.15,x2=0.5,h2=0.9), 
+                technique = technique_meas(), 
+                maxpower = 1000., maxforce = 1000.):
        
       self.mc = mc
       self.maxforce = maxforce
