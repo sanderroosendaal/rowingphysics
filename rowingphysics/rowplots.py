@@ -1,16 +1,19 @@
-from rowingphysics import *
-from crew import *
-from rigging import *
+from __future__ import absolute_import
+from __future__ import print_function
+from .rowingphysics import *
+from .crew import *
+from .rigging import *
 import pylab
 import time
-import rowingphysics
+from . import rowingphysics
 import numpy as np
 from matplotlib import pyplot
+from six.moves import range
 
 def timeinterpol(v,r,rg):
     tm = time.time()
     res = constantvelofast(v,r,rg,timestep=0.01,aantal=15,aantal2=15,
-		       Fmin=100,Fmax=600)
+                       Fmin=100,Fmax=600)
     calctime = time.time()-tm
     return calctime
 
@@ -52,16 +55,16 @@ def plotwindeffect(r,rg,aantal=10):
     wind = linspace(-6,6,aantal)
 
     for i in range(4):
-	rg = read_obj(directory+filenames[i])
-	res = rowingphysics.constantwatt(thepower,r,rg)
-	v0 = res[1]
-	for j in range(aantal):
-	    res = rowingphysics.constantwattfast(thepower,r,rg,windv=wind[j])
-	    resvelo[j,i] = res[1]
-	    perc[j,i] = 100.*(res[1]-v0)/v0
-	    print(i,j,wind[j],perc[j,i],rg.Nrowers,rg.mb)
+        rg = read_obj(directory+filenames[i])
+        res = rowingphysics.constantwatt(thepower,r,rg)
+        v0 = res[1]
+        for j in range(aantal):
+            res = rowingphysics.constantwattfast(thepower,r,rg,windv=wind[j])
+            resvelo[j,i] = res[1]
+            perc[j,i] = 100.*(res[1]-v0)/v0
+            print((i,j,wind[j],perc[j,i],rg.Nrowers,rg.mb))
 
-	pyplot.plot(-wind,perc[:,i],label=filenames[i])
+        pyplot.plot(-wind,perc[:,i],label=filenames[i])
 
     pyplot.legend(loc='best')
     pyplot.xlabel("head wind (m/s)")
@@ -69,7 +72,7 @@ def plotwindeffect(r,rg,aantal=10):
     pyplot.show()
 
 def temposeriesvaughan(tempomin,tempomax,F,crew,rigging,aantal=30,
-		       timestep=0.03):
+                       timestep=0.03):
    """ plot maximum, minimum and average boat speed in a range of spm
 
    """
@@ -196,67 +199,67 @@ def catchangleseries(anglemin,anglemax,F,crew,rigging,aantal=30,timestep=0.03):
     energies=zeros(aantal)
 
     for i in range(len(catchangles)):
-	dv = 1
-	vend = 4
-	rigging.catchangle = catchangles[i]
-	catchacceler = 5
+        dv = 1
+        vend = 4
+        rigging.catchangle = catchangles[i]
+        catchacceler = 5
 
-	while (dv/vend > 0.001):
-	    res = rowingphysics.energybalance(F,crew,rigging,vend,
-					      timestep,0,
-					      catchacceler=catchacceler)
-	    dv = res[0]
-	    vend = res[1]
-	    catchacceler = res[14]
-	res = rowingphysics.stroke(F,crew,rigging,vend,
-			  timestep,10,catchacceler=catchacceler)
-	velocity[i] = res[2]
-	ratios[i] = res[3]
-	energies[i] = res[4]
-	power[i] = res[5]
+        while (dv/vend > 0.001):
+            res = rowingphysics.energybalance(F,crew,rigging,vend,
+                                              timestep,0,
+                                              catchacceler=catchacceler)
+            dv = res[0]
+            vend = res[1]
+            catchacceler = res[14]
+        res = rowingphysics.stroke(F,crew,rigging,vend,
+                          timestep,10,catchacceler=catchacceler)
+        velocity[i] = res[2]
+        ratios[i] = res[3]
+        energies[i] = res[4]
+        power[i] = res[5]
 
     calctime = time.time()-tm
 
 
     # plotjes
     try:
-	pyplot.clf
+        pyplot.clf
 
-	pyplot.subplot(221)
-	pyplot.plot (np.degrees(catchangles),velocity)
-	pyplot.xlabel("catch angle (o)")
-	pyplot.ylabel('Velocity (m/s)')
+        pyplot.subplot(221)
+        pyplot.plot (np.degrees(catchangles),velocity)
+        pyplot.xlabel("catch angle (o)")
+        pyplot.ylabel('Velocity (m/s)')
 
-	pyplot.subplot(222)
-	pyplot.plot (np.degrees(catchangles),power)
-	pyplot.xlabel("catch angle (o)")
-	pyplot.ylabel('Power (W)')
+        pyplot.subplot(222)
+        pyplot.plot (np.degrees(catchangles),power)
+        pyplot.xlabel("catch angle (o)")
+        pyplot.ylabel('Power (W)')
 
-	pyplot.subplot(223)
-	pyplot.plot (power,velocity)
-	pyplot.xlabel("Power (W)")
-	pyplot.ylabel('Velocity (m/s)')
+        pyplot.subplot(223)
+        pyplot.plot (power,velocity)
+        pyplot.xlabel("Power (W)")
+        pyplot.ylabel('Velocity (m/s)')
 
 
-	pyplot.subplot(224)
-	pyplot.plot (np.degrees(catchangles),ratios)
-	pyplot.xlabel("catch angle (o)")
-	pyplot.ylabel('Ratio')
+        pyplot.subplot(224)
+        pyplot.plot (np.degrees(catchangles),ratios)
+        pyplot.xlabel("catch angle (o)")
+        pyplot.ylabel('Ratio')
 
-	pyplot.show()
+        pyplot.show()
     except NameError:
-	print("No plotting today")
+        print("No plotting today")
 
     return calctime
 
 def longlegs(rg,doplot=1,v0=3.962):
-   from crew import crew,trapezium
+   from .crew import crew,trapezium
    rr = crew(strokeprofile=trapezium(x1=0.1,h2=0.75),tempo=30.)
    res = rowingphysics.energybalance(250,rr,rg,v0,dt=0.01,doplot=doplot)
    return res
 
 def shortlegs(rg,doplot=1,v0=3.997):
-   from crew import crew, trapezium
+   from .crew import crew, trapezium
    rr = crew(strokeprofile=trapezium(x1=0.15,x2=0.5,h2=0.9),tempo=30.)
    res = rowingphysics.energybalance(250,rr,rg,v0,dt=0.01,doplot=doplot)
    return res
@@ -274,15 +277,15 @@ def plotrecstyle(crew,trecovery,aantal=50,empirical=0):
     d = crew.strokelength
 
     for i in range(0,aantal-1):
-	vh[i] = crew.vhandle(vavg,trecovery,time[i])
-	vcrecovery[i] = crew.vcm(vh[i],handlepos[i])
-	handlepos[i+1] = d+d*crew.dxhandle(vavg,trecovery,time[i])
+        vh[i] = crew.vhandle(vavg,trecovery,time[i])
+        vcrecovery[i] = crew.vcm(vh[i],handlepos[i])
+        handlepos[i+1] = d+d*crew.dxhandle(vavg,trecovery,time[i])
 
     vh[aantal-1] = crew.vhandle(vavg,trecovery,time[aantal-1])
     vcrecovery[aantal-1] = crew.vcm(vh[aantal-1],handlepos[aantal-1])
-			     
+                             
 
-    if (empirical<>0):
+    if (empirical!=0):
        empdata = genfromtxt(empirical, delimiter = ',')
        emptime = empdata[:,0]
        empv = -empdata[:,1]
@@ -294,8 +297,8 @@ def plotrecstyle(crew,trecovery,aantal=50,empirical=0):
     pyplot.subplot(211)
     pyplot.plot(time,vh,'r-',label = 'Handle speed')
     pyplot.plot(time,vcrecovery, 'b-',label = 'CM speed')
-    if (empirical<>0):
-	pyplot.plot(emptime,empv,'g-',label = 'Measured')
+    if (empirical!=0):
+        pyplot.plot(emptime,empv,'g-',label = 'Measured')
     pylab.legend(loc='lower right')
     pyplot.xlabel("time (s)")
     pyplot.ylabel("velocity (m/s)")
@@ -317,7 +320,7 @@ def plotrowerforcecurve(F,cr,aantal=50):
     y1 = zeros(aantal)
 
     for i in range(len(x)):
-	y1[i] = cr.forceprofile(F,x[i])
+        y1[i] = cr.forceprofile(F,x[i])
 
     pyplot.clf
     pyplot.plot(x,y1,'-g', label='Force Curve')
@@ -333,7 +336,7 @@ def plotforcecurve(F,cr,aantal=50):
 
    """
 
-   from crew import flat,strongmiddle,strongend,strongbegin,trapezium
+   from .crew import flat,strongmiddle,strongend,strongbegin,trapezium
    
    x = linspace(0,cr.strokelength,aantal)
    y1 = zeros(aantal)
@@ -386,7 +389,7 @@ def plotforcecurveRIM(F,cr,aantal=50):
 
    """
    
-   from crew import flat,strongmiddle,strongmiddle2,strongend,strongbegin,trapezium
+   from .crew import flat,strongmiddle,strongmiddle2,strongend,strongbegin,trapezium
    
    x = linspace(0,cr.strokelength,aantal)
    y1 = zeros(aantal)
@@ -435,12 +438,12 @@ def plotforcecurveRIM(F,cr,aantal=50):
    return 1
 
 def styleseries(tempomin,tempomax,F,crew,rigging,
-		aantal=30,timestep=0.03,doplot=1,timewise=0):
+                aantal=30,timestep=0.03,doplot=1,timewise=0):
    """ Power velocity curve for various rowing styles
 
    """
 
-   from crew import flat,strongmiddle,strongend,strongbegin,trapezium
+   from .crew import flat,strongmiddle,strongend,strongbegin,trapezium
    tm = time.time() 
 
    tempos = linspace(tempomin,tempomax,aantal)
@@ -462,15 +465,15 @@ def styleseries(tempomin,tempomax,F,crew,rigging,
 
       while (dv/vend > 0.001):
          res = rowingphysics.energybalance(F,crew,rigging,vend,timestep,0,
-				    timewise=timewise,
-				    catchacceler=catchacceler)
+                                    timewise=timewise,
+                                    catchacceler=catchacceler)
          dv = res[0]
          vend = res[1]
-	 catchacceler = res[14]
-	 print(catchacceler)
+         catchacceler = res[14]
+         print(catchacceler)
       res = rowingphysics.stroke(F,crew,rigging,vend,timestep,10,
-			  timewise=timewise,
-			  catchacceler=catchacceler)
+                          timewise=timewise,
+                          catchacceler=catchacceler)
 
       velocity1[i] = res[2]
       ratios1[i] = res[3]
@@ -498,14 +501,14 @@ def styleseries(tempomin,tempomax,F,crew,rigging,
 
       while (dv/vend > 0.001):
          res = rowingphysics.energybalance(F,crew,rigging,vend,timestep,0,
-				    timewise=timewise,
-				    catchacceler=catchacceler)
+                                    timewise=timewise,
+                                    catchacceler=catchacceler)
          dv = res[0]
          vend = res[1]
-	 catchacceler = res[14]
+         catchacceler = res[14]
       res = rowingphysics.stroke(F,crew,rigging,vend,timestep,10,
-			  timewise=timewise,
-			  catchacceler=catchacceler)
+                          timewise=timewise,
+                          catchacceler=catchacceler)
 
       velocity2[i] = res[2]
       ratios2[i] = res[3]
@@ -533,14 +536,14 @@ def styleseries(tempomin,tempomax,F,crew,rigging,
 
       while (dv/vend > 0.001):
          res = rowingphysics.energybalance(F,crew,rigging,vend,timestep,0,
-				    timewise=timewise,
-				    catchacceler=catchacceler)
+                                    timewise=timewise,
+                                    catchacceler=catchacceler)
          dv = res[0]
          vend = res[1]
-	 catchacceler = res[14]
+         catchacceler = res[14]
       res = rowingphysics.stroke(F,crew,rigging,vend,timestep,10,
-			  timewise=timewise,
-			  catchacceler=catchacceler)
+                          timewise=timewise,
+                          catchacceler=catchacceler)
 
       velocity3[i] = res[2]
       ratios3[i] = res[3]
@@ -568,14 +571,14 @@ def styleseries(tempomin,tempomax,F,crew,rigging,
 
       while (dv/vend > 0.001):
          res = rowingphysics.energybalance(F,crew,rigging,vend,timestep,0,
-				    timewise=timewise,
-				    catchacceler=catchacceler)
+                                    timewise=timewise,
+                                    catchacceler=catchacceler)
          dv = res[0]
          vend = res[1]
-	 catchacceler = res[14]
+         catchacceler = res[14]
       res = rowingphysics.stroke(F,crew,rigging,vend,timestep,10,
-			  timewise=timewise,
-			  catchacceler=catchacceler)
+                          timewise=timewise,
+                          catchacceler=catchacceler)
 
       velocity4[i] = res[2]
       ratios4[i] = res[3]
@@ -604,14 +607,14 @@ def styleseries(tempomin,tempomax,F,crew,rigging,
 
       while (dv/vend > 0.001):
          res = rowingphysics.energybalance(F,crew,rigging,vend,timestep,0,
-				    timewise=timewise,
-				    catchacceler=catchacceler)
+                                    timewise=timewise,
+                                    catchacceler=catchacceler)
          dv = res[0]
          vend = res[1]
-	 catchacceler = res[14]
+         catchacceler = res[14]
       res = rowingphysics.stroke(F,crew,rigging,vend,timestep,10,
-			  timewise=timewise,
-			  catchacceler=catchacceler)
+                          timewise=timewise,
+                          catchacceler=catchacceler)
 
       velocity5[i] = res[2]
       ratios5[i] = res[3]
@@ -642,85 +645,85 @@ def styleseries(tempomin,tempomax,F,crew,rigging,
       pyplot.clf
 
       if (doplot == 1):
-	  pyplot.plot (power1,velocity1,'go',label='T1 ')
-	  pyplot.plot (power2,velocity2,'rs',label='T2 ')
-	  pyplot.plot (power3,velocity3,'bv',label='T3 ')
-	  pyplot.plot (power4,velocity4,'k^',label='T4 ')
-	  pyplot.plot (power5,velocity5,'mo',label='T5 ')
-	  pylab.legend(loc='best')
-	  pyplot.xlabel("Power (W)")
-	  pyplot.ylabel('Velocity (m/s)')
+          pyplot.plot (power1,velocity1,'go',label='T1 ')
+          pyplot.plot (power2,velocity2,'rs',label='T2 ')
+          pyplot.plot (power3,velocity3,'bv',label='T3 ')
+          pyplot.plot (power4,velocity4,'k^',label='T4 ')
+          pyplot.plot (power5,velocity5,'mo',label='T5 ')
+          pylab.legend(loc='best')
+          pyplot.xlabel("Power (W)")
+          pyplot.ylabel('Velocity (m/s)')
 
       if (doplot == 2):
-	  pyplot.plot (tempos,velocity1,'-g',label='T1')
-	  pyplot.plot (tempos,velocity2,'-r',label='T2')
-	  pyplot.plot (tempos,velocity3,'-b',label='T3')
-	  pyplot.plot (tempos,velocity4,'-k',label='T4')
-	  pyplot.plot (tempos,velocity5,'-m',label='T5')
-	  pylab.legend(loc='best')
-	  pyplot.xlabel("tempo (spm)")
-	  pyplot.ylabel('Velocity (m/s)')
+          pyplot.plot (tempos,velocity1,'-g',label='T1')
+          pyplot.plot (tempos,velocity2,'-r',label='T2')
+          pyplot.plot (tempos,velocity3,'-b',label='T3')
+          pyplot.plot (tempos,velocity4,'-k',label='T4')
+          pyplot.plot (tempos,velocity5,'-m',label='T5')
+          pylab.legend(loc='best')
+          pyplot.xlabel("tempo (spm)")
+          pyplot.ylabel('Velocity (m/s)')
 
       if (doplot == 3):
-	  pyplot.plot (tempos,power1,'-g',label='T1')
-	  pyplot.plot (tempos,power2,'-r',label='T2')
-	  pyplot.plot (tempos,power3,'-b',label='T3')
-	  pyplot.plot (tempos,power4,'-k',label='T4')
-	  pyplot.plot (tempos,power5,'-m',label='T5')
-	  pylab.legend(loc='best')
-	  pyplot.xlabel("tempo (spm)")
-	  pyplot.ylabel('Power (W)')
+          pyplot.plot (tempos,power1,'-g',label='T1')
+          pyplot.plot (tempos,power2,'-r',label='T2')
+          pyplot.plot (tempos,power3,'-b',label='T3')
+          pyplot.plot (tempos,power4,'-k',label='T4')
+          pyplot.plot (tempos,power5,'-m',label='T5')
+          pylab.legend(loc='best')
+          pyplot.xlabel("tempo (spm)")
+          pyplot.ylabel('Power (W)')
 
       if (doplot == 4):
 
-	  pyplot.plot (power1,sec1,'-g',label='T1')
-	  pyplot.plot (power2,sec2,'-r',label='T2')
-	  pyplot.plot (power4,sec3,'-b',label='T3')
-	  pyplot.plot (power3,sec4,'-k',label='T4')
-	  pyplot.plot (power3,sec5,'-m',label='T5')
-	  pylab.legend(loc='best')
-	  pyplot.xlabel("Power (W)")
-	  pyplot.ylabel('500m time')
+          pyplot.plot (power1,sec1,'-g',label='T1')
+          pyplot.plot (power2,sec2,'-r',label='T2')
+          pyplot.plot (power4,sec3,'-b',label='T3')
+          pyplot.plot (power3,sec4,'-k',label='T4')
+          pyplot.plot (power3,sec5,'-m',label='T5')
+          pylab.legend(loc='best')
+          pyplot.xlabel("Power (W)")
+          pyplot.ylabel('500m time')
 
       if (doplot == 5):
-	  pyplot.plot (check1,velocity1,'go',label='T1 ')
-	  pyplot.plot (check2,velocity2,'rs',label='T2 ')
-	  pyplot.plot (check3,velocity3,'bv',label='T3 ')
-	  pyplot.plot (check4,velocity4,'k^',label='T4 ')
-	  pyplot.plot (check5,velocity5,'mo',label='T5 ')
-	  pylab.legend(loc='best')
-	  pyplot.xlabel("Check (m2/s4)")
-	  pyplot.ylabel('Velocity (m/s)')
+          pyplot.plot (check1,velocity1,'go',label='T1 ')
+          pyplot.plot (check2,velocity2,'rs',label='T2 ')
+          pyplot.plot (check3,velocity3,'bv',label='T3 ')
+          pyplot.plot (check4,velocity4,'k^',label='T4 ')
+          pyplot.plot (check5,velocity5,'mo',label='T5 ')
+          pylab.legend(loc='best')
+          pyplot.xlabel("Check (m2/s4)")
+          pyplot.ylabel('Velocity (m/s)')
 
       if (doplot == 6):
-	  pyplot.plot (tempos,check1,'go',label='T1')
-	  pyplot.plot (tempos,check2,'rs',label='T2')
-	  pyplot.plot (tempos,check3,'bv',label='T3')
-	  pyplot.plot (tempos,check4,'k^',label='T4')
-	  pyplot.plot (tempos,check5,'mo',label='T5')
-	  pylab.legend(loc='best')
-	  pyplot.xlabel("tempo (spm)")
-	  pyplot.ylabel('Crewnerd Check (m2/s4)')
+          pyplot.plot (tempos,check1,'go',label='T1')
+          pyplot.plot (tempos,check2,'rs',label='T2')
+          pyplot.plot (tempos,check3,'bv',label='T3')
+          pyplot.plot (tempos,check4,'k^',label='T4')
+          pyplot.plot (tempos,check5,'mo',label='T5')
+          pylab.legend(loc='best')
+          pyplot.xlabel("tempo (spm)")
+          pyplot.ylabel('Crewnerd Check (m2/s4)')
 
       if (doplot == 7):
-	  pyplot.plot (RIM_check1,velocity1,'-go',label='T1')
-	  pyplot.plot (RIM_check2,velocity2,'-rs',label='T2')
-	  pyplot.plot (RIM_check3,velocity3,'-bv',label='T3')
-	  pyplot.plot (RIM_check4,velocity4,'-k^',label='T4')
-	  pyplot.plot (RIM_check5,velocity5,'-mo',label='T5')
-	  pylab.legend(loc='best')
-	  pyplot.ylabel("velocity (m/s)")
-	  pyplot.xlabel('RIM Check (m/s)')
+          pyplot.plot (RIM_check1,velocity1,'-go',label='T1')
+          pyplot.plot (RIM_check2,velocity2,'-rs',label='T2')
+          pyplot.plot (RIM_check3,velocity3,'-bv',label='T3')
+          pyplot.plot (RIM_check4,velocity4,'-k^',label='T4')
+          pyplot.plot (RIM_check5,velocity5,'-mo',label='T5')
+          pylab.legend(loc='best')
+          pyplot.ylabel("velocity (m/s)")
+          pyplot.xlabel('RIM Check (m/s)')
 
       if (doplot == 8):
-	  pyplot.plot (RIM_E1,velocity1,'go',label='T1')
-	  pyplot.plot (RIM_E2,velocity2,'rs',label='T2')
-	  pyplot.plot (RIM_E3,velocity3,'bv',label='T3')
-	  pyplot.plot (RIM_E4,velocity4,'k^',label='T4')
-	  pyplot.plot (RIM_E5,velocity5,'mo',label='T5')
-	  pylab.legend(loc='best')
-	  pyplot.ylabel("velocity (m/s)")
-	  pyplot.xlabel('RIM Stroke Efficiency (m)')
+          pyplot.plot (RIM_E1,velocity1,'go',label='T1')
+          pyplot.plot (RIM_E2,velocity2,'rs',label='T2')
+          pyplot.plot (RIM_E3,velocity3,'bv',label='T3')
+          pyplot.plot (RIM_E4,velocity4,'k^',label='T4')
+          pyplot.plot (RIM_E5,velocity5,'mo',label='T5')
+          pylab.legend(loc='best')
+          pyplot.ylabel("velocity (m/s)")
+          pyplot.xlabel('RIM Stroke Efficiency (m)')
 
 
 
@@ -732,12 +735,12 @@ def styleseries(tempomin,tempomax,F,crew,rigging,
 
 
 def catchseriesRIM(anglemin,anglemax,F,crew,rigging,
-		   aantal=30,timestep=0.03,doplot=1,timewise=0):
+                   aantal=30,timestep=0.03,doplot=1,timewise=0):
 
    """ Various plots for different catch angles and style
    """
 
-   from crew import flat,strongmiddle,strongmiddle2,strongend,strongbegin,trapezium
+   from .crew import flat,strongmiddle,strongmiddle2,strongend,strongbegin,trapezium
    tm = time.time() 
 
    catchangles = linspace(anglemin,anglemax,aantal)
@@ -759,15 +762,15 @@ def catchseriesRIM(anglemin,anglemax,F,crew,rigging,
 
       while (dv/vend > 0.001):
          res = rowingphysics.energybalance(F,crew,rigging,vend,timestep,0,
-				    timewise=timewise,
-				    catchacceler=catchacceler)
+                                    timewise=timewise,
+                                    catchacceler=catchacceler)
          dv = res[0]
          vend = res[1]
-	 catchacceler = res[14]
-	 print(catchacceler)
+         catchacceler = res[14]
+         print(catchacceler)
       res = rowingphysics.stroke(F,crew,rigging,vend,timestep,10,
-			  timewise=timewise,
-			  catchacceler=catchacceler)
+                          timewise=timewise,
+                          catchacceler=catchacceler)
 
       velocity1[i] = res[2]
       ratios1[i] = res[3]
@@ -795,14 +798,14 @@ def catchseriesRIM(anglemin,anglemax,F,crew,rigging,
 
       while (dv/vend > 0.001):
          res = rowingphysics.energybalance(F,crew,rigging,vend,timestep,0,
-				    timewise=timewise,
-				    catchacceler=catchacceler)
+                                    timewise=timewise,
+                                    catchacceler=catchacceler)
          dv = res[0]
          vend = res[1]
-	 catchacceler = res[14]
+         catchacceler = res[14]
       res = rowingphysics.stroke(F,crew,rigging,vend,timestep,10,
-			  timewise=timewise,
-			  catchacceler=catchacceler)
+                          timewise=timewise,
+                          catchacceler=catchacceler)
 
       velocity2[i] = res[2]
       ratios2[i] = res[3]
@@ -830,14 +833,14 @@ def catchseriesRIM(anglemin,anglemax,F,crew,rigging,
 
       while (dv/vend > 0.001):
          res = rowingphysics.energybalance(F,crew,rigging,vend,timestep,0,
-				    timewise=timewise,
-				    catchacceler=catchacceler)
+                                    timewise=timewise,
+                                    catchacceler=catchacceler)
          dv = res[0]
          vend = res[1]
-	 catchacceler = res[14]
+         catchacceler = res[14]
       res = rowingphysics.stroke(F,crew,rigging,vend,timestep,10,
-			  timewise=timewise,
-			  catchacceler=catchacceler)
+                          timewise=timewise,
+                          catchacceler=catchacceler)
 
       velocity3[i] = res[2]
       ratios3[i] = res[3]
@@ -865,14 +868,14 @@ def catchseriesRIM(anglemin,anglemax,F,crew,rigging,
 
       while (dv/vend > 0.001):
          res = rowingphysics.energybalance(F,crew,rigging,vend,timestep,0,
-				    timewise=timewise,
-				    catchacceler=catchacceler)
+                                    timewise=timewise,
+                                    catchacceler=catchacceler)
          dv = res[0]
          vend = res[1]
-	 catchacceler = res[14]
+         catchacceler = res[14]
       res = rowingphysics.stroke(F,crew,rigging,vend,timestep,10,
-			  timewise=timewise,
-			  catchacceler=catchacceler)
+                          timewise=timewise,
+                          catchacceler=catchacceler)
 
       velocity4[i] = res[2]
       ratios4[i] = res[3]
@@ -901,14 +904,14 @@ def catchseriesRIM(anglemin,anglemax,F,crew,rigging,
 
       while (dv/vend > 0.001):
          res = rowingphysics.energybalance(F,crew,rigging,vend,timestep,0,
-				    timewise=timewise,
-				    catchacceler=catchacceler)
+                                    timewise=timewise,
+                                    catchacceler=catchacceler)
          dv = res[0]
          vend = res[1]
-	 catchacceler = res[14]
+         catchacceler = res[14]
       res = rowingphysics.stroke(F,crew,rigging,vend,timestep,10,
-			  timewise=timewise,
-			  catchacceler=catchacceler)
+                          timewise=timewise,
+                          catchacceler=catchacceler)
 
       velocity5[i] = res[2]
       ratios5[i] = res[3]
@@ -941,85 +944,85 @@ def catchseriesRIM(anglemin,anglemax,F,crew,rigging,
       pyplot.clf
 
       if (doplot == 1):
-	  pyplot.plot (power1,velocity1,'go',label='T1 ')
-	  pyplot.plot (power2,velocity2,'rs',label='T2 ')
-	  pyplot.plot (power3,velocity3,'bv',label='T3 ')
-	  pyplot.plot (power4,velocity4,'k^',label='T4 ')
-	  pyplot.plot (power5,velocity5,'mo',label='T5 ')
-	  pylab.legend(loc='best')
-	  pyplot.xlabel("Power (W)")
-	  pyplot.ylabel('Velocity (m/s)')
+          pyplot.plot (power1,velocity1,'go',label='T1 ')
+          pyplot.plot (power2,velocity2,'rs',label='T2 ')
+          pyplot.plot (power3,velocity3,'bv',label='T3 ')
+          pyplot.plot (power4,velocity4,'k^',label='T4 ')
+          pyplot.plot (power5,velocity5,'mo',label='T5 ')
+          pylab.legend(loc='best')
+          pyplot.xlabel("Power (W)")
+          pyplot.ylabel('Velocity (m/s)')
 
       if (doplot == 2):
-	  pyplot.plot (catchangles,velocity1,'-g',label='T1')
-	  pyplot.plot (catchangles,velocity2,'-r',label='T2')
-	  pyplot.plot (catchangles,velocity3,'-b',label='T3')
-	  pyplot.plot (catchangles,velocity4,'-k',label='T4')
-	  pyplot.plot (catchangles,velocity5,'-m',label='T5')
-	  pylab.legend(loc='best')
-	  pyplot.xlabel("angle (spm)")
-	  pyplot.ylabel('Velocity (m/s)')
+          pyplot.plot (catchangles,velocity1,'-g',label='T1')
+          pyplot.plot (catchangles,velocity2,'-r',label='T2')
+          pyplot.plot (catchangles,velocity3,'-b',label='T3')
+          pyplot.plot (catchangles,velocity4,'-k',label='T4')
+          pyplot.plot (catchangles,velocity5,'-m',label='T5')
+          pylab.legend(loc='best')
+          pyplot.xlabel("angle (spm)")
+          pyplot.ylabel('Velocity (m/s)')
 
       if (doplot == 3):
-	  pyplot.plot (catchangles,power1,'-g',label='T1')
-	  pyplot.plot (catchangles,power2,'-r',label='T2')
-	  pyplot.plot (catchangles,power3,'-b',label='T3')
-	  pyplot.plot (catchangles,power4,'-k',label='T4')
-	  pyplot.plot (catchangles,power5,'-m',label='T5')
-	  pylab.legend(loc='best')
-	  pyplot.xlabel("angle (spm)")
-	  pyplot.ylabel('Power (W)')
+          pyplot.plot (catchangles,power1,'-g',label='T1')
+          pyplot.plot (catchangles,power2,'-r',label='T2')
+          pyplot.plot (catchangles,power3,'-b',label='T3')
+          pyplot.plot (catchangles,power4,'-k',label='T4')
+          pyplot.plot (catchangles,power5,'-m',label='T5')
+          pylab.legend(loc='best')
+          pyplot.xlabel("angle (spm)")
+          pyplot.ylabel('Power (W)')
 
       if (doplot == 4):
 
-	  pyplot.plot (power1,sec1,'-g',label='T1')
-	  pyplot.plot (power2,sec2,'-r',label='T2')
-	  pyplot.plot (power4,sec3,'-b',label='T3')
-	  pyplot.plot (power3,sec4,'-k',label='T4')
-	  pyplot.plot (power3,sec5,'-m',label='T5')
-	  pylab.legend(loc='best')
-	  pyplot.xlabel("Power (W)")
-	  pyplot.ylabel('500m time')
+          pyplot.plot (power1,sec1,'-g',label='T1')
+          pyplot.plot (power2,sec2,'-r',label='T2')
+          pyplot.plot (power4,sec3,'-b',label='T3')
+          pyplot.plot (power3,sec4,'-k',label='T4')
+          pyplot.plot (power3,sec5,'-m',label='T5')
+          pylab.legend(loc='best')
+          pyplot.xlabel("Power (W)")
+          pyplot.ylabel('500m time')
 
       if (doplot == 5):
-	  pyplot.plot (check1,velocity1,'go',label='T1 ')
-	  pyplot.plot (check2,velocity2,'rs',label='T2 ')
-	  pyplot.plot (check3,velocity3,'bv',label='T3 ')
-	  pyplot.plot (check4,velocity4,'k^',label='T4 ')
-	  pyplot.plot (check5,velocity5,'mo',label='T5 ')
-	  pylab.legend(loc='best')
-	  pyplot.xlabel("Check (m2/s4)")
-	  pyplot.ylabel('Velocity (m/s)')
+          pyplot.plot (check1,velocity1,'go',label='T1 ')
+          pyplot.plot (check2,velocity2,'rs',label='T2 ')
+          pyplot.plot (check3,velocity3,'bv',label='T3 ')
+          pyplot.plot (check4,velocity4,'k^',label='T4 ')
+          pyplot.plot (check5,velocity5,'mo',label='T5 ')
+          pylab.legend(loc='best')
+          pyplot.xlabel("Check (m2/s4)")
+          pyplot.ylabel('Velocity (m/s)')
 
       if (doplot == 6):
-	  pyplot.plot (catchangles,check1,'go',label='T1')
-	  pyplot.plot (catchangles,check2,'rs',label='T2')
-	  pyplot.plot (catchangles,check3,'bv',label='T3')
-	  pyplot.plot (catchangles,check4,'k^',label='T4')
-	  pyplot.plot (catchangles,check5,'mo',label='T5')
-	  pylab.legend(loc='best')
-	  pyplot.xlabel("angle (spm)")
-	  pyplot.ylabel('Crewnerd Check (m2/s4)')
+          pyplot.plot (catchangles,check1,'go',label='T1')
+          pyplot.plot (catchangles,check2,'rs',label='T2')
+          pyplot.plot (catchangles,check3,'bv',label='T3')
+          pyplot.plot (catchangles,check4,'k^',label='T4')
+          pyplot.plot (catchangles,check5,'mo',label='T5')
+          pylab.legend(loc='best')
+          pyplot.xlabel("angle (spm)")
+          pyplot.ylabel('Crewnerd Check (m2/s4)')
 
       if (doplot == 7):
-	  pyplot.plot (RIM_check1,velocity1,'-go',label='T1')
-	  pyplot.plot (RIM_check2,velocity2,'-rs',label='T2')
-	  pyplot.plot (RIM_check3,velocity3,'-bv',label='T3')
-	  pyplot.plot (RIM_check4,velocity4,'-k^',label='T4')
-	  pyplot.plot (RIM_check5,velocity5,'-mo',label='T5')
-	  pylab.legend(loc='best')
-	  pyplot.ylabel("velocity (m/s)")
-	  pyplot.xlabel('RIM Check (m/s)')
+          pyplot.plot (RIM_check1,velocity1,'-go',label='T1')
+          pyplot.plot (RIM_check2,velocity2,'-rs',label='T2')
+          pyplot.plot (RIM_check3,velocity3,'-bv',label='T3')
+          pyplot.plot (RIM_check4,velocity4,'-k^',label='T4')
+          pyplot.plot (RIM_check5,velocity5,'-mo',label='T5')
+          pylab.legend(loc='best')
+          pyplot.ylabel("velocity (m/s)")
+          pyplot.xlabel('RIM Check (m/s)')
 
       if (doplot == 8):
-	  pyplot.plot (RIM_E1,velocity1,'go',label='T1')
-	  pyplot.plot (RIM_E2,velocity2,'rs',label='T2')
-	  pyplot.plot (RIM_E3,velocity3,'bv',label='T3')
-	  pyplot.plot (RIM_E4,velocity4,'k^',label='T4')
-	  pyplot.plot (RIM_E5,velocity5,'mo',label='T5')
-	  pylab.legend(loc='best')
-	  pyplot.ylabel("velocity (m/s)")
-	  pyplot.xlabel('RIM Stroke Efficiency (m)')
+          pyplot.plot (RIM_E1,velocity1,'go',label='T1')
+          pyplot.plot (RIM_E2,velocity2,'rs',label='T2')
+          pyplot.plot (RIM_E3,velocity3,'bv',label='T3')
+          pyplot.plot (RIM_E4,velocity4,'k^',label='T4')
+          pyplot.plot (RIM_E5,velocity5,'mo',label='T5')
+          pylab.legend(loc='best')
+          pyplot.ylabel("velocity (m/s)")
+          pyplot.xlabel('RIM Stroke Efficiency (m)')
 
 
 
@@ -1030,12 +1033,12 @@ def catchseriesRIM(anglemin,anglemax,F,crew,rigging,
    return calctime
 
 def styleseriesRIM(tempomin,tempomax,F,crew,rigging,
-		   aantal=30,timestep=0.03,doplot=1,timewise=0):
+                   aantal=30,timestep=0.03,doplot=1,timewise=0):
    """ Various plots for different stroke rates and rowing styles
 
    """
 
-   from crew import flat,strongmiddle,strongmiddle2,strongend,strongbegin,trapezium
+   from .crew import flat,strongmiddle,strongmiddle2,strongend,strongbegin,trapezium
    tm = time.time() 
 
    tempos = linspace(tempomin,tempomax,aantal)
@@ -1059,15 +1062,15 @@ def styleseriesRIM(tempomin,tempomax,F,crew,rigging,
 
       while (dv/vend > 0.001):
          res = rowingphysics.energybalance(F,crew,rigging,vend,timestep,0,
-				    timewise=timewise,
-				    catchacceler=catchacceler)
+                                    timewise=timewise,
+                                    catchacceler=catchacceler)
          dv = res[0]
          vend = res[1]
-	 catchacceler = res[14]
-	 print(catchacceler)
+         catchacceler = res[14]
+         print(catchacceler)
       res = rowingphysics.stroke(F,crew,rigging,vend,timestep,10,
-			  timewise=timewise,
-			  catchacceler=catchacceler)
+                          timewise=timewise,
+                          catchacceler=catchacceler)
 
       velocity1[i] = res[2]
       ratios1[i] = res[3]
@@ -1099,14 +1102,14 @@ def styleseriesRIM(tempomin,tempomax,F,crew,rigging,
 
       while (dv/vend > 0.001):
          res = rowingphysics.energybalance(F,crew,rigging,vend,timestep,0,
-				    timewise=timewise,
-				    catchacceler=catchacceler)
+                                    timewise=timewise,
+                                    catchacceler=catchacceler)
          dv = res[0]
          vend = res[1]
-	 catchacceler = res[14]
+         catchacceler = res[14]
       res = rowingphysics.stroke(F,crew,rigging,vend,timestep,10,
-			  timewise=timewise,
-			  catchacceler=catchacceler)
+                          timewise=timewise,
+                          catchacceler=catchacceler)
 
       velocity2[i] = res[2]
       ratios2[i] = res[3]
@@ -1139,14 +1142,14 @@ def styleseriesRIM(tempomin,tempomax,F,crew,rigging,
 
       while (dv/vend > 0.001):
          res = rowingphysics.energybalance(F,crew,rigging,vend,timestep,0,
-				    timewise=timewise,
-				    catchacceler=catchacceler)
+                                    timewise=timewise,
+                                    catchacceler=catchacceler)
          dv = res[0]
          vend = res[1]
-	 catchacceler = res[14]
+         catchacceler = res[14]
       res = rowingphysics.stroke(F,crew,rigging,vend,timestep,10,
-			  timewise=timewise,
-			  catchacceler=catchacceler)
+                          timewise=timewise,
+                          catchacceler=catchacceler)
 
       velocity3[i] = res[2]
       ratios3[i] = res[3]
@@ -1179,14 +1182,14 @@ def styleseriesRIM(tempomin,tempomax,F,crew,rigging,
 
       while (dv/vend > 0.001):
          res = rowingphysics.energybalance(F,crew,rigging,vend,timestep,0,
-				    timewise=timewise,
-				    catchacceler=catchacceler)
+                                    timewise=timewise,
+                                    catchacceler=catchacceler)
          dv = res[0]
          vend = res[1]
-	 catchacceler = res[14]
+         catchacceler = res[14]
       res = rowingphysics.stroke(F,crew,rigging,vend,timestep,10,
-			  timewise=timewise,
-			  catchacceler=catchacceler)
+                          timewise=timewise,
+                          catchacceler=catchacceler)
 
       velocity4[i] = res[2]
       ratios4[i] = res[3]
@@ -1219,14 +1222,14 @@ def styleseriesRIM(tempomin,tempomax,F,crew,rigging,
 
       while (dv/vend > 0.001):
          res = rowingphysics.energybalance(F,crew,rigging,vend,timestep,0,
-				    timewise=timewise,
-				    catchacceler=catchacceler)
+                                    timewise=timewise,
+                                    catchacceler=catchacceler)
          dv = res[0]
          vend = res[1]
-	 catchacceler = res[14]
+         catchacceler = res[14]
       res = rowingphysics.stroke(F,crew,rigging,vend,timestep,10,
-			  timewise=timewise,
-			  catchacceler=catchacceler)
+                          timewise=timewise,
+                          catchacceler=catchacceler)
 
       velocity5[i] = res[2]
       ratios5[i] = res[3]
@@ -1259,105 +1262,105 @@ def styleseriesRIM(tempomin,tempomax,F,crew,rigging,
       pyplot.clf
 
       if (doplot == 1):
-	  pyplot.plot (power1,velocity1,'go',label='T1 ')
-	  pyplot.plot (power2,velocity2,'rs',label='T2 ')
-	  pyplot.plot (power3,velocity3,'bv',label='T3 ')
-	  pyplot.plot (power4,velocity4,'k^',label='T4 ')
-	  pyplot.plot (power5,velocity5,'mo',label='T5 ')
-	  pylab.legend(loc='best')
-	  pyplot.xlabel("Power (W)")
-	  pyplot.ylabel('Velocity (m/s)')
+          pyplot.plot (power1,velocity1,'go',label='T1 ')
+          pyplot.plot (power2,velocity2,'rs',label='T2 ')
+          pyplot.plot (power3,velocity3,'bv',label='T3 ')
+          pyplot.plot (power4,velocity4,'k^',label='T4 ')
+          pyplot.plot (power5,velocity5,'mo',label='T5 ')
+          pylab.legend(loc='best')
+          pyplot.xlabel("Power (W)")
+          pyplot.ylabel('Velocity (m/s)')
 
       if (doplot == 2):
-	  pyplot.plot (tempos,velocity1,'-g',label='T1')
-	  pyplot.plot (tempos,velocity2,'-r',label='T2')
-	  pyplot.plot (tempos,velocity3,'-b',label='T3')
-	  pyplot.plot (tempos,velocity4,'-k',label='T4')
-	  pyplot.plot (tempos,velocity5,'-m',label='T5')
-	  pylab.legend(loc='best')
-	  pyplot.xlabel("tempo (spm)")
-	  pyplot.ylabel('Velocity (m/s)')
+          pyplot.plot (tempos,velocity1,'-g',label='T1')
+          pyplot.plot (tempos,velocity2,'-r',label='T2')
+          pyplot.plot (tempos,velocity3,'-b',label='T3')
+          pyplot.plot (tempos,velocity4,'-k',label='T4')
+          pyplot.plot (tempos,velocity5,'-m',label='T5')
+          pylab.legend(loc='best')
+          pyplot.xlabel("tempo (spm)")
+          pyplot.ylabel('Velocity (m/s)')
 
       if (doplot == 3):
-	  pyplot.plot (tempos,power1,'-g',label='T1')
-	  pyplot.plot (tempos,power2,'-r',label='T2')
-	  pyplot.plot (tempos,power3,'-b',label='T3')
-	  pyplot.plot (tempos,power4,'-k',label='T4')
-	  pyplot.plot (tempos,power5,'-m',label='T5')
-	  pylab.legend(loc='best')
-	  pyplot.xlabel("tempo (spm)")
-	  pyplot.ylabel('Power (W)')
+          pyplot.plot (tempos,power1,'-g',label='T1')
+          pyplot.plot (tempos,power2,'-r',label='T2')
+          pyplot.plot (tempos,power3,'-b',label='T3')
+          pyplot.plot (tempos,power4,'-k',label='T4')
+          pyplot.plot (tempos,power5,'-m',label='T5')
+          pylab.legend(loc='best')
+          pyplot.xlabel("tempo (spm)")
+          pyplot.ylabel('Power (W)')
 
       if (doplot == 4):
 
-	  pyplot.plot (power1,sec1,'-g',label='T1')
-	  pyplot.plot (power2,sec2,'-r',label='T2')
-	  pyplot.plot (power4,sec3,'-b',label='T3')
-	  pyplot.plot (power3,sec4,'-k',label='T4')
-	  pyplot.plot (power3,sec5,'-m',label='T5')
-	  pylab.legend(loc='best')
-	  pyplot.xlabel("Power (W)")
-	  pyplot.ylabel('500m time')
+          pyplot.plot (power1,sec1,'-g',label='T1')
+          pyplot.plot (power2,sec2,'-r',label='T2')
+          pyplot.plot (power4,sec3,'-b',label='T3')
+          pyplot.plot (power3,sec4,'-k',label='T4')
+          pyplot.plot (power3,sec5,'-m',label='T5')
+          pylab.legend(loc='best')
+          pyplot.xlabel("Power (W)")
+          pyplot.ylabel('500m time')
 
       if (doplot == 5):
-	  pyplot.plot (check1,velocity1,'go',label='T1 ')
-	  pyplot.plot (check2,velocity2,'rs',label='T2 ')
-	  pyplot.plot (check3,velocity3,'bv',label='T3 ')
-	  pyplot.plot (check4,velocity4,'k^',label='T4 ')
-	  pyplot.plot (check5,velocity5,'mo',label='T5 ')
-	  pylab.legend(loc='best')
-	  pyplot.xlabel("Check (m2/s4)")
-	  pyplot.ylabel('Velocity (m/s)')
+          pyplot.plot (check1,velocity1,'go',label='T1 ')
+          pyplot.plot (check2,velocity2,'rs',label='T2 ')
+          pyplot.plot (check3,velocity3,'bv',label='T3 ')
+          pyplot.plot (check4,velocity4,'k^',label='T4 ')
+          pyplot.plot (check5,velocity5,'mo',label='T5 ')
+          pylab.legend(loc='best')
+          pyplot.xlabel("Check (m2/s4)")
+          pyplot.ylabel('Velocity (m/s)')
 
       if (doplot == 6):
-	  pyplot.plot (tempos,check1,'go',label='T1')
-	  pyplot.plot (tempos,check2,'rs',label='T2')
-	  pyplot.plot (tempos,check3,'bv',label='T3')
-	  pyplot.plot (tempos,check4,'k^',label='T4')
-	  pyplot.plot (tempos,check5,'mo',label='T5')
-	  pylab.legend(loc='best')
-	  pyplot.xlabel("tempo (spm)")
-	  pyplot.ylabel('Crewnerd Check (m2/s4)')
+          pyplot.plot (tempos,check1,'go',label='T1')
+          pyplot.plot (tempos,check2,'rs',label='T2')
+          pyplot.plot (tempos,check3,'bv',label='T3')
+          pyplot.plot (tempos,check4,'k^',label='T4')
+          pyplot.plot (tempos,check5,'mo',label='T5')
+          pylab.legend(loc='best')
+          pyplot.xlabel("tempo (spm)")
+          pyplot.ylabel('Crewnerd Check (m2/s4)')
 
       if (doplot == 7):
-	  pyplot.plot (RIM_check1,velocity1,'-go',label='T1')
-	  pyplot.plot (RIM_check2,velocity2,'-rs',label='T2')
-	  pyplot.plot (RIM_check3,velocity3,'-bv',label='T3')
-	  pyplot.plot (RIM_check4,velocity4,'-k^',label='T4')
-	  pyplot.plot (RIM_check5,velocity5,'-mo',label='T5')
-	  pylab.legend(loc='best')
-	  pyplot.ylabel("velocity (m/s)")
-	  pyplot.xlabel('RIM Check (m/s)')
+          pyplot.plot (RIM_check1,velocity1,'-go',label='T1')
+          pyplot.plot (RIM_check2,velocity2,'-rs',label='T2')
+          pyplot.plot (RIM_check3,velocity3,'-bv',label='T3')
+          pyplot.plot (RIM_check4,velocity4,'-k^',label='T4')
+          pyplot.plot (RIM_check5,velocity5,'-mo',label='T5')
+          pylab.legend(loc='best')
+          pyplot.ylabel("velocity (m/s)")
+          pyplot.xlabel('RIM Check (m/s)')
 
       if (doplot == 8):
-	  pyplot.plot (RIM_E1,velocity1,'go',label='T1')
-	  pyplot.plot (RIM_E2,velocity2,'rs',label='T2')
-	  pyplot.plot (RIM_E3,velocity3,'bv',label='T3')
-	  pyplot.plot (RIM_E4,velocity4,'k^',label='T4')
-	  pyplot.plot (RIM_E5,velocity5,'mo',label='T5')
-	  pylab.legend(loc='best')
-	  pyplot.ylabel("velocity (m/s)")
-	  pyplot.xlabel('RIM Stroke Efficiency (m)')
+          pyplot.plot (RIM_E1,velocity1,'go',label='T1')
+          pyplot.plot (RIM_E2,velocity2,'rs',label='T2')
+          pyplot.plot (RIM_E3,velocity3,'bv',label='T3')
+          pyplot.plot (RIM_E4,velocity4,'k^',label='T4')
+          pyplot.plot (RIM_E5,velocity5,'mo',label='T5')
+          pylab.legend(loc='best')
+          pyplot.ylabel("velocity (m/s)")
+          pyplot.xlabel('RIM Stroke Efficiency (m)')
 
       if (doplot == 9):
-	  pyplot.plot (RIM_effs1,velocity1,'go',label='T1')
-	  pyplot.plot (RIM_effs2,velocity2,'rs',label='T2')
-	  pyplot.plot (RIM_effs3,velocity3,'bv',label='T3')
-	  pyplot.plot (RIM_effs4,velocity4,'k^',label='T4')
-	  pyplot.plot (RIM_effs5,velocity5,'mo',label='T5')
-	  pylab.legend(loc='best')
-	  pyplot.ylabel("velocity (m/s)")
-	  pyplot.xlabel('Fluid Drag Efficiency')
+          pyplot.plot (RIM_effs1,velocity1,'go',label='T1')
+          pyplot.plot (RIM_effs2,velocity2,'rs',label='T2')
+          pyplot.plot (RIM_effs3,velocity3,'bv',label='T3')
+          pyplot.plot (RIM_effs4,velocity4,'k^',label='T4')
+          pyplot.plot (RIM_effs5,velocity5,'mo',label='T5')
+          pylab.legend(loc='best')
+          pyplot.ylabel("velocity (m/s)")
+          pyplot.xlabel('Fluid Drag Efficiency')
 
       if (doplot == 10):
-	  pyplot.plot (efficiencies1,velocity1,'go',label='T1')
-	  pyplot.plot (efficiencies2,velocity2,'rs',label='T2')
-	  pyplot.plot (efficiencies3,velocity3,'bv',label='T3')
-	  pyplot.plot (efficiencies4,velocity4,'k^',label='T4')
-	  pyplot.plot (efficiencies5,velocity5,'mo',label='T5')
-	  pylab.legend(loc='best')
-	  pyplot.ylabel("velocity (m/s)")
-	  pyplot.xlabel('Efficiency')
+          pyplot.plot (efficiencies1,velocity1,'go',label='T1')
+          pyplot.plot (efficiencies2,velocity2,'rs',label='T2')
+          pyplot.plot (efficiencies3,velocity3,'bv',label='T3')
+          pyplot.plot (efficiencies4,velocity4,'k^',label='T4')
+          pyplot.plot (efficiencies5,velocity5,'mo',label='T5')
+          pylab.legend(loc='best')
+          pyplot.ylabel("velocity (m/s)")
+          pyplot.xlabel('Efficiency')
 
 
 
@@ -1369,12 +1372,12 @@ def styleseriesRIM(tempomin,tempomax,F,crew,rigging,
 
 
 def styleseriesforce(Fmin,Fmax,crew,rigging,
-		     aantal=30,timestep=0.03,doplot=1,timewise=0):
+                     aantal=30,timestep=0.03,doplot=1,timewise=0):
    """ Plots various plots for varying forces
 
    """
 
-   from crew import flat,strongmiddle,strongend,strongbegin,trapezium
+   from .crew import flat,strongmiddle,strongend,strongbegin,trapezium
    tm = time.time() 
 
    Forces = linspace(Fmin,Fmax,aantal)
@@ -1395,14 +1398,14 @@ def styleseriesforce(Fmin,Fmax,crew,rigging,
 
       while (dv/vend > 0.001):
          res = rowingphysics.energybalance(Forces[i],crew,rigging,vend,timestep,0,
-				    timewise=timewise,
-				    catchacceler=catchacceler)
+                                    timewise=timewise,
+                                    catchacceler=catchacceler)
          dv = res[0]
          vend = res[1]
-	 catchacceler = res[14]
+         catchacceler = res[14]
       res = rowingphysics.stroke(Forces[i],crew,rigging,vend,timestep,10,
-			  timewise=timewise,
-			  catchacceler=catchacceler)
+                          timewise=timewise,
+                          catchacceler=catchacceler)
 
       velocity1[i] = res[2]
       ratios1[i] = res[3]
@@ -1429,14 +1432,14 @@ def styleseriesforce(Fmin,Fmax,crew,rigging,
 
       while (dv/vend > 0.001):
          res = rowingphysics.energybalance(Forces[i],crew,rigging,vend,timestep,0,
-				    timewise=timewise,
-				    catchacceler=catchacceler)
+                                    timewise=timewise,
+                                    catchacceler=catchacceler)
          dv = res[0]
          vend = res[1]
-	 catchacceler = res[14]
+         catchacceler = res[14]
       res = rowingphysics.stroke(Forces[i],crew,rigging,vend,timestep,10,
-			  timewise=timewise,
-			  catchacceler=catchacceler)
+                          timewise=timewise,
+                          catchacceler=catchacceler)
 
       velocity2[i] = res[2]
       ratios2[i] = res[3]
@@ -1463,14 +1466,14 @@ def styleseriesforce(Fmin,Fmax,crew,rigging,
 
       while (dv/vend > 0.001):
          res = rowingphysics.energybalance(Forces[i],crew,rigging,vend,timestep,0,
-				    timewise=timewise,
-				    catchacceler=catchacceler)
+                                    timewise=timewise,
+                                    catchacceler=catchacceler)
          dv = res[0]
          vend = res[1]
-	 catchacceler = res[14]
+         catchacceler = res[14]
       res = rowingphysics.stroke(Forces[i],crew,rigging,vend,timestep,10,
-			  timewise=timewise,
-			  catchacceler=catchacceler)
+                          timewise=timewise,
+                          catchacceler=catchacceler)
 
       velocity3[i] = res[2]
       ratios3[i] = res[3]
@@ -1497,14 +1500,14 @@ def styleseriesforce(Fmin,Fmax,crew,rigging,
 
       while (dv/vend > 0.001):
          res = rowingphysics.energybalance(Forces[i],crew,rigging,vend,timestep,0,
-				    timewise=timewise,
-				    catchacceler=catchacceler)
+                                    timewise=timewise,
+                                    catchacceler=catchacceler)
          dv = res[0]
          vend = res[1]
-	 catchacceler = res[14]
+         catchacceler = res[14]
       res = rowingphysics.stroke(Forces[i],crew,rigging,vend,timestep,10,
-			  timewise=timewise,
-			  catchacceler=catchacceler)
+                          timewise=timewise,
+                          catchacceler=catchacceler)
 
       velocity4[i] = res[2]
       ratios4[i] = res[3]
@@ -1532,14 +1535,14 @@ def styleseriesforce(Fmin,Fmax,crew,rigging,
 
       while (dv/vend > 0.001):
          res = rowingphysics.energybalance(Forces[i],crew,rigging,vend,timestep,0,
-				    timewise=timewise,
-				    catchacceler=catchacceler)
+                                    timewise=timewise,
+                                    catchacceler=catchacceler)
          dv = res[0]
          vend = res[1]
-	 catchacceler = res[14]
+         catchacceler = res[14]
       res = rowingphysics.stroke(Forces[i],crew,rigging,vend,timestep,10,
-			  timewise=timewise,
-			  catchacceler=catchacceler)
+                          timewise=timewise,
+                          catchacceler=catchacceler)
 
       velocity5[i] = res[2]
       ratios5[i] = res[3]
@@ -1570,85 +1573,85 @@ def styleseriesforce(Fmin,Fmax,crew,rigging,
       pyplot.clf
 
       if (doplot == 1):
-	  pyplot.plot (power1,velocity1,'go',label='T1 ')
-	  pyplot.plot (power2,velocity2,'rs',label='T2 ')
-	  pyplot.plot (power3,velocity3,'bv',label='T3 ')
-	  pyplot.plot (power4,velocity4,'k^',label='T4 ')
-	  pyplot.plot (power5,velocity5,'mo',label='T5 ')
-	  pylab.legend(loc='best')
-	  pyplot.xlabel("Power (W)")
-	  pyplot.ylabel('Velocity (m/s)')
+          pyplot.plot (power1,velocity1,'go',label='T1 ')
+          pyplot.plot (power2,velocity2,'rs',label='T2 ')
+          pyplot.plot (power3,velocity3,'bv',label='T3 ')
+          pyplot.plot (power4,velocity4,'k^',label='T4 ')
+          pyplot.plot (power5,velocity5,'mo',label='T5 ')
+          pylab.legend(loc='best')
+          pyplot.xlabel("Power (W)")
+          pyplot.ylabel('Velocity (m/s)')
 
       if (doplot == 2):
-	  pyplot.plot (Forces,velocity1,'-g',label='T1')
-	  pyplot.plot (Forces,velocity2,'-r',label='T2')
-	  pyplot.plot (Forces,velocity3,'-b',label='T3')
-	  pyplot.plot (Forces,velocity4,'-k',label='T4')
-	  pyplot.plot (Forces,velocity5,'-m',label='T5')
-	  pylab.legend(loc='best')
-	  pyplot.xlabel("Force (N)")
-	  pyplot.ylabel('Velocity (m/s)')
+          pyplot.plot (Forces,velocity1,'-g',label='T1')
+          pyplot.plot (Forces,velocity2,'-r',label='T2')
+          pyplot.plot (Forces,velocity3,'-b',label='T3')
+          pyplot.plot (Forces,velocity4,'-k',label='T4')
+          pyplot.plot (Forces,velocity5,'-m',label='T5')
+          pylab.legend(loc='best')
+          pyplot.xlabel("Force (N)")
+          pyplot.ylabel('Velocity (m/s)')
 
       if (doplot == 3):
-	  pyplot.plot (Forces,power1,'-g',label='T1')
-	  pyplot.plot (Forces,power2,'-r',label='T2')
-	  pyplot.plot (Forces,power3,'-b',label='T3')
-	  pyplot.plot (Forces,power4,'-k',label='T4')
-	  pyplot.plot (Forces,power5,'-m',label='T5')
-	  pylab.legend(loc='best')
-	  pyplot.xlabel("Force (N)")
-	  pyplot.ylabel('Power (W)')
+          pyplot.plot (Forces,power1,'-g',label='T1')
+          pyplot.plot (Forces,power2,'-r',label='T2')
+          pyplot.plot (Forces,power3,'-b',label='T3')
+          pyplot.plot (Forces,power4,'-k',label='T4')
+          pyplot.plot (Forces,power5,'-m',label='T5')
+          pylab.legend(loc='best')
+          pyplot.xlabel("Force (N)")
+          pyplot.ylabel('Power (W)')
 
       if (doplot == 4):
 
-	  pyplot.plot (power1,sec1,'-g',label='T1')
-	  pyplot.plot (power2,sec2,'-r',label='T2')
-	  pyplot.plot (power4,sec3,'-b',label='T3')
-	  pyplot.plot (power3,sec4,'-k',label='T4')
-	  pyplot.plot (power3,sec5,'-m',label='T5')
-	  pylab.legend(loc='best')
-	  pyplot.xlabel("Power (W)")
-	  pyplot.ylabel('500m time')
+          pyplot.plot (power1,sec1,'-g',label='T1')
+          pyplot.plot (power2,sec2,'-r',label='T2')
+          pyplot.plot (power4,sec3,'-b',label='T3')
+          pyplot.plot (power3,sec4,'-k',label='T4')
+          pyplot.plot (power3,sec5,'-m',label='T5')
+          pylab.legend(loc='best')
+          pyplot.xlabel("Power (W)")
+          pyplot.ylabel('500m time')
 
       if (doplot == 5):
-	  pyplot.plot (check1,velocity1,'go',label='T1 ')
-	  pyplot.plot (check2,velocity2,'rs',label='T2 ')
-	  pyplot.plot (check3,velocity3,'bv',label='T3 ')
-	  pyplot.plot (check4,velocity4,'k^',label='T4 ')
-	  pyplot.plot (check5,velocity5,'mo',label='T5 ')
-	  pylab.legend(loc='best')
-	  pyplot.xlabel("Check (m2/s4)")
-	  pyplot.ylabel('Velocity (m/s)')
+          pyplot.plot (check1,velocity1,'go',label='T1 ')
+          pyplot.plot (check2,velocity2,'rs',label='T2 ')
+          pyplot.plot (check3,velocity3,'bv',label='T3 ')
+          pyplot.plot (check4,velocity4,'k^',label='T4 ')
+          pyplot.plot (check5,velocity5,'mo',label='T5 ')
+          pylab.legend(loc='best')
+          pyplot.xlabel("Check (m2/s4)")
+          pyplot.ylabel('Velocity (m/s)')
 
       if (doplot == 6):
-	  pyplot.plot (Forces,check1,'go',label='T1')
-	  pyplot.plot (Forces,check2,'rs',label='T2')
-	  pyplot.plot (Forces,check3,'bv',label='T3')
-	  pyplot.plot (Forces,check4,'k^',label='T4')
-	  pyplot.plot (Forces,check5,'mo',label='T5')
-	  pylab.legend(loc='best')
-	  pyplot.xlabel("Force (N)")
-	  pyplot.ylabel('Crewnerd Check (m2/s4)')
+          pyplot.plot (Forces,check1,'go',label='T1')
+          pyplot.plot (Forces,check2,'rs',label='T2')
+          pyplot.plot (Forces,check3,'bv',label='T3')
+          pyplot.plot (Forces,check4,'k^',label='T4')
+          pyplot.plot (Forces,check5,'mo',label='T5')
+          pylab.legend(loc='best')
+          pyplot.xlabel("Force (N)")
+          pyplot.ylabel('Crewnerd Check (m2/s4)')
 
       if (doplot == 7):
-	  pyplot.plot (RIM_check1,velocity1,'-go',label='T1')
-	  pyplot.plot (RIM_check2,velocity2,'-rs',label='T2')
-	  pyplot.plot (RIM_check3,velocity3,'-bv',label='T3')
-	  pyplot.plot (RIM_check4,velocity4,'-k^',label='T4')
-	  pyplot.plot (RIM_check5,velocity5,'-mo',label='T5')
-	  pylab.legend(loc='best')
-	  pyplot.ylabel("velocity (m/s)")
-	  pyplot.xlabel('RIM Check (m/s)')
+          pyplot.plot (RIM_check1,velocity1,'-go',label='T1')
+          pyplot.plot (RIM_check2,velocity2,'-rs',label='T2')
+          pyplot.plot (RIM_check3,velocity3,'-bv',label='T3')
+          pyplot.plot (RIM_check4,velocity4,'-k^',label='T4')
+          pyplot.plot (RIM_check5,velocity5,'-mo',label='T5')
+          pylab.legend(loc='best')
+          pyplot.ylabel("velocity (m/s)")
+          pyplot.xlabel('RIM Check (m/s)')
 
       if (doplot == 8):
-	  pyplot.plot (RIM_E1,velocity1,'go',label='T1')
-	  pyplot.plot (RIM_E2,velocity2,'rs',label='T2')
-	  pyplot.plot (RIM_E3,velocity3,'bv',label='T3')
-	  pyplot.plot (RIM_E4,velocity4,'k^',label='T4')
-	  pyplot.plot (RIM_E5,velocity5,'mo',label='T5')
-	  pylab.legend(loc='best')
-	  pyplot.ylabel("velocity (m/s)")
-	  pyplot.xlabel('RIM Stroke Efficiency (m)')
+          pyplot.plot (RIM_E1,velocity1,'go',label='T1')
+          pyplot.plot (RIM_E2,velocity2,'rs',label='T2')
+          pyplot.plot (RIM_E3,velocity3,'bv',label='T3')
+          pyplot.plot (RIM_E4,velocity4,'k^',label='T4')
+          pyplot.plot (RIM_E5,velocity5,'mo',label='T5')
+          pylab.legend(loc='best')
+          pyplot.ylabel("velocity (m/s)")
+          pyplot.xlabel('RIM Stroke Efficiency (m)')
 
 
 
@@ -1659,11 +1662,11 @@ def styleseriesforce(Fmin,Fmax,crew,rigging,
    return calctime
 
 def recoverystyleseries(tempomin,tempomax,F,crew,rigging,
-			aantal=30,timestep=0.03,doplot=1,timewise=0):
+                        aantal=30,timestep=0.03,doplot=1,timewise=0):
    """ Various plots with varying recovery style
    
    """
-   from crew import flatrecovery,sinusrecovery,trianglerecovery,realisticrecovery
+   from .crew import flatrecovery,sinusrecovery,trianglerecovery,realisticrecovery
    tm = time.time() 
 
    tempos = linspace(tempomin,tempomax,aantal)
@@ -1685,14 +1688,14 @@ def recoverystyleseries(tempomin,tempomax,F,crew,rigging,
 
       while (dv/vend > 0.001):
          res = rowingphysics.energybalance(F,crew,rigging,vend,timestep,0,
-				    timewise=timewise,
-				    catchacceler=catchacceler)
+                                    timewise=timewise,
+                                    catchacceler=catchacceler)
          dv = res[0]
          vend = res[1]
-	 catchacceler = res[14]
+         catchacceler = res[14]
       res = rowingphysics.stroke(F,crew,rigging,vend,timestep,10,
-			  timewise=timewise,
-			  catchacceler=catchacceler)
+                          timewise=timewise,
+                          catchacceler=catchacceler)
 
       velocity1[i] = res[2]
       ratios1[i] = res[3]
@@ -1720,14 +1723,14 @@ def recoverystyleseries(tempomin,tempomax,F,crew,rigging,
 
       while (dv/vend > 0.001):
          res = rowingphysics.energybalance(F,crew,rigging,vend,timestep,0,
-				    timewise=timewise,
-				    catchacceler=catchacceler)
+                                    timewise=timewise,
+                                    catchacceler=catchacceler)
          dv = res[0]
          vend = res[1]
-	 catchacceler = res[14]
+         catchacceler = res[14]
       res = rowingphysics.stroke(F,crew,rigging,vend,timestep,10,
-			  timewise=timewise,
-			  catchacceler=catchacceler)
+                          timewise=timewise,
+                          catchacceler=catchacceler)
 
       velocity2[i] = res[2]
       ratios2[i] = res[3]
@@ -1755,14 +1758,14 @@ def recoverystyleseries(tempomin,tempomax,F,crew,rigging,
 
       while (dv/vend > 0.001):
          res = rowingphysics.energybalance(F,crew,rigging,vend,timestep,0,
-				    timewise=timewise,
-				    catchacceler=catchacceler)
+                                    timewise=timewise,
+                                    catchacceler=catchacceler)
          dv = res[0]
          vend = res[1]
-	 catchacceler = res[14]
+         catchacceler = res[14]
       res = rowingphysics.stroke(F,crew,rigging,vend,timestep,10,
-			  timewise=timewise,
-			  catchacceler=catchacceler)
+                          timewise=timewise,
+                          catchacceler=catchacceler)
 
       velocity3[i] = res[2]
       ratios3[i] = res[3]
@@ -1791,14 +1794,14 @@ def recoverystyleseries(tempomin,tempomax,F,crew,rigging,
 
       while (dv/vend > 0.001):
          res = rowingphysics.energybalance(F,crew,rigging,vend,timestep,0,
-				    timewise=timewise,
-				    catchacceler=catchacceler)
+                                    timewise=timewise,
+                                    catchacceler=catchacceler)
          dv = res[0]
          vend = res[1]
-	 catchacceler = res[14]
+         catchacceler = res[14]
       res = rowingphysics.stroke(F,crew,rigging,vend,timestep,10,
-			  timewise=timewise,
-			  catchacceler=catchacceler)
+                          timewise=timewise,
+                          catchacceler=catchacceler)
 
       velocity4[i] = res[2]
       ratios4[i] = res[3]
@@ -1825,78 +1828,78 @@ def recoverystyleseries(tempomin,tempomax,F,crew,rigging,
       pyplot.clf
 
       if (doplot==1):
-	  pyplot.plot (power1,velocity1,'-g',label='constant ')
-	  pyplot.plot (power2,velocity2,'-r',label='sinus ')
-	  pyplot.plot (power3,velocity3,'-b',label='triangle ')
-	  pyplot.plot (power4,velocity4,'-k',label='realistic ')
-	  pylab.legend(loc='best')
-	  pyplot.xlabel("Power (W)")
-	  pyplot.ylabel('Velocity (m/s)')
+          pyplot.plot (power1,velocity1,'-g',label='constant ')
+          pyplot.plot (power2,velocity2,'-r',label='sinus ')
+          pyplot.plot (power3,velocity3,'-b',label='triangle ')
+          pyplot.plot (power4,velocity4,'-k',label='realistic ')
+          pylab.legend(loc='best')
+          pyplot.xlabel("Power (W)")
+          pyplot.ylabel('Velocity (m/s)')
 
 
       if (doplot==2):
-	  pyplot.plot (tempos,velocity1,'-g',label='constant')
-	  pyplot.plot (tempos,velocity2,'-r',label='sinus')
-	  pyplot.plot (tempos,velocity3,'-b',label='triangle')
-	  pyplot.plot (tempos,velocity4,'-k',label='realistic')
-	  pylab.legend(loc='best')
-	  pyplot.xlabel("tempo (spm)")
-	  pyplot.ylabel('Velocity (m/s)')
+          pyplot.plot (tempos,velocity1,'-g',label='constant')
+          pyplot.plot (tempos,velocity2,'-r',label='sinus')
+          pyplot.plot (tempos,velocity3,'-b',label='triangle')
+          pyplot.plot (tempos,velocity4,'-k',label='realistic')
+          pylab.legend(loc='best')
+          pyplot.xlabel("tempo (spm)")
+          pyplot.ylabel('Velocity (m/s)')
 
       if (doplot==3):
-	  pyplot.plot (tempos,power1,'-g',label='constant ')
-	  pyplot.plot (tempos,power2,'-r',label='sinus ')
-	  pyplot.plot (tempos,power3,'-b',label='triangle ')
-	  pyplot.plot (tempos,power4,'-k',label='realistic ')
-	  pylab.legend(loc='best')
-	  pyplot.xlabel("tempo (spm)")
-	  pyplot.ylabel('Power (W)')
+          pyplot.plot (tempos,power1,'-g',label='constant ')
+          pyplot.plot (tempos,power2,'-r',label='sinus ')
+          pyplot.plot (tempos,power3,'-b',label='triangle ')
+          pyplot.plot (tempos,power4,'-k',label='realistic ')
+          pylab.legend(loc='best')
+          pyplot.xlabel("tempo (spm)")
+          pyplot.ylabel('Power (W)')
 
       if (doplot==4):
-	  pyplot.plot (power1,sec1,'-g',label='constant')
-	  pyplot.plot (power2,sec2,'-r',label='sinus')
-	  pyplot.plot (power3,sec3,'-b',label='triangle')
-	  pyplot.plot (power4,sec4,'-k',label='realistic')
-	  pylab.legend(loc='best')
-	  pyplot.xlabel("Power (W)")
-	  pyplot.ylabel('500m time')
+          pyplot.plot (power1,sec1,'-g',label='constant')
+          pyplot.plot (power2,sec2,'-r',label='sinus')
+          pyplot.plot (power3,sec3,'-b',label='triangle')
+          pyplot.plot (power4,sec4,'-k',label='realistic')
+          pylab.legend(loc='best')
+          pyplot.xlabel("Power (W)")
+          pyplot.ylabel('500m time')
 
       if (doplot==5):
-	  pyplot.plot (check1,velocity1,'-g',label='constant')
-	  pyplot.plot (check2,velocity2,'-r',label='sinus')
-	  pyplot.plot (check3,velocity3,'-b',label='triangle')
-	  pyplot.plot (check4,velocity4,'-k',label='realistic')
-	  pylab.legend(loc='best')
-	  pyplot.xlabel("Check (m2/s4)")
-	  pyplot.ylabel('Velocity (m/s)')
+          pyplot.plot (check1,velocity1,'-g',label='constant')
+          pyplot.plot (check2,velocity2,'-r',label='sinus')
+          pyplot.plot (check3,velocity3,'-b',label='triangle')
+          pyplot.plot (check4,velocity4,'-k',label='realistic')
+          pylab.legend(loc='best')
+          pyplot.xlabel("Check (m2/s4)")
+          pyplot.ylabel('Velocity (m/s)')
 
       if (doplot == 6):
-	  pyplot.plot (RIM_check1,velocity1,'-g',label='constant')
-	  pyplot.plot (RIM_check2,velocity2,'-r',label='sinus')
-	  pyplot.plot (RIM_check3,velocity3,'-b',label='triangle')
-	  pyplot.plot (RIM_check4,velocity4,'-k',label='realistic')
-	  pylab.legend(loc='best')
-	  pyplot.ylabel("velocity (m/s)")
-	  pyplot.xlabel('RIM Check (m/s)')
+          pyplot.plot (RIM_check1,velocity1,'-g',label='constant')
+          pyplot.plot (RIM_check2,velocity2,'-r',label='sinus')
+          pyplot.plot (RIM_check3,velocity3,'-b',label='triangle')
+          pyplot.plot (RIM_check4,velocity4,'-k',label='realistic')
+          pylab.legend(loc='best')
+          pyplot.ylabel("velocity (m/s)")
+          pyplot.xlabel('RIM Check (m/s)')
 
       if (doplot == 7):
-	  pyplot.plot (RIM_E1,velocity1,'-g',label='constant')
-	  pyplot.plot (RIM_E2,velocity2,'-r',label='sinus')
-	  pyplot.plot (RIM_E3,velocity3,'-b',label='triangle')
-	  pyplot.plot (RIM_E4,velocity4,'-k',label='realistic')
-	  pylab.legend(loc='best')
-	  pyplot.ylabel("velocity (m/s)")
-	  pyplot.xlabel('RIM Stroke Efficiency (m)')
+          pyplot.plot (RIM_E1,velocity1,'-g',label='constant')
+          pyplot.plot (RIM_E2,velocity2,'-r',label='sinus')
+          pyplot.plot (RIM_E3,velocity3,'-b',label='triangle')
+          pyplot.plot (RIM_E4,velocity4,'-k',label='realistic')
+          pylab.legend(loc='best')
+          pyplot.ylabel("velocity (m/s)")
+          pyplot.xlabel('RIM Stroke Efficiency (m)')
 
 
       if (doplot == 8):
-	  pyplot.plot (ratios1,velocity1,'-g',label='constant')
-	  pyplot.plot (ratios2,velocity2,'-r',label='sinus')
-	  pyplot.plot (ratios3,velocity3,'-b',label='triangle')
-	  pyplot.plot (ratios4,velocity4,'-k',label='realistic')
-	  pylab.legend(loc='best')
-	  pyplot.ylabel("velocity (m/s)")
-	  pyplot.xlabel('Stroke/Recovery Ratio')
+          pyplot.plot (ratios1,velocity1,'-g',label='constant')
+          pyplot.plot (ratios2,velocity2,'-r',label='sinus')
+          pyplot.plot (ratios3,velocity3,'-b',label='triangle')
+          pyplot.plot (ratios4,velocity4,'-k',label='realistic')
+          pylab.legend(loc='best')
+          pyplot.ylabel("velocity (m/s)")
+          pyplot.xlabel('Stroke/Recovery Ratio')
 
 
       pyplot.show()
@@ -1907,7 +1910,7 @@ def recoverystyleseries(tempomin,tempomax,F,crew,rigging,
 
 def recoverystyletriangle(tempomin,tempomax,F,crew,rigging,aantal=30,timestep=0.03,doplot=1,timewise=0):
 
-   from crew import flatrecovery,sinusrecovery,trianglerecovery,realisticrecovery
+   from .crew import flatrecovery,sinusrecovery,trianglerecovery,realisticrecovery
    tm = time.time() 
 
    tempos = linspace(tempomin,tempomax,aantal)
@@ -1929,14 +1932,14 @@ def recoverystyletriangle(tempomin,tempomax,F,crew,rigging,aantal=30,timestep=0.
 
       while (dv/vend > 0.001):
          res = rowingphysics.energybalance(F,crew,rigging,vend,timestep,0,
-				    timewise=timewise,
-				    catchacceler=catchacceler)
+                                    timewise=timewise,
+                                    catchacceler=catchacceler)
          dv = res[0]
          vend = res[1]
-	 catchacceler = res[14]
+         catchacceler = res[14]
       res = rowingphysics.stroke(F,crew,rigging,vend,timestep,10,
-			  timewise=timewise,
-			  catchacceler=catchacceler)
+                          timewise=timewise,
+                          catchacceler=catchacceler)
 
       velocity1[i] = res[2]
       ratios1[i] = res[3]
@@ -1964,14 +1967,14 @@ def recoverystyletriangle(tempomin,tempomax,F,crew,rigging,aantal=30,timestep=0.
 
       while (dv/vend > 0.001):
          res = rowingphysics.energybalance(F,crew,rigging,vend,timestep,0,
-				    timewise=timewise,
-				    catchacceler=catchacceler)
+                                    timewise=timewise,
+                                    catchacceler=catchacceler)
          dv = res[0]
          vend = res[1]
-	 catchacceler = res[14]
+         catchacceler = res[14]
       res = rowingphysics.stroke(F,crew,rigging,vend,timestep,10,
-			  timewise=timewise,
-			  catchacceler=catchacceler)
+                          timewise=timewise,
+                          catchacceler=catchacceler)
 
       velocity2[i] = res[2]
       ratios2[i] = res[3]
@@ -1999,14 +2002,14 @@ def recoverystyletriangle(tempomin,tempomax,F,crew,rigging,aantal=30,timestep=0.
 
       while (dv/vend > 0.001):
          res = rowingphysics.energybalance(F,crew,rigging,vend,timestep,0,
-				    timewise=timewise,
-				    catchacceler=catchacceler)
+                                    timewise=timewise,
+                                    catchacceler=catchacceler)
          dv = res[0]
          vend = res[1]
-	 catchacceler = res[14]
+         catchacceler = res[14]
       res = rowingphysics.stroke(F,crew,rigging,vend,timestep,10,
-			  timewise=timewise,
-			  catchacceler=catchacceler)
+                          timewise=timewise,
+                          catchacceler=catchacceler)
 
       velocity3[i] = res[2]
       ratios3[i] = res[3]
@@ -2035,14 +2038,14 @@ def recoverystyletriangle(tempomin,tempomax,F,crew,rigging,aantal=30,timestep=0.
 
       while (dv/vend > 0.001):
          res = rowingphysics.energybalance(F,crew,rigging,vend,timestep,0,
-				    timewise=timewise,
-				    catchacceler=catchacceler)
+                                    timewise=timewise,
+                                    catchacceler=catchacceler)
          dv = res[0]
          vend = res[1]
-	 catchacceler = res[14]
+         catchacceler = res[14]
       res = rowingphysics.stroke(F,crew,rigging,vend,timestep,10,
-			  timewise=timewise,
-			  catchacceler=catchacceler)
+                          timewise=timewise,
+                          catchacceler=catchacceler)
 
       velocity4[i] = res[2]
       ratios4[i] = res[3]
@@ -2069,78 +2072,78 @@ def recoverystyletriangle(tempomin,tempomax,F,crew,rigging,aantal=30,timestep=0.
       pyplot.clf
 
       if (doplot==1):
-	  pyplot.plot (power1,velocity1,'-g',label='0.1 ')
-	  pyplot.plot (power2,velocity2,'-r',label='0.3 ')
-	  pyplot.plot (power3,velocity3,'-b',label='0.5 ')
-	  pyplot.plot (power4,velocity4,'-k',label='0.7 ')
-	  pylab.legend(loc='best')
-	  pyplot.xlabel("Power (W)")
-	  pyplot.ylabel('Velocity (m/s)')
+          pyplot.plot (power1,velocity1,'-g',label='0.1 ')
+          pyplot.plot (power2,velocity2,'-r',label='0.3 ')
+          pyplot.plot (power3,velocity3,'-b',label='0.5 ')
+          pyplot.plot (power4,velocity4,'-k',label='0.7 ')
+          pylab.legend(loc='best')
+          pyplot.xlabel("Power (W)")
+          pyplot.ylabel('Velocity (m/s)')
 
 
       if (doplot==2):
-	  pyplot.plot (tempos,velocity1,'-g',label='0.1')
-	  pyplot.plot (tempos,velocity2,'-r',label='0.3')
-	  pyplot.plot (tempos,velocity3,'-b',label='0.5')
-	  pyplot.plot (tempos,velocity4,'-k',label='0.7')
-	  pylab.legend(loc='best')
-	  pyplot.xlabel("tempo (spm)")
-	  pyplot.ylabel('Velocity (m/s)')
+          pyplot.plot (tempos,velocity1,'-g',label='0.1')
+          pyplot.plot (tempos,velocity2,'-r',label='0.3')
+          pyplot.plot (tempos,velocity3,'-b',label='0.5')
+          pyplot.plot (tempos,velocity4,'-k',label='0.7')
+          pylab.legend(loc='best')
+          pyplot.xlabel("tempo (spm)")
+          pyplot.ylabel('Velocity (m/s)')
 
       if (doplot==3):
-	  pyplot.plot (tempos,power1,'-g',label='0.1 ')
-	  pyplot.plot (tempos,power2,'-r',label='sinus ')
-	  pyplot.plot (tempos,power3,'-b',label='triangle ')
-	  pyplot.plot (tempos,power4,'-k',label='realistic ')
-	  pylab.legend(loc='best')
-	  pyplot.xlabel("tempo (spm)")
-	  pyplot.ylabel('Power (W)')
+          pyplot.plot (tempos,power1,'-g',label='0.1 ')
+          pyplot.plot (tempos,power2,'-r',label='sinus ')
+          pyplot.plot (tempos,power3,'-b',label='triangle ')
+          pyplot.plot (tempos,power4,'-k',label='realistic ')
+          pylab.legend(loc='best')
+          pyplot.xlabel("tempo (spm)")
+          pyplot.ylabel('Power (W)')
 
       if (doplot==4):
-	  pyplot.plot (power1,sec1,'-g',label='0.1')
-	  pyplot.plot (power2,sec2,'-r',label='0.3')
-	  pyplot.plot (power3,sec3,'-b',label='0.5')
-	  pyplot.plot (power4,sec4,'-k',label='0.7')
-	  pylab.legend(loc='best')
-	  pyplot.xlabel("Power (W)")
-	  pyplot.ylabel('500m time')
+          pyplot.plot (power1,sec1,'-g',label='0.1')
+          pyplot.plot (power2,sec2,'-r',label='0.3')
+          pyplot.plot (power3,sec3,'-b',label='0.5')
+          pyplot.plot (power4,sec4,'-k',label='0.7')
+          pylab.legend(loc='best')
+          pyplot.xlabel("Power (W)")
+          pyplot.ylabel('500m time')
 
       if (doplot==5):
-	  pyplot.plot (check1,velocity1,'-g',label='0.1')
-	  pyplot.plot (check2,velocity2,'-r',label='0.3')
-	  pyplot.plot (check3,velocity3,'-b',label='0.5')
-	  pyplot.plot (check4,velocity4,'-k',label='0.7')
-	  pylab.legend(loc='best')
-	  pyplot.xlabel("Check (m2/s4)")
-	  pyplot.ylabel('Velocity (m/s)')
+          pyplot.plot (check1,velocity1,'-g',label='0.1')
+          pyplot.plot (check2,velocity2,'-r',label='0.3')
+          pyplot.plot (check3,velocity3,'-b',label='0.5')
+          pyplot.plot (check4,velocity4,'-k',label='0.7')
+          pylab.legend(loc='best')
+          pyplot.xlabel("Check (m2/s4)")
+          pyplot.ylabel('Velocity (m/s)')
 
       if (doplot == 6):
-	  pyplot.plot (RIM_check1,velocity1,'-g',label='0.1')
-	  pyplot.plot (RIM_check2,velocity2,'-r',label='0.3')
-	  pyplot.plot (RIM_check3,velocity3,'-b',label='0.5')
-	  pyplot.plot (RIM_check4,velocity4,'-k',label='0.7')
-	  pylab.legend(loc='best')
-	  pyplot.ylabel("velocity (m/s)")
-	  pyplot.xlabel('RIM Check (m/s)')
+          pyplot.plot (RIM_check1,velocity1,'-g',label='0.1')
+          pyplot.plot (RIM_check2,velocity2,'-r',label='0.3')
+          pyplot.plot (RIM_check3,velocity3,'-b',label='0.5')
+          pyplot.plot (RIM_check4,velocity4,'-k',label='0.7')
+          pylab.legend(loc='best')
+          pyplot.ylabel("velocity (m/s)")
+          pyplot.xlabel('RIM Check (m/s)')
 
       if (doplot == 7):
-	  pyplot.plot (RIM_E1,velocity1,'-g',label='0.1')
-	  pyplot.plot (RIM_E2,velocity2,'-r',label='0.3')
-	  pyplot.plot (RIM_E3,velocity3,'-b',label='0.5')
-	  pyplot.plot (RIM_E4,velocity4,'-k',label='0.7')
-	  pylab.legend(loc='best')
-	  pyplot.ylabel("velocity (m/s)")
-	  pyplot.xlabel('RIM Stroke Efficiency (m)')
+          pyplot.plot (RIM_E1,velocity1,'-g',label='0.1')
+          pyplot.plot (RIM_E2,velocity2,'-r',label='0.3')
+          pyplot.plot (RIM_E3,velocity3,'-b',label='0.5')
+          pyplot.plot (RIM_E4,velocity4,'-k',label='0.7')
+          pylab.legend(loc='best')
+          pyplot.ylabel("velocity (m/s)")
+          pyplot.xlabel('RIM Stroke Efficiency (m)')
 
 
       if (doplot == 8):
-	  pyplot.plot (ratios1,velocity1,'-g',label='0.1')
-	  pyplot.plot (ratios2,velocity2,'-r',label='0.3')
-	  pyplot.plot (ratios3,velocity3,'-b',label='0.5')
-	  pyplot.plot (ratios4,velocity4,'-k',label='0.7')
-	  pylab.legend(loc='best')
-	  pyplot.ylabel("velocity (m/s)")
-	  pyplot.xlabel('Stroke/Recovery Ratio')
+          pyplot.plot (ratios1,velocity1,'-g',label='0.1')
+          pyplot.plot (ratios2,velocity2,'-r',label='0.3')
+          pyplot.plot (ratios3,velocity3,'-b',label='0.5')
+          pyplot.plot (ratios4,velocity4,'-k',label='0.7')
+          pylab.legend(loc='best')
+          pyplot.ylabel("velocity (m/s)")
+          pyplot.xlabel('Stroke/Recovery Ratio')
 
 
       pyplot.show()
@@ -2210,8 +2213,8 @@ def forceseries(Forcemin,Forcemax,tempo,crew,rigging,aantal=10,timestep=.03):
    return calctime
 
 def plot_tempo_v_constantwatt(watt,r,rg,aantal=10,
-			      timestep=0.03,Fmin=100,
-			      Fmax=760,tempomin=20,tempomax=40):
+                              timestep=0.03,Fmin=100,
+                              Fmax=760,tempomin=20,tempomax=40):
    """ Plots average boat speed at constant power with varying spm
 
    """
@@ -2237,7 +2240,7 @@ def plot_tempo_v_constantwatt(watt,r,rg,aantal=10,
       watts[i] = res[3]
       effs[i] = res[4]
 
-      print(tempoos[i],velocity[i],watts[i],fres[i],effs[i])
+      print((tempoos[i],velocity[i],watts[i],fres[i],effs[i]))
 
    wattratio = (watts/watts[0])**(1./3.)
    velocity = velocity/wattratio
@@ -2306,7 +2309,7 @@ def plot_catchangle_v_constantwatt(watt,r,rg,aantal=10,timestep=0.03):
       velocity[i] = res[1]
       eff[i] = res[4]
       watts[i] = res[3]
-      print(np.degrees(catchangles[i]),rg.dcatch,velocity[i],watts[i])
+      print((np.degrees(catchangles[i]),rg.dcatch,velocity[i],watts[i]))
 
    wattratio = (watts/watts[0])**(1./3.)
    velocity = velocity/wattratio
@@ -2388,7 +2391,7 @@ def plot_ratio_v_constantwatt(watt,r,rg,aantal=10,timestep=0.03):
       ratios[i] = res[2]
       eff[i] = res[4]
       watts[i] = res[3]
-      print(r.tempo, lsculls[i],ratios[i],velocity[i],watts[i])
+      print((r.tempo, lsculls[i],ratios[i],velocity[i],watts[i]))
 
    wattratio = (watts/watts[0])**(1./3.)
    velocity = velocity/wattratio
@@ -2406,7 +2409,7 @@ def plot_ratio_v_constantwatt(watt,r,rg,aantal=10,timestep=0.03):
       ratios2[i] = res[2]
       eff2[i] = res[4]
       watts2[i] = res[3]
-      print(r.tempo, lsculls[i],ratios2[i],velocity2[i],watts2[i])
+      print((r.tempo, lsculls[i],ratios2[i],velocity2[i],watts2[i]))
 
    wattratio = (watts2/watts2[0])**(1./3.)
    velocity2 = velocity2/wattratio
@@ -2424,7 +2427,7 @@ def plot_ratio_v_constantwatt(watt,r,rg,aantal=10,timestep=0.03):
       ratios3[i] = res[2]
       eff3[i] = res[4]
       watts3[i] = res[3]
-      print(r.tempo, lsculls[i],ratios3[i],velocity3[i],watts3[i])
+      print((r.tempo, lsculls[i],ratios3[i],velocity3[i],watts3[i]))
 
    wattratio = (watts3/watts3[0])**(1./3.)
    velocity3 = velocity3/wattratio
@@ -2487,7 +2490,7 @@ def plot_ratio_v_constantwatt(watt,r,rg,aantal=10,timestep=0.03):
    return calctime
 
 def plot_tempo_power_constantv(velo,r,rg,aantal=10,timestep=0.03,
-			       Fmin=50,Fmax=650):
+                               Fmin=50,Fmax=650):
    """ Plots power needed to achieve certain boat speed at various stroke rates
 
    """
@@ -2513,7 +2516,7 @@ def plot_tempo_power_constantv(velo,r,rg,aantal=10,timestep=0.03,
       watts[i] = res[3]
       eff[i]=res[4]
       peakforce[i] = res[0]
-      print(tempoos[i],velocity[i],watts[i],peakforce[i])
+      print((tempoos[i],velocity[i],watts[i],peakforce[i]))
 
    calctime = time.time()-tm
 
@@ -2579,7 +2582,7 @@ def plot_inboard_power_constantv(velo,r,rg,aantal=10,timestep=0.03):
       eff[i]=res[4]
       peakforce[i] = (0.5+0.25*pi)*res[0]
       
-      print(lins[i],velocity[i],watts[i],peakforce[i])
+      print((lins[i],velocity[i],watts[i],peakforce[i]))
 
 
    calctime = time.time()-tm
@@ -2639,7 +2642,7 @@ def plot_boatweight_power_constantv(velo,r,rg,aantal=10,timestep=0.01):
       eff[i]=res[4]
       peakforce[i] = (0.5+0.25*pi)*res[0]
       
-      print(mbs[i],velocity[i],watts[i],peakforce[i])
+      print((mbs[i],velocity[i],watts[i],peakforce[i]))
 
 
    calctime = time.time()-tm
@@ -2676,8 +2679,8 @@ def plot_boatweight_power_constantv(velo,r,rg,aantal=10,timestep=0.01):
 def atkinson(timestep=0.01,factor=0.45,doplot=1,h1=0.75,h2=1.0,
              timewise=0,x1=0.02,x2=0.39,bladearea=0.071,
              lscull=3.05,lin=0.86,strokelength=1.31,constantdrag=0):
-   from crew import trapezium
-   from crew import trianglerecovery,sinusrecovery,flatrecovery
+   from .crew import trapezium
+   from .crew import trianglerecovery,sinusrecovery,flatrecovery
 
    r = crew(mc=90.0,tempo=29.4,strokelength=strokelength)
    r.strokeprofile = trapezium(x1=x1,x2=x2,h1=h1,h2=h2)
@@ -2731,14 +2734,14 @@ def atkinson(timestep=0.01,factor=0.45,doplot=1,h1=0.75,h2=1.0,
    displacement = rg.mb+rg.Nrowers*r.mc
    res = rowingphysics.drag_eq(displacement,velocity,alfaref=3.2,doprint=1,constantdrag=constantdrag)
 
-   print("Velocity :",velocity,"  m/s")
-   print("Ratio    :",ratios)
-   print("Power    :",power," W")
-   print("Energy   :",energies," J")
-   print("dv       :",res2[0])
-   print("vend     :",res2[1])
-   print("vmin     :",res2[7])
-   print("vmax     :",res2[8])
+   print(("Velocity :",velocity,"  m/s"))
+   print(("Ratio    :",ratios))
+   print(("Power    :",power," W"))
+   print(("Energy   :",energies," J"))
+   print(("dv       :",res2[0]))
+   print(("vend     :",res2[1]))
+   print(("vmin     :",res2[7]))
+   print(("vmax     :",res2[8]))
 
    calctime = time.time()-tm
    
@@ -2747,8 +2750,8 @@ def atkinson(timestep=0.01,factor=0.45,doplot=1,h1=0.75,h2=1.0,
 
 def james_hm2min(timestep=0.01,factor=0.86,doplot=1,h1=1.0,h2=0.8,
              timewise=0,x1=0.03,x2=0.35,bladearea=1.212e-1):
-   from crew import trapezium
-   from crew import trianglerecovery,sinusrecovery,flatrecovery
+   from .crew import trapezium
+   from .crew import trianglerecovery,sinusrecovery,flatrecovery
 
    r = crew(mc=88.5,tempo=36.0,strokelength=1.37)
    r.strokeprofile = trapezium(x1=x1,x2=x2,h1=h1,h2=h2)
@@ -2799,11 +2802,11 @@ def james_hm2min(timestep=0.01,factor=0.86,doplot=1,h1=1.0,h2=0.8,
 
 
 
-   print("Velocity :",velocity,"  m/s")
-   print("Ratio    :",ratios)
-   print("Power    :",power," W")
-   print("Energy   :",energies," J")
-   print("dv       :",res[0])
+   print(("Velocity :",velocity,"  m/s"))
+   print(("Ratio    :",ratios))
+   print(("Power    :",power," W"))
+   print(("Energy   :",energies," J"))
+   print(("dv       :",res[0]))
 
    calctime = time.time()-tm
    
@@ -2820,7 +2823,7 @@ def powerseries(powers,r,rg):
    for pw in powers:
       res = rowingphysics.constantwatt(pw,r,rg)
       [mins,secs] = rowingphysics.vavgto500mtime(res[1])
-      print(pw,'W  ',mins,':',secs)
+      print((pw,'W  ',mins,':',secs))
 
 def ergtoboat(splits,r,rg,tempos,erg):
 
@@ -2830,7 +2833,7 @@ def ergtoboat(splits,r,rg,tempos,erg):
       r.tempo = tempo
 
       print("----------------------------------------")
-      print("Tempo       ",tempo, " /min")
+      print(("Tempo       ",tempo, " /min"))
       print("")
       print("erg split     erg P    total P      boat split")
       
@@ -2847,13 +2850,13 @@ def ergtoboat(splits,r,rg,tempos,erg):
          bmins = int(bmins)
          bsecs = int(10*bsecs)/10.
          
-         print(mins,":",secs,"  ",int(ergpower),"   ",int(totalpower),"  ",bmins,":",bsecs)
+         print((mins,":",secs,"  ",int(ergpower),"   ",int(totalpower),"  ",bmins,":",bsecs))
 
 def tempopower(r,rg,tp,pw):
 
     res = rowingphysics.constantwatt(pw,r,rg,timestep = 0.01,aantal = 15,aantal2=15)
-    print(pw,res[3])
-    print('Split ',rowingphysics.vavgto500mtime(res[1]))
+    print((pw,res[3]))
+    print(('Split ',rowingphysics.vavgto500mtime(res[1])))
 
 def tempopowererg(r,rg,erg,tp,pwd,theconst=0.0):
     
@@ -2861,5 +2864,5 @@ def tempopowererg(r,rg,erg,tp,pwd,theconst=0.0):
     print(res)
     pw = res[3]
     res = rowingphysics.constantwatt(pw,r,rg,timestep = 0.01,aantal = 15,aantal2=15)
-    print(pw,res[3])
-    print('Split ',rowingphysics.vavgto500mtime(res[1]))
+    print((pw,res[3]))
+    print(('Split ',rowingphysics.vavgto500mtime(res[1])))
