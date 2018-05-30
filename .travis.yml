@@ -30,14 +30,12 @@ before_install:
 - sudo rm -rf /dev/shm
 - sudo ln -s /run/shm /dev/shm
 install:
-- conda install --yes python=$TRAVIS_PYTHON_VERSION atlas numpy scipy matplotlib nose
-  dateutil pandas statsmodels
+- pip install twine
+- conda install --yes python=$TRAVIS_PYTHON_VERSION atlas numpy scipy matplotlib nose pandas statsmodels
 - python setup.py install
 sudo: required
 after_success:
 - coveralls --config_file .coveragerc
-script:
-- python setup.py install
 before_deploy:
 - python setup.py develop install
 - python setup.py sdist
