@@ -49,4 +49,5 @@ deploy:
   distributions: sdist
   on:
     branch: master
+    node: 2.7
     repo: sanderroosendaal/rowingphysics
