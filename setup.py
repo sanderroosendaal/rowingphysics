@@ -34,10 +34,10 @@ setup(name='rowingphysics',
 #      py_modules = ['rowingphysics.crew',
 #                   'rowingphysics.rowingphysics',
 #                   'rowingphysics.rigging'],
+#
+#      packages=find_packages(),
 
-      packages=find_packages(),
-
-#      packages = ['rowingphysics','crew','rigging'],
+      packages = ['rowingphysics'],
       
       keywords = 'rowing ergometer concept2',
       
