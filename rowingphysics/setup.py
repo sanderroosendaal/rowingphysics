@@ -1,5 +1,7 @@
 from __future__ import absolute_import
-from setuptools import setup, find_packages
+#from setuptools import setup, find_packages
+from distutils.core import setup
+import setuptools
 
 import re
 
@@ -33,7 +35,7 @@ setup(name='rowingphysics',
 #		    'rowingphysics.rowingphysics',
 #		    'rowingphysics.rigging'],
 
-      packages=find_packages(),
+      packages=['rowingphysics'],
 
 #      packages = ['rowingphysics','crew','rigging'],
       
