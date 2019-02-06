@@ -18,7 +18,7 @@ from matplotlib import pyplot
 from numpy import linspace,zeros,cumsum,mean
 from six.moves import range
 
-__version__ = "0.4.8"
+__version__ = "0.4.9"
 
 # submodules
 from .srnumerical import *

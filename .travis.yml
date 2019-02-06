@@ -39,7 +39,7 @@ after_success:
 script:
 - python setup.py install
 before_deploy:
-- python setup.py develop install
+- python setup.py install
 - python setup.py sdist
 deploy:
   provider: pypi
@@ -49,5 +49,5 @@ deploy:
   distributions: sdist
   on:
     branch: master
-    node: 2.7
+    python: 2.7
     repo: sanderroosendaal/rowingphysics
