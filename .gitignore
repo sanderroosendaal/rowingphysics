@@ -11,3 +11,6 @@
 
 # Emacs temp files
 *.*~
+
+# virtualenv
+/venv/

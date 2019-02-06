@@ -2679,7 +2679,7 @@ def constantwatt(watt,crew,rigging,timestep=0.03,aantal=5,
 
 def constantwattfast(watt,crew,rigging,timestep=0.03,aantal=5,
                  aantal2=5,Fmin=50,Fmax=1000,catchacceler=5,
-                 windv=0,dowind=1):
+                     windv=0,dowind=1, max_iterations_allowed=100):
     """ Returns force, average speed given an input power in watt
     """
 
@@ -2694,13 +2694,16 @@ def constantwattfast(watt,crew,rigging,timestep=0.03,aantal=5,
         # een paar halen om op snelheid te komen
         dv = 1
         vend = 4.0
-        while (dv/vend > 0.001):
+        count = 0
+        while (dv/vend > 0.001) or count < max_iterations_allowed:
             res = energybalance(F[i],crew,rigging,vend,timestep,0,
                                 catchacceler=tcatchacceler,
                                 windv=windv,dowind=dowind)
             dv = res[0]
             vend = res[1]
             tcatchacceler = res[14]
+            count += 1
+            
         res = stroke(F[i],crew,rigging,vend,timestep,10,
                      dowind=dowind,windv=windv)
         velocity[i] = res[2]
@@ -2710,15 +2713,16 @@ def constantwattfast(watt,crew,rigging,timestep=0.03,aantal=5,
 
 
     fres = sr_interpol1(F,power,watt)
+    count = 0
 
-
-    while (dv/vend > 0.001):
+    while (dv/vend > 0.001) or count < max_iterations_allowed:
         res = energybalance(fres,crew,rigging,vend,timestep,0,
                             catchacceler=tcatchacceler,
                             dowind=dowind,windv=windv)
         dv = res[0]
         vend = res[1]
         tcatchacceler = res[14]
+        count += 1
 
    
     res = stroke(fres,crew,rigging,vend,timestep,10,catchacceler=tcatchacceler,
