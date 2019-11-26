@@ -11,7 +11,7 @@ import numpy as np
 import pandas as pd
 
 #import scipy
-import matplotlib 
+import matplotlib
 from matplotlib import pyplot
 
 
@@ -29,7 +29,7 @@ from .row_functions import *
 # boat drag coefficient
 #alfa = 3.5  # 2.95??  for skif, from Marinus van Holst
 
-alfa = 3.06 # best fit to Kleshnev data for single 
+alfa = 3.06 # best fit to Kleshnev data for single
 # alfaatkinson = 3.18 # use for Atkinson
 alfaatkinson = 3.4
 rho_air = 1.226 # kg/m3
@@ -57,7 +57,7 @@ def vavgto500mtime(vavg):
     seconds = 500.0/vavg
     minutes = np.floor(seconds/60.)
     secs = seconds-60.0*minutes
-   
+
     return [minutes,secs]
 
 def write_obj(obj,filename):
@@ -78,23 +78,23 @@ def testbladeforce(fhandle,rigging,vb,oarangle=0.01,aantal=10):
     lout = lscull - lin
     oarangle = oarangle*np.pi/180.
 
-    Fblade = fhandle*lin/lout 
+    Fblade = fhandle*lin/lout
     res = blade_force(oarangle,rigging,vb,Fblade)
     phidot = res[0]
-   
+
     print((Fblade,180*phidot/np.pi,180.*vb*np.cos(0.01)/(np.pi*lout)))
 
 
     Fb = zeros(aantal)
     itern = list(range(aantal))
-   
+
     for i in range(aantal):
         l2 = lout
         Fb[i] = fhandle*lin/l2
         res = blade_force(oarangle,rigging,vb,Fb[i])
         phidot = res[0]
         print((Fb[i],180.*phidot/np.pi))
-        
+
         Fdot = fhandle + Fb
 
     # plot
@@ -112,16 +112,16 @@ def plotforce(fhandle,rigging,vb,oarangle=0.01):
     """ iterates slip using "real" fulcrum point
     aantal = nr iterations
     """
-   
+
     lin = rigging.lin
     lscull = rigging.lscull
     lout = lscull - lin
     oarangle = oarangle*np.pi/180.
 
-    Fblade = fhandle*lin/lout 
+    Fblade = fhandle*lin/lout
     res = blade_force(oarangle,rigging,vb,Fblade,doplot=1)
     phidot = res[0]
-   
+
     print((Fblade,180*phidot/np.pi,180.*vb*np.cos(0.01)/(np.pi*lout)))
 
 
@@ -130,7 +130,7 @@ def empirical(datafile,vavg,crew,rigging,tstroke,trecovery,doplot=1):
     acceleration plot
 
     """
-    
+
     lin = rigging.lin
     lscull = rigging.lscull
     lout = lscull - lin
@@ -173,7 +173,7 @@ def empirical(datafile,vavg,crew,rigging,tstroke,trecovery,doplot=1):
     ydotdot[0:wh_stroke] = (-Fdrag[0:wh_stroke]-(mb+(Nrowers*mc))*xdotdot[0:wh_stroke])/(Nrowers*mc)
     ydot = empdt*cumsum(ydotdot)
 
-    
+
     Fhelp = mb*xdotdot+Fdrag
 
     # calculate phidot, phi
@@ -219,8 +219,8 @@ def empirical(datafile,vavg,crew,rigging,tstroke,trecovery,doplot=1):
     Pq = (Nrowers*mc)*(ydotdot)*ydot
     Pqrower = abs(Pq)
     Pdiss = Pqrower-Pq
-    
-    
+
+
 
     print(('Drag Power',mean(Pw)))
     print(('Kinetic Power loss',mean(Pdiss)))
@@ -265,7 +265,7 @@ def empirical(datafile,vavg,crew,rigging,tstroke,trecovery,doplot=1):
         pyplot.xlabel("time (s)")
         pyplot.ylabel("F (N)")
         pyplot.show()
-          
+
     if (doplot==4):
         pyplot.clf()
         pyplot.plot(emptime, phidot1, 'r-',label = 'Angular velocity')
@@ -276,7 +276,7 @@ def empirical(datafile,vavg,crew,rigging,tstroke,trecovery,doplot=1):
         pyplot.xlabel("time (s)")
         pyplot.ylabel("rad/s")
         pyplot.show()
-          
+
     if (doplot==5):
         pyplot.clf()
         pyplot.plot(emptime, numpy.degrees(phi1), 'r-',label = 'Oar angle')
@@ -287,8 +287,8 @@ def empirical(datafile,vavg,crew,rigging,tstroke,trecovery,doplot=1):
         pyplot.xlabel("time (s)")
         pyplot.ylabel("degrees")
         pyplot.show()
-          
-       
+
+
     if (doplot==6):
         pyplot.clf()
         pyplot.plot(emptime, handlepos, 'r-', label = 'Handle position')
@@ -316,9 +316,9 @@ def energybalance(F,crew,rigging,v0=4.3801,dt=0.03,doplot=1,doprint=0,
     """ calculates one stroke with average handle force as input
     slide velocity and stroke/recovery ratio are calculated
     knows about slip, lift, drag. Plots energy balance.
-    
+
     windv is wind speed in m/s. Positive values are tailwind.
-    
+
     """
 
     # initialising output values
@@ -365,7 +365,7 @@ def energybalance(F,crew,rigging,v0=4.3801,dt=0.03,doplot=1,doprint=0,
     Fblade = zeros(len(time))
     Fprop = zeros(len(time))
     Fhandle[0:2] = 0
-   
+
     Pbladeslip = zeros(len(time))    # H
 
     xdotdot = zeros(len(time))
@@ -383,7 +383,7 @@ def energybalance(F,crew,rigging,v0=4.3801,dt=0.03,doplot=1,doprint=0,
     attackangle = zeros(len(time))
     Clift = zeros(len(time))
     Cdrag = zeros(len(time))
-   
+
     handlepos = 0
 
     # initial handle and boat velocities
@@ -395,7 +395,7 @@ def energybalance(F,crew,rigging,v0=4.3801,dt=0.03,doplot=1,doprint=0,
 
 
     i=1
-   
+
     vcstroke = 0
     vcstroke2 = 1
 
@@ -404,7 +404,7 @@ def energybalance(F,crew,rigging,v0=4.3801,dt=0.03,doplot=1,doprint=0,
 
     while (vcstroke < vcstroke2):
         vhand = catchacceler*(time[i]-time[0])
-        
+
         vcstroke = crew.vcm(vhand, handlepos)
         phidot = vb[i-1]*np.cos(oarangle[i-1])
         vhand = phidot*lin*np.cos(oarangle[i-1])
@@ -419,13 +419,13 @@ def energybalance(F,crew,rigging,v0=4.3801,dt=0.03,doplot=1,doprint=0,
         xdot[i] = zdot[i]-((Nrowers*mc)/((Nrowers*mc)+mb))*ydot[i]
 
         Fi = crew.forceprofile(F,handlepos)
-        Fbladei = Fi*lin/lout 
+        Fbladei = Fi*lin/lout
         res = blade_force(oarangle[i-1],rigging,vb[i-1],Fbladei)
         phidot2 = res[0]
         vhand2 = phidot2*lin*np.cos(oarangle[i-1])
         vcstroke2 = crew.vcm(vhand2,handlepos)
 
-       
+
         vblade = xdot[i]-phidot*lout*np.cos(oarangle[i-1])
         #       print(i,vhand,vhand2,vcstroke,vcstroke2)
         vs[i] = zdot[i]
@@ -438,18 +438,18 @@ def energybalance(F,crew,rigging,v0=4.3801,dt=0.03,doplot=1,doprint=0,
 
         handlepos = handlepos+ydot[i]*dt
         Fhandle[i] = 0
-       
+
         oarangle[i] = rigging.oarangle(handlepos)
         i = i+1
 
-    # stroke 
+    # stroke
     while (handlepos<d) & (i<len(time)):
         if (timewise == 1):
             Fi = crew.forceprofile(F,handlepos)*np.cos(oarangle[i-1])
         else:
             Fi = crew.forceprofile(F,handlepos)
         Fhandle[i-1] = Fi
-        Fblade[i-1] = Fi*lin/lout 
+        Fblade[i-1] = Fi*lin/lout
         res = blade_force(oarangle[i-1],rigging,vb[i-1],Fblade[i-1])
         phidot = res[0]
 
@@ -473,8 +473,8 @@ def energybalance(F,crew,rigging,v0=4.3801,dt=0.03,doplot=1,doprint=0,
         zdotdot[i] = zdotdot[i] + Fwind/((Nrowers*mc)+mb)
 
         zdot[i] = zdot[i-1]+dt*zdotdot[i]
-      
-          
+
+
         ydot[i] = vcstroke
         xdot[i] = zdot[i]-((Nrowers*mc)/((Nrowers*mc)+mb))*ydot[i]
 
@@ -488,10 +488,10 @@ def energybalance(F,crew,rigging,v0=4.3801,dt=0.03,doplot=1,doprint=0,
 
         Pf[i-1] = Nrowers*Fblade[i-1]*xdot[i]*np.cos(oarangle[i-1])
 
-        oarangle[i] = rigging.oarangle(handlepos)  
+        oarangle[i] = rigging.oarangle(handlepos)
 
         i = i+1
-      
+
     i=i-1;
 
     # recovery
@@ -524,7 +524,7 @@ def energybalance(F,crew,rigging,v0=4.3801,dt=0.03,doplot=1,doprint=0,
             xdotdot[k] = zdotdot[k]-((Nrowers*mc)/((Nrowers*mc)+mb))*ydotdot[k]
             handlepos = handlepos+vhand[k]*dt
             oarangle[k] = rigging.oarangle(handlepos)
-      
+
     else:
         vavgrec = d/trecovery
         vcrecovery = zeros(aantal)
@@ -554,9 +554,9 @@ def energybalance(F,crew,rigging,v0=4.3801,dt=0.03,doplot=1,doprint=0,
             handlepos = d+d*crew.dxhandle(vavgrec,trecovery,time[k]-time[i])
             #         handlepos = handlepos+vhand*dt
             oarangle[k] = rigging.oarangle(handlepos)
-      
 
-    # blade positions      
+
+    # blade positions
     xblade=dt*cumsum(vb)-np.sin(oarangle)*lout
     yblade=lout*np.cos(oarangle)+rigging.spread
 
@@ -570,7 +570,7 @@ def energybalance(F,crew,rigging,v0=4.3801,dt=0.03,doplot=1,doprint=0,
     ydotdot[1]=(ydot[1]-ydot[0])/dt
 
     Pq = (Nrowers*mc)*(xdotdot+ydotdot)*ydot
-   
+
     #   Ekinb = 0.5*mb*xdot**2 - 0.5*mb*v0**2
     #   Ekinc = 0.5*mc*(xdot+ydot)**2 - 0.5*mc*v0**2
 
@@ -608,7 +608,7 @@ def energybalance(F,crew,rigging,v0=4.3801,dt=0.03,doplot=1,doprint=0,
     Fbltotal = (Fbldrag**2 + Flift**2)**(0.5)
 
     # empirical data
-    
+
     if (empirical!=0):
         empdata = np.genfromtxt(empirical, delimiter = ',',skip_header=1)
         emptime = empdata[:,0]
@@ -627,11 +627,11 @@ def energybalance(F,crew,rigging,v0=4.3801,dt=0.03,doplot=1,doprint=0,
 
         empRIM_E = max(cumsum(empxdot-min(empxdot))*empdt)
         empRIM_check = max(empxdot)-min(empxdot)
-       
+
         if (doprint == 1):
             print(("RIM E (measured)",empRIM_E))
             print(("RIM Check (meas)",empRIM_check))
-                     
+
 
     # some other calculations
 
@@ -694,7 +694,7 @@ def energybalance(F,crew,rigging,v0=4.3801,dt=0.03,doplot=1,doprint=0,
         pyplot.xlabel("time (s)")
         pyplot.ylabel('power (W)')
         pyplot.show()
-      
+
     if (doplot==3):
         pyplot.clf()
         pyplot.subplot(111)
@@ -706,7 +706,7 @@ def energybalance(F,crew,rigging,v0=4.3801,dt=0.03,doplot=1,doprint=0,
         pyplot.xlabel("time (s)")
         pyplot.ylabel('energy (J)')
         pyplot.show()
-      
+
     if (doplot==4):
         pyplot.clf()
         pyplot.subplot(111)
@@ -718,7 +718,7 @@ def energybalance(F,crew,rigging,v0=4.3801,dt=0.03,doplot=1,doprint=0,
         pyplot.xlabel("time (s)")
         pyplot.ylabel('power (W)')
         pyplot.show()
-      
+
     if (doplot==5):
         pyplot.clf()
         pyplot.subplot(111)
@@ -731,7 +731,7 @@ def energybalance(F,crew,rigging,v0=4.3801,dt=0.03,doplot=1,doprint=0,
         pyplot.xlabel("time (s)")
         pyplot.ylabel('energy (J)')
         pyplot.show()
-      
+
     if (doplot==6):
         pyplot.clf()
         pyplot.subplot(121)
@@ -749,7 +749,7 @@ def energybalance(F,crew,rigging,v0=4.3801,dt=0.03,doplot=1,doprint=0,
         pyplot.ylabel('power (W)')
 
         pyplot.show()
-      
+
     if (doplot==7):
         pyplot.clf()
         pyplot.plot(time, Ew+Ediss+Ekinb+Ekinc+Eblade, 'r-', label = 'Total Sinks')
@@ -776,7 +776,7 @@ def energybalance(F,crew,rigging,v0=4.3801,dt=0.03,doplot=1,doprint=0,
         ax1 = pyplot.subplot(111)
 
         pyplot.plot(xblade,yblade,label='blade centre')
-        
+
         pylab.legend(loc='best')
         pyplot.xlabel("x (m)")
         pyplot.ylabel('y (m)')
@@ -805,7 +805,7 @@ def energybalance(F,crew,rigging,v0=4.3801,dt=0.03,doplot=1,doprint=0,
         pyplot.xlabel("time (s)")
         pyplot.ylabel('Force (N)')
         pyplot.show()
-        
+
     if (doplot==11):
         pyplot.clf()
         pyplot.plot(numpy.degrees(oarangle), Clift, 'r-', label = 'Lift coefficient')
@@ -817,7 +817,7 @@ def energybalance(F,crew,rigging,v0=4.3801,dt=0.03,doplot=1,doprint=0,
 
     if (doplot==12):
         pyplot.clf()
-        
+
         ax1 = pyplot.subplot(111)
         pyplot.plot(numpy.degrees(oarangle), Flift, 'r-', label = 'Lift Force')
         pyplot.plot(numpy.degrees(oarangle), Fbldrag, 'g-', label = 'Drag Force')
@@ -837,7 +837,7 @@ def energybalance(F,crew,rigging,v0=4.3801,dt=0.03,doplot=1,doprint=0,
         pyplot.show()
 
 
-      
+
     if (doplot==13):
         pyplot.clf()
         pyplot.plot(time, ydot, 'r-', label = 'Crew velocity')
@@ -845,7 +845,7 @@ def energybalance(F,crew,rigging,v0=4.3801,dt=0.03,doplot=1,doprint=0,
         pyplot.xlabel("time (s)")
         pyplot.ylabel("v (m/s)")
         pyplot.show()
-        
+
     if (doplot==14):
         pyplot.clf()
         pyplot.plot(time, xdotdot, 'r-', label = 'Boat acceleration')
@@ -898,8 +898,8 @@ def energybalance(F,crew,rigging,v0=4.3801,dt=0.03,doplot=1,doprint=0,
         instanteff = (Pf+Pq)/(Pf+Pq+Pbladeslip)
     except RuntimeWarning:
         instanteff = 0.0
-   
-         
+
+
 
     if (doplot==17):
        pyplot.clf()
@@ -914,7 +914,7 @@ def energybalance(F,crew,rigging,v0=4.3801,dt=0.03,doplot=1,doprint=0,
     indices = decel.nonzero()
     decelmean = mean(decel[indices])
     cn_check = np.std(decel[indices])**2
-       
+
 
     # calculate vavg, vmin, vmax, energy, efficiency, power
     dv = zdot[len(time)-1]-zdot[0]
@@ -941,10 +941,10 @@ def energybalance(F,crew,rigging,v0=4.3801,dt=0.03,doplot=1,doprint=0,
     amin = min(xdotdot[2:])
     RIM_catchE = -(amin/t4)
     RIM_catchD = t4+max(time)-t3
-    
+
     catchacceler = max(5,ydotdot[aantal-1]-xdotdot[aantal-1])
 
-   
+
     return [dv,vend,vavg,ratio,energy,power,efficiency,vmax,vmin,cn_check,RIM_E,RIM_check,RIM_catchE,RIM_catchD,catchacceler,drag_eff]
 
 def energybalance_erg(ratio,crew,erg,w0=4.3801,dt=0.03,doplot=1,doprint=0,theconst=1.0):
@@ -998,7 +998,7 @@ def energybalance_erg(ratio,crew,erg,w0=4.3801,dt=0.03,doplot=1,doprint=0,thecon
 
    Ebungee = zeros(len(time))
    Pbungee = zeros(len(time))
-   
+
    handlepos = 0
    vhand = ydot[0]
 
@@ -1046,7 +1046,7 @@ def energybalance_erg(ratio,crew,erg,w0=4.3801,dt=0.03,doplot=1,doprint=0,thecon
        Tdrag = drag*wf[i-1]**2
 
        handlepos += dt*vi
-      
+
        ydot[i] = crew.vcm(vi, handlepos)
 #       ydot[i] = vi*(1-timerel)
 #       ydot[i] = vi
@@ -1065,7 +1065,7 @@ def energybalance_erg(ratio,crew,erg,w0=4.3801,dt=0.03,doplot=1,doprint=0,thecon
            Tdrag = 0
 
        wfdot[i] = (wf[i]-wf[i-1])/dt
-       
+
        Fhandle[i] = ((Tdrag+Tacceler)/r)+cord*(cordlength+handlepos)
        Fres[i] = Nrowers*mc*ydotdot[i]
        Fleg[i] = Fres[i]+Fhandle[i]
@@ -1098,7 +1098,7 @@ def energybalance_erg(ratio,crew,erg,w0=4.3801,dt=0.03,doplot=1,doprint=0,thecon
          Ebungee[k] = 0.5*(cord*(cordlength+handlepos)**2 - cord*cordlength**2)
          Pbungee[k] = (Ebungee[k]-Ebungee[k-1])/dt
 
-      
+
    else:
       vavgrec = d/trecovery
       vcrecovery = zeros(aantal)
@@ -1119,7 +1119,7 @@ def energybalance_erg(ratio,crew,erg,w0=4.3801,dt=0.03,doplot=1,doprint=0,thecon
 
          handlepos = d+d*crew.dxhandle(vavgrec,trecovery,time[k]-time[idrivemax])
 
-                
+
          Fhandle[k] = cord*(cordlength+handlepos)
          Fres[k] = Nrowers*mc*ydotdot[k]
          Fleg[k] = Fres[k]+Fhandle[k]
@@ -1127,7 +1127,7 @@ def energybalance_erg(ratio,crew,erg,w0=4.3801,dt=0.03,doplot=1,doprint=0,thecon
          Ebungee[k] = 0.5*(cord*(cordlength+handlepos)**2 - cord*cordlength**2)
          Pbungee[k] = (Ebungee[k]-Ebungee[k-1])/dt
 
-      
+
    ydot[0] = ydot[0]/2.
    ydotdot[1]=(ydot[1]-ydot[0])/dt
 
@@ -1154,8 +1154,8 @@ def energybalance_erg(ratio,crew,erg,w0=4.3801,dt=0.03,doplot=1,doprint=0,thecon
 
    Ehandle = cumsum(Phandle)*dt
 
-# sinks   
-# drag power 
+# sinks
+# drag power
    Pw = drag*wf**3.
    Ew = cumsum(Pw)*dt
 
@@ -1215,7 +1215,7 @@ def energybalance_erg(ratio,crew,erg,w0=4.3801,dt=0.03,doplot=1,doprint=0,thecon
       pyplot.xlabel("time (s)")
       pyplot.ylabel('force (N)')
       pyplot.show()
-      
+
    if (doplot==3):
       pyplot.clf()
       pyplot.subplot(111)
@@ -1228,7 +1228,7 @@ def energybalance_erg(ratio,crew,erg,w0=4.3801,dt=0.03,doplot=1,doprint=0,thecon
       pyplot.xlabel("time (s)")
       pyplot.ylabel('power (W)')
       pyplot.show()
-      
+
    if (doplot==4):
       pyplot.clf()
       pyplot.subplot(111)
@@ -1242,7 +1242,7 @@ def energybalance_erg(ratio,crew,erg,w0=4.3801,dt=0.03,doplot=1,doprint=0,thecon
       pyplot.xlabel("time (s)")
       pyplot.ylabel('Energy (J)')
       pyplot.show()
-      
+
    if (doplot==5):
       pyplot.clf()
       pyplot.subplot(111)
@@ -1271,9 +1271,9 @@ def energybalance_erg(ratio,crew,erg,w0=4.3801,dt=0.03,doplot=1,doprint=0,thecon
       pyplot.xlabel("time (s)")
       pyplot.ylabel('energy (J)')
       pyplot.show()
-      
-      
-      
+
+
+
    if (doplot==7):
       pyplot.clf()
       pyplot.plot(time, Ew+Ediss, 'r-', label = 'Total Sinks')
@@ -1313,7 +1313,7 @@ def energybalance_erg(ratio,crew,erg,w0=4.3801,dt=0.03,doplot=1,doprint=0,thecon
    energyd = energyd/Nrowers
    power = energy*tempo/60.
    powerd = energyd*tempo/60.
-   
+
    return [dw,wend,wavg,ratio,energy,power,powerd]
 
 
@@ -1363,7 +1363,7 @@ def energybalance_erg_old(F,crew,erg,w0=4.3801,dt=0.03,doplot=1,doprint=0,
 
    Ebungee = zeros(len(time))
    Pbungee = zeros(len(time))
-   
+
    handlepos = 0
    vhand = ydot[0]
 
@@ -1378,7 +1378,7 @@ def energybalance_erg_old(F,crew,erg,w0=4.3801,dt=0.03,doplot=1,doprint=0,
            Fi = crew.forceprofile(F,handlepos)
        else:
            Fi = crew.forceprofile(F,handlepos)
-      
+
        Fhandle[i-1] = Fi
        Tdrag = drag*wf[i-1]**2  # drag torque
 
@@ -1419,7 +1419,7 @@ def energybalance_erg_old(F,crew,erg,w0=4.3801,dt=0.03,doplot=1,doprint=0,
        Pf[i-1] = Nrowers*Fhandle[i-1]*ydot[i]
 
        i = i+1
-      
+
    i=i-1;
 
    # recovery
@@ -1444,7 +1444,7 @@ def energybalance_erg_old(F,crew,erg,w0=4.3801,dt=0.03,doplot=1,doprint=0,
          Ebungee[k] = 0.5*(cord*(cordlength+handlepos)**2 - cord*cordlength**2)
          Pbungee[k] = (Ebungee[k]-Ebungee[k-1])/dt
 
-      
+
    else:
       vavgrec = d/trecovery
       vcrecovery = zeros(aantal)
@@ -1463,13 +1463,13 @@ def energybalance_erg_old(F,crew,erg,w0=4.3801,dt=0.03,doplot=1,doprint=0,
          Ebungee[k] = 0.5*(cord*(cordlength+handlepos)**2 - cord*cordlength**2)
          Pbungee[k] = (Ebungee[k]-Ebungee[k-1])/dt
 
-      
+
    ydot[0] = ydot[0]/2.
    ydotdot[1]=(ydot[1]-ydot[0])/dt
 
    Pq = (Nrowers*mc)*ydotdot*ydot
    Pq = Pq+Pbungee
-   
+
 # drag power
    Pw = drag*wf**3.
 
@@ -1527,7 +1527,7 @@ def energybalance_erg_old(F,crew,erg,w0=4.3801,dt=0.03,doplot=1,doprint=0,
       pyplot.xlabel("time (s)")
       pyplot.ylabel('power (W)')
       pyplot.show()
-      
+
    if (doplot==3):
       pyplot.clf()
       pyplot.subplot(111)
@@ -1539,7 +1539,7 @@ def energybalance_erg_old(F,crew,erg,w0=4.3801,dt=0.03,doplot=1,doprint=0,
       pyplot.xlabel("time (s)")
       pyplot.ylabel('energy (J)')
       pyplot.show()
-      
+
    if (doplot==4):
       pyplot.clf()
       pyplot.subplot(111)
@@ -1549,7 +1549,7 @@ def energybalance_erg_old(F,crew,erg,w0=4.3801,dt=0.03,doplot=1,doprint=0,
       pyplot.xlabel("time (s)")
       pyplot.ylabel('Energy (J)')
       pyplot.show()
-      
+
    if (doplot==5):
       pyplot.clf()
       pyplot.subplot(111)
@@ -1560,7 +1560,7 @@ def energybalance_erg_old(F,crew,erg,w0=4.3801,dt=0.03,doplot=1,doprint=0,
       pyplot.xlabel("time (s)")
       pyplot.ylabel('energy (J)')
       pyplot.show()
-      
+
    if (doplot==6):
       pyplot.clf()
       pyplot.subplot(121)
@@ -1578,7 +1578,7 @@ def energybalance_erg_old(F,crew,erg,w0=4.3801,dt=0.03,doplot=1,doprint=0,
       pyplot.ylabel('power (W)')
 
       pyplot.show()
-      
+
    if (doplot==7):
       pyplot.clf()
       pyplot.plot(time, Ew+Ediss, 'r-', label = 'Total Sinks')
@@ -1617,7 +1617,7 @@ def energybalance_erg_old(F,crew,erg,w0=4.3801,dt=0.03,doplot=1,doprint=0,
    energyd = energyd/Nrowers
    power = energy*tempo/60.
    powerd = energyd*tempo/60.
-   
+
    return [dw,wend,wavg,ratio,energy,power,powerd]
 
 
@@ -1680,7 +1680,7 @@ def energybalance_old(F,crew,rigging,v0=4.3801,dt=0.03,doplot=1,doprint=0,
 
    Pf = zeros(len(time))
    Foarlock = zeros(len(time))
-   
+
    handlepos = 0
 
    # initial handle and boat velocities
@@ -1700,7 +1700,7 @@ def energybalance_old(F,crew,rigging,v0=4.3801,dt=0.03,doplot=1,doprint=0,
       else:
          Fi = crew.forceprofile(F,handlepos)
       Fhandle[i-1] = Fi
-      Fblade[i-1] = Fi*lin/lout 
+      Fblade[i-1] = Fi*lin/lout
       res = blade_force(oarangle[i-1],rigging,vb[i-1],Fblade[i-1])
       phidot = res[0]
 #      for u in range(5):
@@ -1734,10 +1734,10 @@ def energybalance_old(F,crew,rigging,v0=4.3801,dt=0.03,doplot=1,doprint=0,
 
       Pf[i-1] = Nrowers*Fblade[i-1]*xdot[i]*np.cos(oarangle[i-1])
 
-      oarangle[i] = rigging.oarangle(handlepos)  
+      oarangle[i] = rigging.oarangle(handlepos)
 
       i = i+1
-      
+
    i=i-1;
 
    # recovery
@@ -1766,7 +1766,7 @@ def energybalance_old(F,crew,rigging,v0=4.3801,dt=0.03,doplot=1,doprint=0,
          xdotdot[k] = zdotdot[k]-((Nrowers*mc)/((Nrowers*mc)+mb))*ydotdot[k]
          handlepos = handlepos+vhand[k]*dt
          oarangle[k] = rigging.oarangle(handlepos)
-      
+
    else:
       vavgrec = d/trecovery
       vcrecovery = zeros(aantal)
@@ -1791,9 +1791,9 @@ def energybalance_old(F,crew,rigging,v0=4.3801,dt=0.03,doplot=1,doprint=0,
          handlepos = d+d*crew.dxhandle(vavgrec,trecovery,time[k]-time[i])
 #         handlepos = handlepos+vhand*dt
          oarangle[k] = rigging.oarangle(handlepos)
-      
 
-# blade positions      
+
+# blade positions
    xblade=dt*cumsum(vb)-np.sin(oarangle)*lout
    yblade=lout*np.cos(oarangle)+rigging.spread
 
@@ -1807,7 +1807,7 @@ def energybalance_old(F,crew,rigging,v0=4.3801,dt=0.03,doplot=1,doprint=0,
    ydotdot[1]=(ydot[1]-ydot[0])/dt
 
    Pq = (Nrowers*mc)*(xdotdot+ydotdot)*ydot
-   
+
    Ekinb1 = 0.5*mb*xdot**2 - 0.5*mb*v0**2
    Ekinc1 = 0.5*mc*(xdot+ydot)**2 - 0.5*mc*v0**2
 
@@ -1889,7 +1889,7 @@ def energybalance_old(F,crew,rigging,v0=4.3801,dt=0.03,doplot=1,doprint=0,
       pyplot.xlabel("time (s)")
       pyplot.ylabel('power (W)')
       pyplot.show()
-      
+
    if (doplot==3):
       pyplot.clf()
       pyplot.subplot(111)
@@ -1901,7 +1901,7 @@ def energybalance_old(F,crew,rigging,v0=4.3801,dt=0.03,doplot=1,doprint=0,
       pyplot.xlabel("time (s)")
       pyplot.ylabel('energy (J)')
       pyplot.show()
-      
+
    if (doplot==4):
       pyplot.clf()
       pyplot.subplot(111)
@@ -1913,7 +1913,7 @@ def energybalance_old(F,crew,rigging,v0=4.3801,dt=0.03,doplot=1,doprint=0,
       pyplot.xlabel("time (s)")
       pyplot.ylabel('power (W)')
       pyplot.show()
-      
+
    if (doplot==5):
       pyplot.clf()
       pyplot.subplot(111)
@@ -1926,7 +1926,7 @@ def energybalance_old(F,crew,rigging,v0=4.3801,dt=0.03,doplot=1,doprint=0,
       pyplot.xlabel("time (s)")
       pyplot.ylabel('energy (J)')
       pyplot.show()
-      
+
    if (doplot==6):
       pyplot.clf()
       pyplot.subplot(121)
@@ -1944,7 +1944,7 @@ def energybalance_old(F,crew,rigging,v0=4.3801,dt=0.03,doplot=1,doprint=0,
       pyplot.ylabel('power (W)')
 
       pyplot.show()
-      
+
    if (doplot==7):
       pyplot.clf()
       pyplot.plot(time, Ew+Ediss+Ekinb+Ekinc+Eblade, 'r-', label = 'Total Sinks')
@@ -1971,7 +1971,7 @@ def energybalance_old(F,crew,rigging,v0=4.3801,dt=0.03,doplot=1,doprint=0,
       ax1 = pyplot.subplot(111)
 
       pyplot.plot(xblade,yblade,label='blade centre')
-      
+
       pylab.legend(loc='best')
       pyplot.xlabel("x (m)")
       pyplot.ylabel('y (m)')
@@ -2000,7 +2000,7 @@ def energybalance_old(F,crew,rigging,v0=4.3801,dt=0.03,doplot=1,doprint=0,
       pyplot.xlabel("time (s)")
       pyplot.ylabel('Force (N)')
       pyplot.show()
-      
+
 
    dv = zdot[len(time)-1]-zdot[0]
    vavg = mean(xdot)
@@ -2009,7 +2009,7 @@ def energybalance_old(F,crew,rigging,v0=4.3801,dt=0.03,doplot=1,doprint=0,
    efficiency = max(Ew-Eloss)/energy
    energy = energy/Nrowers
    power = energy*tempo/60.
-   
+
    return [dv,vend,vavg,ratio,energy,power,efficiency]
 
 
@@ -2070,7 +2070,7 @@ def atkinsoncalc(F,crew,rigging,v0=4.3801,dt=0.03,doplot=1,doprint=0,
 
    Pf = zeros(len(time))
    Foarlock = zeros(len(time))
-   
+
    handlepos = 0
 
    # initial handle and boat velocities
@@ -2102,13 +2102,13 @@ def atkinsoncalc(F,crew,rigging,v0=4.3801,dt=0.03,doplot=1,doprint=0,
        xdot[i] = zdot[i]-((Nrowers*mc)/((Nrowers*mc)+mb))*ydot[i]
 
        Fi = crew.forceprofile(F,handlepos)
-       Fbladei = Fi*lin/lout 
+       Fbladei = Fi*lin/lout
        res = blade_force(oarangle[i-1],rigging,vb[i-1],Fbladei)
        phidot2 = res[0]
        vhand2 = phidot2*lin*np.cos(oarangle[i-1])
        vcstroke2 = crew.vcm(vhand2,handlepos)
 
-       
+
        vblade = xdot[i]-phidot*lout*np.cos(oarangle[i-1])
 #       print(i,vhand,vhand2,vcstroke,vcstroke2)
        vs[i] = zdot[i]
@@ -2121,7 +2121,7 @@ def atkinsoncalc(F,crew,rigging,v0=4.3801,dt=0.03,doplot=1,doprint=0,
 
        handlepos = handlepos+ydot[i]*dt
        Fhandle[i] = 0
-       
+
        oarangle[i] = rigging.oarangle(handlepos)
        i = i+1
 
@@ -2163,10 +2163,10 @@ def atkinsoncalc(F,crew,rigging,v0=4.3801,dt=0.03,doplot=1,doprint=0,
 
       Pf[i-1] = Nrowers*Fblade[i-1]*xdot[i]*np.cos(oarangle[i-1])
 
-      oarangle[i] = rigging.oarangle(handlepos)  
+      oarangle[i] = rigging.oarangle(handlepos)
 
       i = i+1
-      
+
    i=i-1;
 
    # recovery
@@ -2195,7 +2195,7 @@ def atkinsoncalc(F,crew,rigging,v0=4.3801,dt=0.03,doplot=1,doprint=0,
          xdotdot[k] = zdotdot[k]-((Nrowers*mc)/((Nrowers*mc)+mb))*ydotdot[k]
          handlepos = handlepos+vhand[k]*dt
          oarangle[k] = rigging.oarangle(handlepos)
-      
+
    else:
       vavgrec = d/trecovery
       vcrecovery = zeros(aantal)
@@ -2220,9 +2220,9 @@ def atkinsoncalc(F,crew,rigging,v0=4.3801,dt=0.03,doplot=1,doprint=0,
          handlepos = d+d*crew.dxhandle(vavgrec,trecovery,time[k]-time[i])
 #         handlepos = handlepos+vhand*dt
          oarangle[k] = rigging.oarangle(handlepos)
-      
 
-# blade positions      
+
+# blade positions
    xblade=dt*cumsum(vb)-np.sin(oarangle)*lout
    yblade=lout*np.cos(oarangle)+rigging.spread
 
@@ -2236,7 +2236,7 @@ def atkinsoncalc(F,crew,rigging,v0=4.3801,dt=0.03,doplot=1,doprint=0,
    ydotdot[1]=(ydot[1]-ydot[0])/dt
 
    Pq = (Nrowers*mc)*(xdotdot+ydotdot)*ydot
-   
+
 #   Ekinb = 0.5*mb*xdot**2 - 0.5*mb*v0**2
 #   Ekinc = 0.5*mc*(xdot+ydot)**2 - 0.5*mc*v0**2
 
@@ -2314,7 +2314,7 @@ def atkinsoncalc(F,crew,rigging,v0=4.3801,dt=0.03,doplot=1,doprint=0,
       pyplot.xlabel("time (s)")
       pyplot.ylabel('power (W)')
       pyplot.show()
-      
+
    if (doplot==3):
       pyplot.clf()
       pyplot.subplot(111)
@@ -2326,7 +2326,7 @@ def atkinsoncalc(F,crew,rigging,v0=4.3801,dt=0.03,doplot=1,doprint=0,
       pyplot.xlabel("time (s)")
       pyplot.ylabel('energy (J)')
       pyplot.show()
-      
+
    if (doplot==4):
       pyplot.clf()
       pyplot.subplot(111)
@@ -2338,7 +2338,7 @@ def atkinsoncalc(F,crew,rigging,v0=4.3801,dt=0.03,doplot=1,doprint=0,
       pyplot.xlabel("time (s)")
       pyplot.ylabel('power (W)')
       pyplot.show()
-      
+
    if (doplot==5):
       pyplot.clf()
       pyplot.subplot(111)
@@ -2351,7 +2351,7 @@ def atkinsoncalc(F,crew,rigging,v0=4.3801,dt=0.03,doplot=1,doprint=0,
       pyplot.xlabel("time (s)")
       pyplot.ylabel('energy (J)')
       pyplot.show()
-      
+
    if (doplot==6):
       pyplot.clf()
       pyplot.subplot(121)
@@ -2369,7 +2369,7 @@ def atkinsoncalc(F,crew,rigging,v0=4.3801,dt=0.03,doplot=1,doprint=0,
       pyplot.ylabel('power (W)')
 
       pyplot.show()
-      
+
    if (doplot==7):
       pyplot.clf()
       pyplot.plot(time, Ew+Ediss+Ekinb+Ekinc+Eblade, 'r-', label = 'Total Sinks')
@@ -2396,7 +2396,7 @@ def atkinsoncalc(F,crew,rigging,v0=4.3801,dt=0.03,doplot=1,doprint=0,
       ax1 = pyplot.subplot(111)
 
       pyplot.plot(xblade,yblade,label='blade centre')
-      
+
       pylab.legend(loc='best')
       pyplot.xlabel("x (m)")
       pyplot.ylabel('y (m)')
@@ -2443,7 +2443,7 @@ def atkinsoncalc(F,crew,rigging,v0=4.3801,dt=0.03,doplot=1,doprint=0,
    power = energy*tempo/60.
    vmin = min(xdot)
    vmax = max(xdot)
-   
+
    return [dv,vend,vavg,ratio,energy,power,efficiency,vmin,vmax]
 
 
@@ -2454,7 +2454,7 @@ def stroke(F,crew,rigging,v0,dt,aantal,doplot=0,timewise=0,catchacceler=5,
     over those strokes
 
     """
-    
+
     dv=0
     vend=0
     vavg=0
@@ -2527,7 +2527,7 @@ def stroke_erg(ratio,crew,erg,w0,dt,aantal,doplot=0,theconst=0.0):
     """ Calculates a number (aantal) erg strokes and returns
     parameters averaged over the strokes
     """
-    
+
     dv=0
     wend=0
     wavg=0
@@ -2554,7 +2554,7 @@ def stroke_erg(ratio,crew,erg,w0,dt,aantal,doplot=0,theconst=0.0):
     dv = dv/aantal
     wend = wend/aantal
     wavg = wavg/aantal
-    
+
 
     energy = energy/aantal
     power = power/aantal
@@ -2607,7 +2607,7 @@ def constantwatt(watt,crew,rigging,timestep=0.03,aantal=5,
     ratios = zeros(aantal)
     energies = zeros(aantal)
     tcatchacceler = catchacceler
-   
+
     for i in range(len(F)):
         # een paar halen om op snelheid te komen
         dv = 1
@@ -2657,7 +2657,7 @@ def constantwatt(watt,crew,rigging,timestep=0.03,aantal=5,
         energies[i] = res[4]
         power[i] = res[5]
 
-   
+
     fres = sr_interpol1(F,power,watt)
 
     while (dv/vend > 0.001):
@@ -2668,7 +2668,7 @@ def constantwatt(watt,crew,rigging,timestep=0.03,aantal=5,
         vend = res[1]
         tcatchacceler = res[14]
 
-   
+
     res = stroke(fres,crew,rigging,vend,timestep,10,catchacceler=tcatchacceler,
                  dowind=dowind,windv=windv)
     vavg = res[2]
@@ -2691,7 +2691,7 @@ def constantwattfast(watt,crew,rigging,timestep=0.03,aantal=5,
     ratios = zeros(aantal)
     energies = zeros(aantal)
     tcatchacceler = catchacceler
-   
+
     for i in range(len(F)):
         # een paar halen om op snelheid te komen
         dv = 1
@@ -2705,7 +2705,7 @@ def constantwattfast(watt,crew,rigging,timestep=0.03,aantal=5,
             vend = res[1]
             tcatchacceler = res[14]
             count += 1
-            
+
         res = stroke(F[i],crew,rigging,vend,timestep,10,
                      dowind=dowind,windv=windv)
         velocity[i] = res[2]
@@ -2726,7 +2726,7 @@ def constantwattfast(watt,crew,rigging,timestep=0.03,aantal=5,
         tcatchacceler = res[14]
         count += 1
 
-   
+
     res = stroke(fres,crew,rigging,vend,timestep,10,catchacceler=tcatchacceler,
                  dowind=dowind,windv=windv)
     vavg = res[2]
@@ -2742,7 +2742,7 @@ def constantwatt_erg(watt,crew,erg,timestep=0.03,aantal=5,
    """ Returns drive/recovery ratio, force given an input power (watt)
 
    The power is the total power (not only what the erg display shows)
-   
+
    """
 
    F = linspace(ratiomin,ratiomax,aantal)
@@ -2751,7 +2751,7 @@ def constantwatt_erg(watt,crew,erg,timestep=0.03,aantal=5,
    powerd = zeros(aantal)
    ratios = zeros(aantal)
    energies = zeros(aantal)
-   
+
    for i in range(len(F)):
        # een paar halen om op snelheid te komen
 
@@ -2769,7 +2769,7 @@ def constantwatt_erg(watt,crew,erg,timestep=0.03,aantal=5,
        power[i] = res[5]
        powerd[i] = res[6]
 
-       
+
 
 #   fres = sr_interpol3(F,power,watt)
    fres = sr_interpol4(F,power,watt)
@@ -2796,21 +2796,21 @@ def constantwatt_erg(watt,crew,erg,timestep=0.03,aantal=5,
               vend = res[1]
           except:
               pass
-          
+
       res = stroke_erg(F[i],crew,erg,vend,timestep,10,theconst=theconst)
       velocity[i] = res[2]
       ratios[i] = res[3]
       energies[i] = res[4]
       power[i] = res[5]
       powerd[i] = res[6]
-   
+
 
 #   fres = sr_interpol3(F,power,watt)
    fres = sr_interpol4(F,power,watt)
-   
+
    while (dv/vend > 0.001):
       res = energybalance_erg(fres,crew,erg,vend,timestep,0,theconst=theconst)
-   
+
    res = stroke_erg(fres,crew,erg,vend,timestep,10,theconst=theconst)
    vavg = res[2]
    ratio = res[3]
@@ -2824,7 +2824,7 @@ def constantwatt_ergtempo(watt,crew,erg,timestep=0.03,aantal=5,
    """ Returns drive/recovery ratio, force given an input power (watt)
 
    The power is the total power (not only what the erg display shows)
-   
+
    """
 
    F = linspace(tempomin,tempomax,aantal)
@@ -2833,7 +2833,7 @@ def constantwatt_ergtempo(watt,crew,erg,timestep=0.03,aantal=5,
    powerd = zeros(aantal)
    ratios = zeros(aantal)
    energies = zeros(aantal)
-   
+
    for i in range(len(F)):
        # een paar halen om op snelheid te komen
 
@@ -2852,7 +2852,7 @@ def constantwatt_ergtempo(watt,crew,erg,timestep=0.03,aantal=5,
        power[i] = res[5]
        powerd[i] = res[6]
 
-       
+
 
    fres = sr_interpol3(F,power,watt)
 
@@ -2879,21 +2879,21 @@ def constantwatt_ergtempo(watt,crew,erg,timestep=0.03,aantal=5,
               vend = res[1]
           except:
               pass
-          
+
       res = stroke_erg(ratio,crew,erg,vend,timestep,10,theconst=theconst)
       velocity[i] = res[2]
       ratios[i] = res[3]
       energies[i] = res[4]
       power[i] = res[5]
       powerd[i] = res[6]
-   
+
 
    fres = sr_interpol3(F,power,watt)
    crew.tempo = fres
 
    while (dv/vend > 0.001):
       res = energybalance_erg(ratio,crew,erg,vend,timestep,0,theconst=theconst)
-   
+
    res = stroke_erg(ratio,crew,erg,vend,timestep,10,theconst=theconst)
    vavg = res[2]
    ratio = res[3]
@@ -2941,7 +2941,7 @@ def constantwatt_ergdisplay(watt,crew,erg,timestep=0.03,aantal=10,
    powerd = zeros(aantal)
    ratios = zeros(aantal)
    energies = zeros(aantal)
-   
+
    for i in range(len(F)):
       # een paar halen om op snelheid te komen
       dv = 1
@@ -2991,7 +2991,7 @@ def constantwatt_ergdisplay(watt,crew,erg,timestep=0.03,aantal=10,
 
    while (dv/vend > 0.001):
       res = energybalance_erg(fres,crew,erg,vend,timestep,0,theconst=theconst)
-   
+
    res = stroke_erg(fres,crew,erg,vend,timestep,10,theconst=theconst)
    vavg = res[2]
    ratio = res[3]
@@ -3006,14 +3006,14 @@ def constantvelo(velo,crew,rigging,timestep=0.03,aantal=5,
    average boat speed of velo
 
    """
-   
+
    F = linspace(Fmin,Fmax,aantal)
    velocity = zeros(aantal)
    power = zeros(aantal)
    ratios = zeros(aantal)
    energies = zeros(aantal)
    tcatchacceler=catchacceler
-   
+
    for i in range(len(F)):
       # een paar halen om op snelheid te komen
       dv = 1
@@ -3062,7 +3062,7 @@ def constantvelo(velo,crew,rigging,timestep=0.03,aantal=5,
       ratios[i] = res[3]
       energies[i] = res[4]
       power[i] = res[5]
-   
+
    fres = sr_interpol1(F,velocity,velo)
 
    while (dv/vend > 0.001):
@@ -3073,7 +3073,7 @@ def constantvelo(velo,crew,rigging,timestep=0.03,aantal=5,
       tcatchacceler = res[14]
       dv=res[0]
 
-   
+
    res = stroke(fres,crew,rigging,vend,timestep,10,
                 windv=windv,dowind=dowind)
    vavg = res[2]
@@ -3092,14 +3092,14 @@ def constantvelofast(velo,crew,rigging,timestep=0.03,aantal=5,
    Cuts a few corners to speed up the calculation
 
    """
-   
+
    F = linspace(Fmin,Fmax,aantal)
    velocity = zeros(aantal)
    power = zeros(aantal)
    ratios = zeros(aantal)
    energies = zeros(aantal)
    tcatchacceler=catchacceler
-   
+
    for i in range(len(F)):
       # een paar halen om op snelheid te komen
       dv = 1
@@ -3130,7 +3130,7 @@ def constantvelofast(velo,crew,rigging,timestep=0.03,aantal=5,
       tcatchacceler = res[14]
       dv=res[0]
 
-   
+
    res = stroke(fres,crew,rigging,vend,timestep,10,
                 dowind=dowind,windv=windv)
    vavg = res[2]
@@ -3148,14 +3148,14 @@ def constantratio(ratio,crew,rigging,timestep=0.03,aantal=5,
    certain drive/recovery ratio
 
    """
-  
+
    F = linspace(Fmin,Fmax,aantal)
    velocity = zeros(aantal)
    power = zeros(aantal)
    ratios = zeros(aantal)
    energies = zeros(aantal)
    tcatchacceler=catchacceler
-   
+
    for i in range(len(F)):
       # een paar halen om op snelheid te komen
       dv = 1
@@ -3204,7 +3204,7 @@ def constantratio(ratio,crew,rigging,timestep=0.03,aantal=5,
       ratios[i] = res[3]
       energies[i] = res[4]
       power[i] = res[5]
-   
+
    fres = sr_interpol1(F,ratios,ratio)
 
    while (dv/vend > 0.001):
@@ -3215,7 +3215,7 @@ def constantratio(ratio,crew,rigging,timestep=0.03,aantal=5,
       tcatchacceler = res[14]
       dv=res[0]
 
-   
+
    res = stroke(fres,crew,rigging,vend,timestep,10,
                 windv=windv,dowind=dowind)
    vavg = res[2]
@@ -3237,7 +3237,7 @@ def constantrecovery(trecovery,crew,rigging,timestep=0.03,
    power = zeros(aantal)
    ratios = zeros(aantal)
    energies = zeros(aantal)
-   
+
    tstroke = 60./crew.tempo
    tratio = (tstroke-trecovery)/tstroke
 
@@ -3284,13 +3284,13 @@ def constantrecovery(trecovery,crew,rigging,timestep=0.03,
       ratios[i] = res[3]
       energies[i] = res[4]
       power[i] = res[5]
-   
+
    fres = sr_interpol1(F,ratios,tratio)
 
    while (dv/vend > 0.001):
       res = energybalance(fres,crew,rigging,vend,timestep,0,
                           windv=windv,dowind=dowind)
-   
+
    res = stroke(fres,crew,rigging,vend,timestep,10,
                 windv=windv,dowind=dowind)
    vavg = res[2]
@@ -3298,7 +3298,7 @@ def constantrecovery(trecovery,crew,rigging,timestep=0.03,
    trecovery = (1-ratio)*tstroke
    pw = res[5]
    eff = res[6]
-   vend  = res[1] 
+   vend  = res[1]
 
    print(("vend",vend,res[1]))
 
@@ -3308,14 +3308,14 @@ def constantrecovery(trecovery,crew,rigging,timestep=0.03,
 def drag_skif():
     """ Plots the drag of a single as a function of boat speed
     """
-    
+
     velo = linspace(0,8,100)
 
     crewweight = 80.0
     boatweight = 14.0
 
     displacement = crewweight+boatweight
-    
+
     a2 = 3.5
 
     W1 = drag_eq(displacement,velo,alfaref=alfa*dragform)
@@ -3330,21 +3330,21 @@ def drag_skif():
 
     pyplot.show()
 
-    
+
 
     return 1
 
 def drag_eight():
     """ Plots the drag force of an eight
     """
-    
+
     velo = linspace(0,8,100)
 
     crewweight = 8*80.0
     boatweight = 98.0
 
     displacement = crewweight+boatweight
-    
+
     a2 = 3.5
     a_eight = a2*(displacement/(94.0))**(2./3.)
 
@@ -3360,21 +3360,21 @@ def drag_eight():
 
     pyplot.show()
 
-    
+
 
     return 1
 
 def drag_pair():
     """ Plots the drag force of a pair
     """
-    
+
     velo = linspace(0,8,100)
 
     crewweight = 2*80.0
     boatweight = 27.0
 
     displacement = crewweight+boatweight
-    
+
     a2 = 3.5
     a_pair = a2*(displacement/(94.0))**(2./3.)
 
@@ -3390,7 +3390,7 @@ def drag_pair():
 
     pyplot.show()
 
-    
+
 
     return 1
 
@@ -3418,12 +3418,12 @@ def powertoerg(pw,ratio,crew,erg):
 #   ergpower = pw-kinpower
 
    result = constantwatt_erg(pw,crew,erg)
-   
+
    ergpower = result[4]
    kinpower = pw-ergpower
 
    ergvelo = (ergpower/2.8)**(1./3.)
-   
+
    ergminsec = vavgto500mtime(ergvelo)
 
    ergsplit = str(int(round(ergminsec[0])))+':'+str(int(round(ergminsec[1])))
@@ -3460,7 +3460,7 @@ def ergtopower(min,sec,ratio,crew,erg):
 #   kinpower = (Emaxstroke+Emaxrecovery)/timetotal
    velo = 500./(60.*min+sec)
    ergpower = 2.8*velo**3
-   
+
    result = constantwatt_ergdisplay(ergpower,crew,erg,theconst=1.0)
    totalpower = result[3]
    kinpower = totalpower-ergpower
@@ -3472,7 +3472,7 @@ def ergtoboatspeed(min,sec,ratio,crew,rigging,erg):
    """
    res = ergtopower(min,sec,ratio,crew,erg)
    pw = res[0]
-   
+
    res = constantwatt(pw,crew,rigging)
 
    return res
