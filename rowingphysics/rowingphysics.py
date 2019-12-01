@@ -407,10 +407,11 @@ def energybalance(F,crew,rigging,v0=4.3801,dt=0.03,doplot=1,doprint=0,
 
         vcstroke = crew.vcm(vhand, handlepos)
         phidot = vb[i-1]*np.cos(oarangle[i-1])
-        vhand = phidot*lin*np.cos(oarangle[i-1])
+        # vhand = phidot*lin*np.cos(oarangle[i-1])
         ydot[i] = vcstroke
         Fdrag = drag_eq((Nrowers*mc)+mb,xdot[i-1],alfaref=alfa*dragform)
         zdotdot[i] = -Fdrag/((Nrowers*mc)+mb)
+
         vw = windv-vcstroke-zdot[i-1]
         Fwind = 0.5*crewarea*Cdw*rho_air*(Nrowers**scalepower)*vw*abs(vw)*dowind
         #       print(Fwind,crewarea,dowind)
@@ -420,14 +421,16 @@ def energybalance(F,crew,rigging,v0=4.3801,dt=0.03,doplot=1,doprint=0,
 
         Fi = crew.forceprofile(F,handlepos)
         Fbladei = Fi*lin/lout
+
         res = blade_force(oarangle[i-1],rigging,vb[i-1],Fbladei)
+
         phidot2 = res[0]
         vhand2 = phidot2*lin*np.cos(oarangle[i-1])
         vcstroke2 = crew.vcm(vhand2,handlepos)
 
 
         vblade = xdot[i]-phidot*lout*np.cos(oarangle[i-1])
-        #       print(i,vhand,vhand2,vcstroke,vcstroke2)
+
         vs[i] = zdot[i]
         vc[i] = xdot[i]+ydot[i]
         vb[i] = xdot[i]
@@ -440,7 +443,10 @@ def energybalance(F,crew,rigging,v0=4.3801,dt=0.03,doplot=1,doprint=0,
         Fhandle[i] = 0
 
         oarangle[i] = rigging.oarangle(handlepos)
+
         i = i+1
+
+
 
     # stroke
     while (handlepos<d) & (i<len(time)):
@@ -465,6 +471,7 @@ def energybalance(F,crew,rigging,v0=4.3801,dt=0.03,doplot=1,doprint=0,
 
         vcstroke = crew.vcm(vhand, handlepos)
         Pbladeslip[i-1] = Nrowers*res[1]*(phidot*lout - vb[i-1]*np.cos(oarangle[i-1]))
+        
         Fdrag = drag_eq((Nrowers*mc)+mb,xdot[i-1],alfaref=alfa*dragform)
         zdotdot[i] = (Fprop[i-1] - Fdrag)/((Nrowers*mc)+mb)
 
@@ -565,6 +572,7 @@ def energybalance(F,crew,rigging,v0=4.3801,dt=0.03,doplot=1,doprint=0,
     xdot = vb
     zdot = vs
     ydot = vc-vb
+
 
     xdotdot[1]=(xdot[1]-xdot[0])/dt
     ydotdot[1]=(ydot[1]-ydot[0])/dt
@@ -894,21 +902,6 @@ def energybalance(F,crew,rigging,v0=4.3801,dt=0.03,doplot=1,doprint=0,
 
        pyplot.show()
 
-    try:
-        instanteff = (Pf+Pq)/(Pf+Pq+Pbladeslip)
-    except RuntimeWarning:
-        instanteff = 0.0
-
-
-
-    if (doplot==17):
-       pyplot.clf()
-       pyplot.plot(time, instanteff, 'r-', label = 'Efficiency')
-       pylab.legend(loc='upper right')
-       pyplot.xlabel("time (s)")
-       pyplot.ylabel("Efficiency")
-       pyplot.show()
-
     # calculate check
     decel = -(abs(xdotdot[index_offset:])-xdotdot[index_offset:])/2.
     indices = decel.nonzero()
@@ -945,7 +938,10 @@ def energybalance(F,crew,rigging,v0=4.3801,dt=0.03,doplot=1,doprint=0,
     catchacceler = max(5,ydotdot[aantal-1]-xdotdot[aantal-1])
 
 
-    return [dv,vend,vavg,ratio,energy,power,efficiency,vmax,vmin,cn_check,RIM_E,RIM_check,RIM_catchE,RIM_catchD,catchacceler,drag_eff]
+    return [
+        dv,vend,vavg,ratio,energy,
+        power,efficiency,vmax,vmin,
+        cn_check,RIM_E,RIM_check,RIM_catchE,RIM_catchD,catchacceler,drag_eff]
 
 def energybalance_erg(ratio,crew,erg,w0=4.3801,dt=0.03,doplot=1,doprint=0,theconst=1.0):
    """
