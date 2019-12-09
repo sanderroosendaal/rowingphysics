@@ -471,7 +471,7 @@ def energybalance(F,crew,rigging,v0=4.3801,dt=0.03,doplot=1,doprint=0,
 
         vcstroke = crew.vcm(vhand, handlepos)
         Pbladeslip[i-1] = Nrowers*res[1]*(phidot*lout - vb[i-1]*np.cos(oarangle[i-1]))
-        
+
         Fdrag = drag_eq((Nrowers*mc)+mb,xdot[i-1],alfaref=alfa*dragform)
         zdotdot[i] = (Fprop[i-1] - Fdrag)/((Nrowers*mc)+mb)
 
@@ -542,8 +542,9 @@ def energybalance(F,crew,rigging,v0=4.3801,dt=0.03,doplot=1,doprint=0,
             Fdrag = drag_eq((Nrowers*mc)+mb,xdot[k-1],alfaref=alfa*dragform)
             zdotdot[k] = (- Fdrag)/((Nrowers*mc)+mb)
 
-            vw = windv-vcstroke-zdot[k-1]
+            vw = windv-vcrecovery[k]-zdot[k-1]
             Fwind = 0.5*crewarea*Cdw*rho_air*(Nrowers**scalepower)*vw*abs(vw)*dowind
+        
             zdotdot[k] = zdotdot[k] + Fwind/((Nrowers*mc)+mb)
 
 
