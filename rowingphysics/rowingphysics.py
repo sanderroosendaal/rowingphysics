@@ -6,7 +6,7 @@ from six.moves import input
 import math
 import time
 import pickle
-import pylab
+
 import numpy as np
 import pandas as pd
 
@@ -102,7 +102,7 @@ def testbladeforce(fhandle,rigging,vb,oarangle=0.01,aantal=10):
     pyplot.subplot(111)
     pyplot.plot(itern, Fb,'ro',label = 'Blade Force')
     pyplot.plot(itern, Fdol,'bo',label = 'Oarlock Force')
-    pylab.legend()
+    pyplot.legend()
     pyplot.xlabel("Iteration")
     pyplot.ylabel('Force (N)')
     pyplot.show()
@@ -239,7 +239,7 @@ def empirical(datafile,vavg,crew,rigging,tstroke,trecovery,doplot=1):
       pyplot.plot(emptime,xdotdot, 'r-',label = 'Measured Boat Acceleration')
       pyplot.plot(emptime,ydotdot+xdotdot,'b-',label = 'Crew Acceleration')
       pyplot.plot(emptime,zdotdot,'g-',label = 'System Acceleration')
-      pylab.legend(loc='upper left')
+      pyplot.legend(loc='upper left')
       pyplot.xlabel("time (s)")
       pyplot.ylabel('a (m/s^2)')
       pyplot.show()
@@ -249,7 +249,7 @@ def empirical(datafile,vavg,crew,rigging,tstroke,trecovery,doplot=1):
       pyplot.plot(emptime, xdot, 'r-',label = 'Boat Speed')
       pyplot.plot(emptime, xdot+ydot, 'b-',label = 'Crew Speed')
       pyplot.plot(emptime, zdot, 'g-',label = 'System speed')
-      pylab.legend(loc='lower left')
+      pyplot.legend(loc='lower left')
       pyplot.xlabel("time (s)")
       pyplot.ylabel('v (m/s)')
       pyplot.show()
@@ -261,7 +261,7 @@ def empirical(datafile,vavg,crew,rigging,tstroke,trecovery,doplot=1):
         pyplot.plot(emptime, Fblade, 'b-',label = 'Fblade')
         pyplot.plot(emptime, Ffoot,'y-', label = 'Ffoot')
         pyplot.plot(emptime, Fhandle,'k-', label = 'Fhandle')
-        pylab.legend(loc='upper left')
+        pyplot.legend(loc='upper left')
         pyplot.xlabel("time (s)")
         pyplot.ylabel("F (N)")
         pyplot.show()
@@ -272,7 +272,7 @@ def empirical(datafile,vavg,crew,rigging,tstroke,trecovery,doplot=1):
         pyplot.plot(emptime, phidot2, 'g-',label = 'Iteration 2')
         pyplot.plot(emptime, phidot3, 'y-',label = 'Iteration 3')
         pyplot.plot(emptime, phidot, 'b-',label = 'Iteration 4')
-        pylab.legend(loc='lower right')
+        pyplot.legend(loc='lower right')
         pyplot.xlabel("time (s)")
         pyplot.ylabel("rad/s")
         pyplot.show()
@@ -283,7 +283,7 @@ def empirical(datafile,vavg,crew,rigging,tstroke,trecovery,doplot=1):
         pyplot.plot(emptime, numpy.degrees(phi2), 'g-',label = 'Iteration 2')
         pyplot.plot(emptime, numpy.degrees(phi3), 'y-',label = 'Iteration 3')
         pyplot.plot(emptime, numpy.degrees(phi), 'b-',label = 'Iteration 4')
-        pylab.legend(loc='upper left')
+        pyplot.legend(loc='upper left')
         pyplot.xlabel("time (s)")
         pyplot.ylabel("degrees")
         pyplot.show()
@@ -292,7 +292,7 @@ def empirical(datafile,vavg,crew,rigging,tstroke,trecovery,doplot=1):
     if (doplot==6):
         pyplot.clf()
         pyplot.plot(emptime, handlepos, 'r-', label = 'Handle position')
-        pylab.legend(loc='upper left')
+        pyplot.legend(loc='upper left')
         pyplot.xlabel("time (s)")
         pyplot.ylabel("y (m)")
 
@@ -301,7 +301,7 @@ def empirical(datafile,vavg,crew,rigging,tstroke,trecovery,doplot=1):
     if (doplot==7):
         pyplot.clf()
         pyplot.plot(handlepos,Fhandle,'r-', label = 'Handle Force')
-        pylab.legend(loc='upper left')
+        pyplot.legend(loc='upper left')
         pyplot.xlabel("x (m)")
         pyplot.ylabel("F (N)")
         pyplot.show()
@@ -544,7 +544,7 @@ def energybalance(F,crew,rigging,v0=4.3801,dt=0.03,doplot=1,doprint=0,
 
             vw = windv-vcrecovery[k]-zdot[k-1]
             Fwind = 0.5*crewarea*Cdw*rho_air*(Nrowers**scalepower)*vw*abs(vw)*dowind
-        
+
             zdotdot[k] = zdotdot[k] + Fwind/((Nrowers*mc)+mb)
 
 
@@ -677,7 +677,7 @@ def energybalance(F,crew,rigging,v0=4.3801,dt=0.03,doplot=1,doprint=0,
         pyplot.plot(time, zdot,'b-',label = 'CM velocity')
         if (empirical!=0):
             pyplot.plot(emptime, empxdot, 'y-',label = 'Measured')
-        pylab.legend(loc='upper left')
+        pyplot.legend(loc='upper left')
         pyplot.xlabel("time (s)")
         pyplot.ylabel('v (m/s)')
 
@@ -686,7 +686,7 @@ def energybalance(F,crew,rigging,v0=4.3801,dt=0.03,doplot=1,doprint=0,
     if(doplot==18):
         pyplot.clf()
         pyplot.plot(time,numpy.degrees(oarangle),'y.',label='oar angle')
-        pylab.legend(loc='upper right')
+        pyplot.legend(loc='upper right')
         pyplot.ylabel("Oar Angle (o)")
 
         pyplot.show()
@@ -699,7 +699,7 @@ def energybalance(F,crew,rigging,v0=4.3801,dt=0.03,doplot=1,doprint=0,
         pyplot.plot(time, Pq,'b-',label = 'Kinetic power')
         pyplot.plot(time, Pbladeslip,'k-',label = 'Puddle power')
         pyplot.plot(time, Pf+Pq+Pbladeslip,'g-',label = 'Leg power')
-        pylab.legend(loc='upper right')
+        pyplot.legend(loc='upper right')
         pyplot.xlabel("time (s)")
         pyplot.ylabel('power (W)')
         pyplot.show()
@@ -711,7 +711,7 @@ def energybalance(F,crew,rigging,v0=4.3801,dt=0.03,doplot=1,doprint=0,
         pyplot.plot(time, Eqrower,'b-',label = 'Kinetic Energy')
         pyplot.plot(time, Ef+Eqrower+Eblade,'g-',label = 'Total Energy')
         pyplot.plot(time, Eblade,'k-',label = 'Puddle Energy')
-        pylab.legend(loc='upper left')
+        pyplot.legend(loc='upper left')
         pyplot.xlabel("time (s)")
         pyplot.ylabel('energy (J)')
         pyplot.show()
@@ -723,7 +723,7 @@ def energybalance(F,crew,rigging,v0=4.3801,dt=0.03,doplot=1,doprint=0,
         pyplot.plot(time, Pbladeslip,'k-',label = 'Blade slip sink')
         pyplot.plot(time, Pmb,'b-',label = 'Kinetic energy change boat')
         pyplot.plot(time, Pmc,'g-',label = 'Kinetic energy change crew')
-        pylab.legend(loc='upper right')
+        pyplot.legend(loc='upper right')
         pyplot.xlabel("time (s)")
         pyplot.ylabel('power (W)')
         pyplot.show()
@@ -736,7 +736,7 @@ def energybalance(F,crew,rigging,v0=4.3801,dt=0.03,doplot=1,doprint=0,
         pyplot.plot(time, Ekinb,'b-',label = 'Boat Kinetic energy')
         pyplot.plot(time, Ekinc,'g-',label = 'Crew Kinetic energy')
         pyplot.plot(time, Ew+Ediss+Ekinb+Ekinc+Eblade, 'k-', label = 'Ew + Ediss + Ekinb + Ekinc+Eblade')
-        pylab.legend(loc='upper left')
+        pyplot.legend(loc='upper left')
         pyplot.xlabel("time (s)")
         pyplot.ylabel('energy (J)')
         pyplot.show()
@@ -746,14 +746,14 @@ def energybalance(F,crew,rigging,v0=4.3801,dt=0.03,doplot=1,doprint=0,
         pyplot.subplot(121)
         pyplot.plot(time, Pq,'k-',label = 'Kinetic power')
         pyplot.plot(time, 0*Pq, 'k-')
-        pylab.legend(loc='upper right')
+        pyplot.legend(loc='upper right')
         pyplot.xlabel("time (s)")
         pyplot.ylabel('power (W)')
 
         pyplot.subplot(122)
         pyplot.plot(time, Pqrower,'b-',label = 'Kinetic power rower')
         pyplot.plot(time, Pdiss,'k-',label = 'Kinetic energy dissipation')
-        pylab.legend(loc='upper right')
+        pyplot.legend(loc='upper right')
         pyplot.xlabel("time (s)")
         pyplot.ylabel('power (W)')
 
@@ -763,7 +763,7 @@ def energybalance(F,crew,rigging,v0=4.3801,dt=0.03,doplot=1,doprint=0,
         pyplot.clf()
         pyplot.plot(time, Ew+Ediss+Ekinb+Ekinc+Eblade, 'r-', label = 'Total Sinks')
         pyplot.plot(time, Ef+Eqrower+Eblade,'g-',label = 'Total Sources')
-        pylab.legend(loc='lower right')
+        pyplot.legend(loc='lower right')
         pyplot.xlabel("time (s)")
         pyplot.ylabel('energy (J)')
         pyplot.show()
@@ -775,7 +775,7 @@ def energybalance(F,crew,rigging,v0=4.3801,dt=0.03,doplot=1,doprint=0,
         pyplot.plot(time, Pbladeslip,'g-',label = 'Puddle power')
         pyplot.plot(time, Pf, 'y-', label = 'Propulsive power')
         pyplot.plot(time, Pf+Pbladeslip,'k-',label = 'Propulsive+Puddle Power')
-        pylab.legend(loc='upper right')
+        pyplot.legend(loc='upper right')
         pyplot.xlabel("time (s)")
         pyplot.ylabel('power (W)')
         pyplot.show()
@@ -786,7 +786,7 @@ def energybalance(F,crew,rigging,v0=4.3801,dt=0.03,doplot=1,doprint=0,
 
         pyplot.plot(xblade,yblade,label='blade centre')
 
-        pylab.legend(loc='best')
+        pyplot.legend(loc='best')
         pyplot.xlabel("x (m)")
         pyplot.ylabel('y (m)')
         ax1.axis('equal')
@@ -810,7 +810,7 @@ def energybalance(F,crew,rigging,v0=4.3801,dt=0.03,doplot=1,doprint=0,
         pyplot.plot(time, Fhandle, 'r-', label = 'Handle Force')
         pyplot.plot(time, Fblade, 'g-', label = 'Blade Force')
         pyplot.plot(time, Fprop, 'k-', label = 'Propulsive Force')
-        pylab.legend(loc='lower right')
+        pyplot.legend(loc='lower right')
         pyplot.xlabel("time (s)")
         pyplot.ylabel('Force (N)')
         pyplot.show()
@@ -819,7 +819,7 @@ def energybalance(F,crew,rigging,v0=4.3801,dt=0.03,doplot=1,doprint=0,
         pyplot.clf()
         pyplot.plot(numpy.degrees(oarangle), Clift, 'r-', label = 'Lift coefficient')
         pyplot.plot(numpy.degrees(oarangle), Cdrag, 'g-', label = 'Drag coefficient')
-        pylab.legend(loc='lower right')
+        pyplot.legend(loc='lower right')
         pyplot.xlabel("Oar Angle (degree)")
         pyplot.ylabel("Coefficient")
         pyplot.show()
@@ -831,17 +831,17 @@ def energybalance(F,crew,rigging,v0=4.3801,dt=0.03,doplot=1,doprint=0,
         pyplot.plot(numpy.degrees(oarangle), Flift, 'r-', label = 'Lift Force')
         pyplot.plot(numpy.degrees(oarangle), Fbldrag, 'g-', label = 'Drag Force')
         pyplot.plot(numpy.degrees(oarangle), Fbltotal, 'k-', label = 'Total blade Force')
-        pyplot.plot(numpy.degrees(oarangle),numpy.degrees(attackangle),'y.',label='angle of attack')
-        pylab.legend(loc='lower right')
+        # pyplot.plot(numpy.degrees(oarangle),numpy.degrees(attackangle),'y.',label='angle of attack')
+        pyplot.legend(loc='lower right')
         pyplot.xlabel("Oar Angle (degree)")
         pyplot.ylabel("Blade Force")
 
-        ax2 = pyplot.twinx()
-        pyplot.plot(numpy.degrees(oarangle),numpy.degrees(attackangle),'y.',label='angle of attack')
-        pylab.legend(loc='upper right')
-        pyplot.ylabel("Angle of attack (o)")
-        ax2.yaxis.tick_right()
-        ax1 = pyplot.subplot(111)
+        #ax2 = pyplot.twinx()
+        #pyplot.plot(numpy.degrees(oarangle),numpy.degrees(attackangle),'y.',label='angle of attack')
+        #pyplot.legend(loc='upper right')
+        #pyplot.ylabel("Angle of attack (o)")
+        #ax2.yaxis.tick_right()
+        #ax1 = pyplot.subplot(111)
 
         pyplot.show()
 
@@ -850,7 +850,7 @@ def energybalance(F,crew,rigging,v0=4.3801,dt=0.03,doplot=1,doprint=0,
     if (doplot==13):
         pyplot.clf()
         pyplot.plot(time, ydot, 'r-', label = 'Crew velocity')
-        pylab.legend(loc='lower right')
+        pyplot.legend(loc='lower right')
         pyplot.xlabel("time (s)")
         pyplot.ylabel("v (m/s)")
         pyplot.show()
@@ -862,7 +862,7 @@ def energybalance(F,crew,rigging,v0=4.3801,dt=0.03,doplot=1,doprint=0,
         pyplot.plot(time, ydotdot, 'b-', label = 'Crew acceleration')
         if (empirical!=0):
             pyplot.plot(emptime,empxdotdot, 'y-', label = 'Measured')
-        pylab.legend(loc='upper right')
+        pyplot.legend(loc='upper right')
         pyplot.xlabel("time (s)")
         pyplot.ylabel("Boat Acceleration (m/s2)")
         pyplot.show()
@@ -870,7 +870,7 @@ def energybalance(F,crew,rigging,v0=4.3801,dt=0.03,doplot=1,doprint=0,
     if (doplot==15):
         pyplot.clf()
         pyplot.plot(time, ydot, 'r-', label = 'Recovery speed')
-        pylab.legend(loc='upper right')
+        pyplot.legend(loc='upper right')
         pyplot.xlabel("time (s)")
         pyplot.ylabel("Recovery Speed (m/s)")
         pyplot.show()
@@ -878,7 +878,7 @@ def energybalance(F,crew,rigging,v0=4.3801,dt=0.03,doplot=1,doprint=0,
     if (doplot==16):
         pyplot.clf()
         pyplot.plot(time, numpy.degrees(oarangle), 'r-', label = 'Oar Angle')
-        pylab.legend(loc='upper right')
+        pyplot.legend(loc='upper right')
         pyplot.xlabel("time (s)")
         pyplot.ylabel("Oar angle (o)")
         pyplot.show()
@@ -891,13 +891,13 @@ def energybalance(F,crew,rigging,v0=4.3801,dt=0.03,doplot=1,doprint=0,
        pyplot.plot(time, ydotdot, 'b-', label = 'Crew acceleration')
        if (empirical!=0):
            pyplot.plot(emptime,empxdotdot, 'y-', label = 'Measured')
-       pylab.legend(loc='upper right')
+       pyplot.legend(loc='upper right')
        pyplot.xlabel("time (s)")
        pyplot.ylabel("Boat Acceleration (m/s2)")
 
        ax2 = pyplot.twinx()
        pyplot.plot(time,numpy.degrees(oarangle),'y-',label='oar angle')
-       pylab.legend(loc='upper left')
+       pyplot.legend(loc='upper left')
        pyplot.ylabel("Oar Angle (o)")
        ax2.yaxis.tick_right()
 
@@ -1195,7 +1195,7 @@ def energybalance_erg(ratio,crew,erg,w0=4.3801,dt=0.03,doplot=1,doprint=0,thecon
 
       pyplot.plot(time, ydot,'r-',label = 'Crew velocity')
       pyplot.plot(time, vpull,'k-',label = 'Handle velocity')
-      pylab.legend(loc='upper right')
+      pyplot.legend(loc='upper right')
       pyplot.xlabel("time (s)")
       pyplot.ylabel('v (m/s)')
 
@@ -1208,7 +1208,7 @@ def energybalance_erg(ratio,crew,erg,w0=4.3801,dt=0.03,doplot=1,doprint=0,thecon
       pyplot.plot(time, Fhandle,'r-',label = 'Handle force')
       pyplot.plot(time, Fleg,'b-',label = 'Leg force')
       pyplot.plot(time, Fres,'g-',label = 'Accelerating force')
-      pylab.legend(loc='upper right')
+      pyplot.legend(loc='upper right')
       pyplot.xlabel("time (s)")
       pyplot.ylabel('force (N)')
       pyplot.show()
@@ -1221,7 +1221,7 @@ def energybalance_erg(ratio,crew,erg,w0=4.3801,dt=0.03,doplot=1,doprint=0,thecon
       pyplot.plot(time, Pq,'k-',label = 'Kinetic power')
       pyplot.plot(time, Parm,'y-',label = 'Arm power')
       pyplot.plot(time, Pq+Phandle-Parm-Pleg,'b+', label = 'should be zero')
-      pylab.legend(loc='upper right')
+      pyplot.legend(loc='upper right')
       pyplot.xlabel("time (s)")
       pyplot.ylabel('power (W)')
       pyplot.show()
@@ -1235,7 +1235,7 @@ def energybalance_erg(ratio,crew,erg,w0=4.3801,dt=0.03,doplot=1,doprint=0,thecon
       pyplot.plot(time, Ediss,'b-',label = 'Rower body dissipation')
       pyplot.plot(time, Ewheel+Eq+Ew+Ediss+Ebungee, 'b+', label = 'Sinks+Kinetic')
       pyplot.plot(time, Ew+Ediss, 'r+', label = 'Sinks')
-      pylab.legend(loc='upper right')
+      pyplot.legend(loc='upper right')
       pyplot.xlabel("time (s)")
       pyplot.ylabel('Energy (J)')
       pyplot.show()
@@ -1249,7 +1249,7 @@ def energybalance_erg(ratio,crew,erg,w0=4.3801,dt=0.03,doplot=1,doprint=0,thecon
       pyplot.plot(time, Parm, 'r-', label = 'Arm power')
       pyplot.plot(time, Parmdiss,'k-',label = 'Arm dissipation')
       pyplot.plot(time, Parmsource,'k+',label = 'Arm source')
-      pylab.legend(loc='upper left')
+      pyplot.legend(loc='upper left')
       pyplot.xlabel("time (s)")
       pyplot.ylabel('power (W)')
       pyplot.show()
@@ -1264,7 +1264,7 @@ def energybalance_erg(ratio,crew,erg,w0=4.3801,dt=0.03,doplot=1,doprint=0,thecon
       pyplot.plot(time, Earmdiss,'k-',label = 'Arm dissipation')
       pyplot.plot(time, Eqrower+Ewheel+Ebungee, 'y+', label = 'Eqrower+Ewheel+Ecord')
       pyplot.plot(time, Elegsource+Earmsource,'b+', label = 'Sources')
-      pylab.legend(loc='upper left')
+      pyplot.legend(loc='upper left')
       pyplot.xlabel("time (s)")
       pyplot.ylabel('energy (J)')
       pyplot.show()
@@ -1277,7 +1277,7 @@ def energybalance_erg(ratio,crew,erg,w0=4.3801,dt=0.03,doplot=1,doprint=0,thecon
 #      pyplot.plot(time, Elegsource+Earmsource,'go',label = 'Total Sources')
       pyplot.plot(time, Eqrower+Ehandle,'y-',label = 'Total Sources 2')
       pyplot.plot(time, Ewheel+Eq+Ew+Ediss+Ebungee, 'b+', label = 'Sinks+Kinetic')
-      pylab.legend(loc='lower right')
+      pyplot.legend(loc='lower right')
       pyplot.xlabel("time (s)")
       pyplot.ylabel('energy (J)')
       pyplot.show()
@@ -1286,7 +1286,7 @@ def energybalance_erg(ratio,crew,erg,w0=4.3801,dt=0.03,doplot=1,doprint=0,thecon
    if (doplot==8):
       pyplot.clf()
       pyplot.plot(time, ydot, 'r-', label = 'Crew velocity')
-      pylab.legend(loc='lower right')
+      pyplot.legend(loc='lower right')
       pyplot.xlabel("time (s)")
       pyplot.ylabel("v (m/s)")
       pyplot.show()
@@ -1295,7 +1295,7 @@ def energybalance_erg(ratio,crew,erg,w0=4.3801,dt=0.03,doplot=1,doprint=0,thecon
       pyplot.clf()
       wref = wf
       pyplot.plot(time,wref,'r-',label='flywheel speed')
-      pylab.legend(loc='upper right')
+      pyplot.legend(loc='upper right')
       pyplot.xlabel("time (s)")
       pyplot.ylabel("Flywheel speed (rad/sec)")
       pyplot.show()
@@ -1507,7 +1507,7 @@ def energybalance_erg_old(F,crew,erg,w0=4.3801,dt=0.03,doplot=1,doprint=0,
       pyplot.subplot(111)
 
       pyplot.plot(time, ydot,'r-',label = 'Crew velocity')
-      pylab.legend(loc='upper right')
+      pyplot.legend(loc='upper right')
       pyplot.xlabel("time (s)")
       pyplot.ylabel('v (m/s)')
 
@@ -1520,7 +1520,7 @@ def energybalance_erg_old(F,crew,erg,w0=4.3801,dt=0.03,doplot=1,doprint=0,
       pyplot.plot(time, Phandle,'r-',label = 'Handle power')
       pyplot.plot(time, Pq,'b-',label = 'Kinetic power')
       pyplot.plot(time, Phandle+Pq,'g-',label = 'Leg power')
-      pylab.legend(loc='upper right')
+      pyplot.legend(loc='upper right')
       pyplot.xlabel("time (s)")
       pyplot.ylabel('power (W)')
       pyplot.show()
@@ -1532,7 +1532,7 @@ def energybalance_erg_old(F,crew,erg,w0=4.3801,dt=0.03,doplot=1,doprint=0,
       pyplot.plot(time, Eqrower,'b-',label = 'Kinetic Energy')
       pyplot.plot(time, Ebungee,'k-',label = 'Bungee cord energy')
       pyplot.plot(time, Ehandle+Eqrower,'g-',label = 'Total Energy')
-      pylab.legend(loc='upper left')
+      pyplot.legend(loc='upper left')
       pyplot.xlabel("time (s)")
       pyplot.ylabel('energy (J)')
       pyplot.show()
@@ -1542,7 +1542,7 @@ def energybalance_erg_old(F,crew,erg,w0=4.3801,dt=0.03,doplot=1,doprint=0,
       pyplot.subplot(111)
       pyplot.plot(time, Eq,'g-',label = 'Kinetic energy change crew')
       pyplot.plot(time, Ediss,'r-',label = 'Kinetic energy change crew (lost)')
-      pylab.legend(loc='upper right')
+      pyplot.legend(loc='upper right')
       pyplot.xlabel("time (s)")
       pyplot.ylabel('Energy (J)')
       pyplot.show()
@@ -1553,7 +1553,7 @@ def energybalance_erg_old(F,crew,erg,w0=4.3801,dt=0.03,doplot=1,doprint=0,
       pyplot.plot(time, Ew, 'y-', label = 'Drag Energy')
       pyplot.plot(time, Ediss,'g-',label = 'Crew Kinetic energy lost')
       pyplot.plot(time, Ew+Ediss, 'k-', label = 'Ew + Ediss')
-      pylab.legend(loc='upper left')
+      pyplot.legend(loc='upper left')
       pyplot.xlabel("time (s)")
       pyplot.ylabel('energy (J)')
       pyplot.show()
@@ -1563,14 +1563,14 @@ def energybalance_erg_old(F,crew,erg,w0=4.3801,dt=0.03,doplot=1,doprint=0,
       pyplot.subplot(121)
       pyplot.plot(time, Pq,'k-',label = 'Kinetic power')
       pyplot.plot(time, 0*Pq, 'k-')
-      pylab.legend(loc='upper right')
+      pyplot.legend(loc='upper right')
       pyplot.xlabel("time (s)")
       pyplot.ylabel('power (W)')
 
       pyplot.subplot(122)
       pyplot.plot(time, Pqrower,'b-',label = 'Kinetic power rower')
       pyplot.plot(time, Pdiss,'k-',label = 'Kinetic energy dissipation')
-      pylab.legend(loc='upper right')
+      pyplot.legend(loc='upper right')
       pyplot.xlabel("time (s)")
       pyplot.ylabel('power (W)')
 
@@ -1581,7 +1581,7 @@ def energybalance_erg_old(F,crew,erg,w0=4.3801,dt=0.03,doplot=1,doprint=0,
       pyplot.plot(time, Ew+Ediss, 'r-', label = 'Total Sinks')
       pyplot.plot(time, Ehandle+Eqrower,'g-',label = 'Total Sources')
       pyplot.plot(time, Ew+Ediss+Ekinrower+Ekinerg+Ebungee,'k-',label = 'Total Sinks+Stored')
-      pylab.legend(loc='lower right')
+      pyplot.legend(loc='lower right')
       pyplot.xlabel("time (s)")
       pyplot.ylabel('energy (J)')
       pyplot.show()
@@ -1590,7 +1590,7 @@ def energybalance_erg_old(F,crew,erg,w0=4.3801,dt=0.03,doplot=1,doprint=0,
    if (doplot==8):
       pyplot.clf()
       pyplot.plot(time, ydot, 'r-', label = 'Crew velocity')
-      pylab.legend(loc='lower right')
+      pyplot.legend(loc='lower right')
       pyplot.xlabel("time (s)")
       pyplot.ylabel("v (m/s)")
       pyplot.show()
@@ -1599,7 +1599,7 @@ def energybalance_erg_old(F,crew,erg,w0=4.3801,dt=0.03,doplot=1,doprint=0,
       pyplot.clf()
       wref = wf/(2.0*np.pi)
       pyplot.plot(time,wref,'r-',label='flywheel speed')
-      pylab.legend(loc='upper right')
+      pyplot.legend(loc='upper right')
       pyplot.xlabel("time (s)")
       pyplot.ylabel("Flywheel speed (rev/sec)")
       pyplot.show()
@@ -1863,13 +1863,13 @@ def energybalance_old(F,crew,rigging,v0=4.3801,dt=0.03,doplot=1,doprint=0,
       pyplot.plot(time, xdot,'r-',label = 'Boat velocity')
       pyplot.plot(time, xdot+ydot,'g-',label = 'Crew velocity')
       pyplot.plot(time, zdot,'b-',label = 'CM velocity')
-      pylab.legend(loc='upper left')
+      pyplot.legend(loc='upper left')
       pyplot.xlabel("time (s)")
       pyplot.ylabel('v (m/s)')
 
       ax2 = pyplot.twinx()
       pyplot.plot(time,numpy.degrees(oarangle),'y.',label='oar angle')
-      pylab.legend(loc='upper right')
+      pyplot.legend(loc='upper right')
       pyplot.ylabel("Oar Angle (o)")
       ax2.yaxis.tick_right()
 
@@ -1882,7 +1882,7 @@ def energybalance_old(F,crew,rigging,v0=4.3801,dt=0.03,doplot=1,doprint=0,
       pyplot.plot(time, Pq,'b-',label = 'Kinetic power')
       pyplot.plot(time, Pbladeslip,'k-',label = 'Puddle power')
       pyplot.plot(time, Pf+Pq+Pbladeslip,'g-',label = 'Total power')
-      pylab.legend(loc='upper right')
+      pyplot.legend(loc='upper right')
       pyplot.xlabel("time (s)")
       pyplot.ylabel('power (W)')
       pyplot.show()
@@ -1894,7 +1894,7 @@ def energybalance_old(F,crew,rigging,v0=4.3801,dt=0.03,doplot=1,doprint=0,
       pyplot.plot(time, Eqrower,'b-',label = 'Kinetic Energy')
       pyplot.plot(time, Ef+Eqrower+Eblade,'g-',label = 'Total Energy')
       pyplot.plot(time, Eblade,'k-',label = 'Puddle Energy')
-      pylab.legend(loc='upper left')
+      pyplot.legend(loc='upper left')
       pyplot.xlabel("time (s)")
       pyplot.ylabel('energy (J)')
       pyplot.show()
@@ -1906,7 +1906,7 @@ def energybalance_old(F,crew,rigging,v0=4.3801,dt=0.03,doplot=1,doprint=0,
       pyplot.plot(time, Pbladeslip,'k-',label = 'Blade slip sink')
       pyplot.plot(time, Pmb,'b-',label = 'Kinetic energy change boat')
       pyplot.plot(time, Pmc,'g-',label = 'Kinetic energy change crew')
-      pylab.legend(loc='upper right')
+      pyplot.legend(loc='upper right')
       pyplot.xlabel("time (s)")
       pyplot.ylabel('power (W)')
       pyplot.show()
@@ -1919,7 +1919,7 @@ def energybalance_old(F,crew,rigging,v0=4.3801,dt=0.03,doplot=1,doprint=0,
       pyplot.plot(time, Ekinb,'b-',label = 'Boat Kinetic energy')
       pyplot.plot(time, Ekinc,'g-',label = 'Crew Kinetic energy')
       pyplot.plot(time, Ew+Ediss+Ekinb+Ekinc+Eblade, 'k-', label = 'Ew + Ediss + Ekinb + Ekinc+Eblade')
-      pylab.legend(loc='upper left')
+      pyplot.legend(loc='upper left')
       pyplot.xlabel("time (s)")
       pyplot.ylabel('energy (J)')
       pyplot.show()
@@ -1929,14 +1929,14 @@ def energybalance_old(F,crew,rigging,v0=4.3801,dt=0.03,doplot=1,doprint=0,
       pyplot.subplot(121)
       pyplot.plot(time, Pq,'k-',label = 'Kinetic power')
       pyplot.plot(time, 0*Pq, 'k-')
-      pylab.legend(loc='upper right')
+      pyplot.legend(loc='upper right')
       pyplot.xlabel("time (s)")
       pyplot.ylabel('power (W)')
 
       pyplot.subplot(122)
       pyplot.plot(time, Pqrower,'b-',label = 'Kinetic power rower')
       pyplot.plot(time, Pdiss,'k-',label = 'Kinetic energy dissipation')
-      pylab.legend(loc='upper right')
+      pyplot.legend(loc='upper right')
       pyplot.xlabel("time (s)")
       pyplot.ylabel('power (W)')
 
@@ -1946,7 +1946,7 @@ def energybalance_old(F,crew,rigging,v0=4.3801,dt=0.03,doplot=1,doprint=0,
       pyplot.clf()
       pyplot.plot(time, Ew+Ediss+Ekinb+Ekinc+Eblade, 'r-', label = 'Total Sinks')
       pyplot.plot(time, Ef+Eqrower+Eblade,'g-',label = 'Total Sources')
-      pylab.legend(loc='lower right')
+      pyplot.legend(loc='lower right')
       pyplot.xlabel("time (s)")
       pyplot.ylabel('energy (J)')
       pyplot.show()
@@ -1958,7 +1958,7 @@ def energybalance_old(F,crew,rigging,v0=4.3801,dt=0.03,doplot=1,doprint=0,
       pyplot.plot(time, Pbladeslip,'g-',label = 'Puddle power')
       pyplot.plot(time, Pf, 'y-', label = 'Propulsive power')
       pyplot.plot(time, Pf+Pbladeslip,'k-',label = 'Propulsive+Puddle Power')
-      pylab.legend(loc='upper right')
+      pyplot.legend(loc='upper right')
       pyplot.xlabel("time (s)")
       pyplot.ylabel('power (W)')
       pyplot.show()
@@ -1969,7 +1969,7 @@ def energybalance_old(F,crew,rigging,v0=4.3801,dt=0.03,doplot=1,doprint=0,
 
       pyplot.plot(xblade,yblade,label='blade centre')
 
-      pylab.legend(loc='best')
+      pyplot.legend(loc='best')
       pyplot.xlabel("x (m)")
       pyplot.ylabel('y (m)')
       ax1.axis('equal')
@@ -1993,7 +1993,7 @@ def energybalance_old(F,crew,rigging,v0=4.3801,dt=0.03,doplot=1,doprint=0,
       pyplot.plot(time, Fhandle, 'r-', label = 'Handle Force')
       pyplot.plot(time, Fblade, 'g-', label = 'Blade Force')
       pyplot.plot(time, Fprop, 'k-', label = 'Propulsive Force')
-      pylab.legend(loc='lower right')
+      pyplot.legend(loc='lower right')
       pyplot.xlabel("time (s)")
       pyplot.ylabel('Force (N)')
       pyplot.show()
@@ -2288,13 +2288,13 @@ def atkinsoncalc(F,crew,rigging,v0=4.3801,dt=0.03,doplot=1,doprint=0,
       pyplot.plot(time, xdot,'r-',label = 'Boat velocity')
       pyplot.plot(time, xdot+ydot,'g-',label = 'Crew velocity')
       pyplot.plot(time, zdot,'b-',label = 'CM velocity')
-      pylab.legend(loc='upper left')
+      pyplot.legend(loc='upper left')
       pyplot.xlabel("time (s)")
       pyplot.ylabel('v (m/s)')
 
       ax2 = pyplot.twinx()
       pyplot.plot(time,numpy.degrees(oarangle),'y.',label='oar angle')
-      pylab.legend(loc='upper right')
+      pyplot.legend(loc='upper right')
       pyplot.ylabel("Oar Angle (o)")
       ax2.yaxis.tick_right()
 
@@ -2307,7 +2307,7 @@ def atkinsoncalc(F,crew,rigging,v0=4.3801,dt=0.03,doplot=1,doprint=0,
       pyplot.plot(time, Pq,'b-',label = 'Kinetic power')
       pyplot.plot(time, Pbladeslip,'k-',label = 'Puddle power')
       pyplot.plot(time, Pf+Pq+Pbladeslip,'g-',label = 'Total power')
-      pylab.legend(loc='upper right')
+      pyplot.legend(loc='upper right')
       pyplot.xlabel("time (s)")
       pyplot.ylabel('power (W)')
       pyplot.show()
@@ -2319,7 +2319,7 @@ def atkinsoncalc(F,crew,rigging,v0=4.3801,dt=0.03,doplot=1,doprint=0,
       pyplot.plot(time, Eqrower,'b-',label = 'Kinetic Energy')
       pyplot.plot(time, Ef+Eqrower+Eblade,'g-',label = 'Total Energy')
       pyplot.plot(time, Eblade,'k-',label = 'Puddle Energy')
-      pylab.legend(loc='upper left')
+      pyplot.legend(loc='upper left')
       pyplot.xlabel("time (s)")
       pyplot.ylabel('energy (J)')
       pyplot.show()
@@ -2331,7 +2331,7 @@ def atkinsoncalc(F,crew,rigging,v0=4.3801,dt=0.03,doplot=1,doprint=0,
       pyplot.plot(time, Pbladeslip,'k-',label = 'Blade slip sink')
       pyplot.plot(time, Pmb,'b-',label = 'Kinetic energy change boat')
       pyplot.plot(time, Pmc,'g-',label = 'Kinetic energy change crew')
-      pylab.legend(loc='upper right')
+      pyplot.legend(loc='upper right')
       pyplot.xlabel("time (s)")
       pyplot.ylabel('power (W)')
       pyplot.show()
@@ -2344,7 +2344,7 @@ def atkinsoncalc(F,crew,rigging,v0=4.3801,dt=0.03,doplot=1,doprint=0,
       pyplot.plot(time, Ekinb,'b-',label = 'Boat Kinetic energy')
       pyplot.plot(time, Ekinc,'g-',label = 'Crew Kinetic energy')
       pyplot.plot(time, Ew+Ediss+Ekinb+Ekinc+Eblade, 'k-', label = 'Ew + Ediss + Ekinb + Ekinc+Eblade')
-      pylab.legend(loc='upper left')
+      pyplot.legend(loc='upper left')
       pyplot.xlabel("time (s)")
       pyplot.ylabel('energy (J)')
       pyplot.show()
@@ -2354,14 +2354,14 @@ def atkinsoncalc(F,crew,rigging,v0=4.3801,dt=0.03,doplot=1,doprint=0,
       pyplot.subplot(121)
       pyplot.plot(time, Pq,'k-',label = 'Kinetic power')
       pyplot.plot(time, 0*Pq, 'k-')
-      pylab.legend(loc='upper right')
+      pyplot.legend(loc='upper right')
       pyplot.xlabel("time (s)")
       pyplot.ylabel('power (W)')
 
       pyplot.subplot(122)
       pyplot.plot(time, Pqrower,'b-',label = 'Kinetic power rower')
       pyplot.plot(time, Pdiss,'k-',label = 'Kinetic energy dissipation')
-      pylab.legend(loc='upper right')
+      pyplot.legend(loc='upper right')
       pyplot.xlabel("time (s)")
       pyplot.ylabel('power (W)')
 
@@ -2371,7 +2371,7 @@ def atkinsoncalc(F,crew,rigging,v0=4.3801,dt=0.03,doplot=1,doprint=0,
       pyplot.clf()
       pyplot.plot(time, Ew+Ediss+Ekinb+Ekinc+Eblade, 'r-', label = 'Total Sinks')
       pyplot.plot(time, Ef+Eqrower+Eblade,'g-',label = 'Total Sources')
-      pylab.legend(loc='lower right')
+      pyplot.legend(loc='lower right')
       pyplot.xlabel("time (s)")
       pyplot.ylabel('energy (J)')
       pyplot.show()
@@ -2383,7 +2383,7 @@ def atkinsoncalc(F,crew,rigging,v0=4.3801,dt=0.03,doplot=1,doprint=0,
       pyplot.plot(time, Pbladeslip,'g-',label = 'Puddle power')
       pyplot.plot(time, Pf, 'y-', label = 'Propulsive power')
       pyplot.plot(time, Pf+Pbladeslip,'k-',label = 'Propulsive+Puddle Power')
-      pylab.legend(loc='upper right')
+      pyplot.legend(loc='upper right')
       pyplot.xlabel("time (s)")
       pyplot.ylabel('power (W)')
       pyplot.show()
@@ -2394,7 +2394,7 @@ def atkinsoncalc(F,crew,rigging,v0=4.3801,dt=0.03,doplot=1,doprint=0,
 
       pyplot.plot(xblade,yblade,label='blade centre')
 
-      pylab.legend(loc='best')
+      pyplot.legend(loc='best')
       pyplot.xlabel("x (m)")
       pyplot.ylabel('y (m)')
       ax1.axis('equal')
@@ -2418,7 +2418,7 @@ def atkinsoncalc(F,crew,rigging,v0=4.3801,dt=0.03,doplot=1,doprint=0,
       pyplot.plot(time, Fhandle, 'r-', label = 'Handle Force')
       pyplot.plot(time, Fblade, 'g-', label = 'Blade Force')
       pyplot.plot(time, Fprop, 'k-', label = 'Propulsive Force')
-      pylab.legend(loc='lower right')
+      pyplot.legend(loc='lower right')
       pyplot.xlabel("time (s)")
       pyplot.ylabel('Force (N)')
       pyplot.show()
@@ -3062,6 +3062,7 @@ def constantvelo(velo,crew,rigging,timestep=0.03,aantal=5,
 
    fres = sr_interpol1(F,velocity,velo)
 
+
    while (dv/vend > 0.001):
       res = energybalance(fres,crew,rigging,vend,timestep,0,
                           catchacceler=tcatchacceler,
@@ -3117,7 +3118,6 @@ def constantvelofast(velo,crew,rigging,timestep=0.03,aantal=5,
 
 
    fres = sr_interpol1(F,velocity,velo)
-
 
    while (dv/vend > 0.001):
       res = energybalance(fres,crew,rigging,vend,timestep,0,
@@ -3321,7 +3321,7 @@ def drag_skif():
     pyplot.clf()
     pyplot.plot(velo,W1,label='ITTC 1957')
     pyplot.plot(velo,W2,label='Constant alpha')
-    pylab.legend(loc='best')
+    pyplot.legend(loc='best')
     pyplot.xlabel("Boat velocity (m/s)")
     pyplot.ylabel("Drag Force (N)")
 
@@ -3351,7 +3351,7 @@ def drag_eight():
     pyplot.clf()
     pyplot.plot(velo,W1,label='ITTC 1957')
     pyplot.plot(velo,W2,label='Constant alpha')
-    pylab.legend(loc='best')
+    pyplot.legend(loc='best')
     pyplot.xlabel("Boat velocity (m/s)")
     pyplot.ylabel("Drag Force (N)")
 
@@ -3381,7 +3381,7 @@ def drag_pair():
     pyplot.clf()
     pyplot.plot(velo,W1,label='ITTC 1957')
     pyplot.plot(velo,W2,label='Constant alpha')
-    pylab.legend(loc='best')
+    pyplot.legend(loc='best')
     pyplot.xlabel("Boat velocity (m/s)")
     pyplot.ylabel("Drag Force (N)")
 
