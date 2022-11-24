@@ -34,11 +34,13 @@ def plot_blade():
    pyplot.clf()
    ax1 = pyplot.subplot(111)
 
-   pyplot.plot(a,C_D,label='C_D')
-   pyplot.plot(a,C_L,label='C_L')
-   pylab.legend(loc='best')
-   pyplot.xlabel("Angle of attack (rad)")
-   pyplot.ylabel('Drag Coefficient')
+   line1, = ax1.plot(a*180/pi,C_D,'k-')
+   line2, = ax1.plot(a*180/pi,C_L,'k--')
+   line1.set_label('$C_D$')
+   line2.set_label('$C_L$')
+   ax1.legend()
+   pyplot.xlabel("Angle of attack (degree)")
+   pyplot.ylabel('Lift/Drag Coefficient')
    
    pyplot.show()
          
@@ -48,7 +50,7 @@ def plotwindeffect(r,rg,aantal=10):
     r = crew()
     thepower = 580.
     filenames = ['1x.txt','2-.txt','4-.txt','8+.txt']
-    directory = "C:\\python\\rowingdata\\rigging\\"
+    directory = "~/python/rowingdata/rigging/"
 
     resvelo = zeros([aantal,4])
     perc = zeros([aantal,4])
@@ -645,11 +647,11 @@ def styleseries(tempomin,tempomax,F,crew,rigging,
       pyplot.clf
 
       if (doplot == 1):
-          pyplot.plot (power1,velocity1,'go',label='T1 ')
-          pyplot.plot (power2,velocity2,'rs',label='T2 ')
-          pyplot.plot (power3,velocity3,'bv',label='T3 ')
-          pyplot.plot (power4,velocity4,'k^',label='T4 ')
-          pyplot.plot (power5,velocity5,'mo',label='T5 ')
+          pyplot.plot (power1,velocity1,'go',label='flat')
+          pyplot.plot (power2,velocity2,'rs',label='strongbegin')
+          pyplot.plot (power3,velocity3,'bv',label='strongend')
+          pyplot.plot (power4,velocity4,'k^',label='trapezium')
+          pyplot.plot (power5,velocity5,'mo',label='trapezium2')
           pylab.legend(loc='best')
           pyplot.xlabel("Power (W)")
           pyplot.ylabel('Velocity (m/s)')
@@ -2455,7 +2457,7 @@ def plot_ratio_v_constantwatt(watt,r,rg,aantal=10,timestep=0.03):
       pyplot.plot (lsculls,velocity2,'-r',label='320 W, T=30')
       pyplot.plot (lsculls,velocity3,'-b',label='450 W, T=35')
       pylab.legend(loc='best')
-      pyplot.xlabel("L scull (m)")
+      pyplot.xlabel("Lb scull (m)")
       pyplot.ylabel('Velocity (m/s)')
 
       pyplot.subplot(222)
