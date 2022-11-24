@@ -18,7 +18,7 @@ from matplotlib import pyplot
 from numpy import linspace,zeros,cumsum,mean
 from six.moves import range
 
-__version__ = "0.4.9"
+__version__ = "0.5.0"
 
 # submodules
 from .srnumerical import *
@@ -2681,7 +2681,7 @@ def constantwatt(watt,crew,rigging,timestep=0.03,aantal=5,
 
 def constantwattfast(watt,crew,rigging,timestep=0.03,aantal=5,
                  aantal2=5,Fmin=50,Fmax=1000,catchacceler=5,
-                     windv=0,dowind=1, max_iterations_allowed=100):
+                     windv=0,dowind=1, max_iterations_allowed=15):
     """ Returns force, average speed given an input power in watt
     """
 
@@ -2697,7 +2697,7 @@ def constantwattfast(watt,crew,rigging,timestep=0.03,aantal=5,
         dv = 1
         vend = 4.0
         count = 0
-        while (dv/vend > 0.001) or count < max_iterations_allowed:
+        while (dv/vend > 0.001) and count < max_iterations_allowed:
             res = energybalance(F[i],crew,rigging,vend,timestep,0,
                                 catchacceler=tcatchacceler,
                                 windv=windv,dowind=dowind)
@@ -2717,7 +2717,7 @@ def constantwattfast(watt,crew,rigging,timestep=0.03,aantal=5,
     fres = sr_interpol1(F,power,watt)
     count = 0
 
-    while (dv/vend > 0.001) or count < max_iterations_allowed:
+    while (dv/vend > 0.001) and count < max_iterations_allowed:
         res = energybalance(fres,crew,rigging,vend,timestep,0,
                             catchacceler=tcatchacceler,
                             dowind=dowind,windv=windv)
