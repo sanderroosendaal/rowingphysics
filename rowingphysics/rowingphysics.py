@@ -18,7 +18,7 @@ from matplotlib import pyplot
 from numpy import linspace,zeros,cumsum,mean
 from six.moves import range
 
-__version__ = "0.5.1"
+__version__ = "0.5.2"
 
 # submodules
 from .srnumerical import *
@@ -828,8 +828,8 @@ def energybalance(F,crew,rigging,v0=4.3801,dt=0.03,doplot=1,doprint=0,
         pyplot.clf()
 
         ax1 = pyplot.subplot(111)
-        pyplot.plot(numpy.degrees(oarangle), Flift, 'r-', label = 'Lift Force')
-        pyplot.plot(numpy.degrees(oarangle), Fbldrag, 'g-', label = 'Drag Force')
+        pyplot.plot(numpy.degrees(oarangle), Flift, 'k:', label = 'Lift Force')
+        pyplot.plot(numpy.degrees(oarangle), Fbldrag, 'k--', label = 'Drag Force')
         pyplot.plot(numpy.degrees(oarangle), Fbltotal, 'k-', label = 'Total blade Force')
         # pyplot.plot(numpy.degrees(oarangle),numpy.degrees(attackangle),'y.',label='angle of attack')
         pyplot.legend(loc='lower right')
